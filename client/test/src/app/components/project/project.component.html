@@ -1,0 +1,19 @@
+<p>project works!</p>
+<form [formGroup]="existingProject">
+    <div>Contribute Amount: </div>
+    <div>
+        <input type="number" formControlName="contributeAmount">
+    </div>
+</form>
+<button (click)="contribute()">contribute</button>
+<form [formGroup]="voteRequestForm">
+    <div>
+        Request Number:
+    </div>
+    <div>
+        <input type="number" formControlName="voteRequest" min=0>
+    </div>
+</form>
+<button (click)="voteRequest()">vote Request</button>
+<br>
+<button (click)="refund()">Refund</button>

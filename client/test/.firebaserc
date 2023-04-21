@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "mini-proj-cc83e": {
+      "hosting": {
+        "test": [
+          "mini-proj-cc83e"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "mini-proj-cc83e"
+  }
+}
