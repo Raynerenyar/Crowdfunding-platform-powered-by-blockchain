@@ -15,7 +15,10 @@ export class TwlvFaucetFunctions {
     balance() { return { contractName: this.contractName, functionName: 'balance' } as ContractTxProperties }
     tokenAddress() { return { contractName: this.contractName, functionName: 'tokenAddress' } as ContractTxProperties }
     mintable() { return { contractName: this.contractName, functionName: 'mintable' } as ContractTxProperties }
-    timestampOfLastMint(param: any) { return { contractName: this.contractName, functionName: 'timestampOfLastMint', parameters: param } as ContractTxProperties }
+    timestampOfLastMint(address: string) {
+        let param = [address]
+        return { contractName: this.contractName, functionName: 'timestampOfLastMint', parameters: param } as ContractTxProperties
+    }
 
 
 }

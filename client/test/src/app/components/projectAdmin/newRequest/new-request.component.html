@@ -1,0 +1,26 @@
+<div>
+    <h2 class="mt-5 mb-5">Request Details</h2>
+    <form [formGroup]="newRequestForm">
+        <div class="p-float-label mt-5">
+            <input type="text" id="title" pInputText class="text-base text-color border-2 border-solid border-round appearance-none outline-none  focus:border-primary w-full h-3rem" formControlName="title">
+            <label for="title">Title</label>
+        </div>
+        <div class="p-float-label mt-5">
+            <input type="text" id="recipient" pInputText class="text-base text-color border-2 border-solid border-round appearance-none outline-none  focus:border-primary w-full h-3rem" formControlName="recipient">
+            <label for="recipient">Recipient</label>
+        </div>
+        <div class="p-float-label mt-5">
+            <p-inputNumber id="amount" [showButtons]="true" [step]="100" [min]="100" formControlName="amount"
+            class="w-full text-base text-color"
+            styleClass="w-full"
+            inputStyleClass="border-2 focus:border-primary"
+            ></p-inputNumber>
+            <label for="amount">Amount</label>
+        </div>
+        <div class="field p-float-label mt-5">
+            <textarea id="description" cols="30" rows="10" maxlength="2000" class="text-base text-color surface-overlay border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full" pInputTextarea [autoResize]="true" formControlName="description"></textarea>
+            <label for="description">Description</label>
+        </div>
+    </form>
+</div>
+<p-button styleClass="p-button-raised" (click)="createRequest()">Create New Request</p-button>

@@ -31,6 +31,7 @@ contract("Crowdfunding", (accounts) => {
     factory = await Factory.deployed();
     twlv = await TWLV.deployed();
     faucet = await Faucet.deployed();
+    await twlv.mint(faucet.address, 1000000);
 
     const twlvOwner = await twlv.owner();
     const factoryOwner = await factory.owner();
@@ -85,7 +86,6 @@ contract("Crowdfunding", (accounts) => {
   });
 
   it("check faucet balance", async () => {
-    await twlv.mint(faucet.address, 1000000);
     let balance = await twlv.balanceOf(faucet.address);
     web3;
     assert.isAbove(balance.toNumber(), 0, "faucet has no balance");
@@ -100,7 +100,7 @@ contract("Crowdfunding", (accounts) => {
   });
 
   it("check faucet distribution", async () => {
-    await faucet.toggleFaucet();
+    // await faucet.toggleFaucet();
     await faucet.distribute({ from: accountTwo });
     const bal = await twlv.balanceOf(accountTwo, { from: accountTwo });
 
@@ -221,7 +221,7 @@ contract("Crowdfunding", (accounts) => {
   });
   it("check crowdfundingOwner and deployer are the same", async () => {
     const factAddress = factory.address;
-    const facttAddress = crowdfunding.contractFactory();
+    const facttAddress = crowdfunding.crowdfundingFactory();
     const cfOwner = crowdfunding.owner();
     assert.equal(crowdfundingOwner, accountTen, "address must be the same");
   });

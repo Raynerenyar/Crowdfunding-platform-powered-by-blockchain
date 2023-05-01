@@ -24,7 +24,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import ethereum.tutorials.java.ethereum.model.NonceResponse;
+import ethereum.tutorials.java.ethereum.models.NonceResponse;
 
 @Service
 public class FirebaseService {
@@ -65,7 +65,8 @@ public class FirebaseService {
         DocumentReference docRef = getFirebaseDocument(address);
         DocumentSnapshot doc = docRef.get().get();
         if (doc.exists()) {
-            nonce = doc.getString("nonce");
+            // nonce = doc.getString("nonce");
+            nonce = UUID.randomUUID().toString().substring(0, 8);
             return Optional.of(nonce);
         }
         return Optional.empty();

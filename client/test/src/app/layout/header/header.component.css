@@ -1,0 +1,18 @@
+/* :host ::ng-deep .p-toolbar{
+    background-color: transparent;
+    border: 0cm;
+} */
+
+:host ::ng-deep .p-toolbar {
+    position: sticky;
+    position: -webkit-sticky; /* Needed for Safari browsers.*/
+    z-index: 10000; /* This prevents elements to be seen through the toolbar.*/
+    top: 0; /* Required for "position: sticky" to take effect.*/
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+:host ::ng-deep .p-toast {
+    top: 4.5rem;
+    font-size: small;
+}

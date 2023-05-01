@@ -1,0 +1,14 @@
+<div>
+    <h2 class="mt-5 mb-5">Receive Contributions</h2>
+    <form [formGroup]="requestNumForm">
+        <div class="p-float-label mt-5 mb-3">
+            <p-inputNumber id="amount" [showButtons]="true" [step]="1" [min]="1" formControlName="requestNum"
+            class="w-full text-base text-color"
+            styleClass="w-full"
+            inputStyleClass="border-2 focus:border-primary"
+            ></p-inputNumber>
+            <label for="amount">Request Number</label>
+        </div>
+    </form>
+    <p-button styleClass="p-button-raised" (click)="receiveContribution()">Receive contribution</p-button>
+</div>

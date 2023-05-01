@@ -10,39 +10,49 @@ contract CrowdfundingFactory is Ownable {
     bool isFreeForAll;
 
     struct ProjectDetails {
-        string description;
+        string title;
         Crowdfunding project;
     }
 
-    event NewProjectInitiated(
+    event CreateNewProjectEvent(
         address _projectAddress,
-        string _description,
+        address _projectCreator,
+        string _title,
         uint _goal,
-        uint _timeAhead,
+        uint _deadline,
         address _tokenUsed
     );
-    event ContributeEvent(
+    event ContributeToProjectEvent(
         address _projectAddress,
-        address _sender,
+        address _contributor,
         address _tokenAddress,
         uint _amount
     );
-    event RefundFromProject(
+    event GetRefundFromProjectEvent(
         address _projectAddress,
-        address _contributer,
+        address _contributor,
         address _RefundToken,
         uint _RefundAmount
     );
-    event CreateRequestEvent(
+    event CreateRequestForProjectEvent(
         address _projectAddress,
-        string _description,
+        address _projectCreator,
+        string _title,
         address _recipient,
         uint _amount
     );
-    event ReceiveContributionEvent(
+    event ReceiveContributionFromProjectEvent(
         address _projectAddress,
+        address _projectCreator,
         address _recipient,
-        uint _amount
+        uint _amount,
+        uint _requestNo
+    );
+    event voteRequestForProjectEvent(
+        address _projectAddress,
+        address _voter,
+        uint _requestNo,
+        uint _valueOfVote
     );
 
     constructor() {
@@ -51,10 +61,10 @@ contract CrowdfundingFactory is Ownable {
 
     function createNewProject(
         uint _goal,
-        uint _timeAhead,
+        uint _deadline,
         address _acceptingThisToken,
-        string memory _description
-    ) public returns (address) {
+        string memory _title
+    ) public {
         if (!isFreeForAll) {
             require(
                 allowedAddresses[msg.sender] == true,
@@ -65,7 +75,7 @@ contract CrowdfundingFactory is Ownable {
         Crowdfunding crowdfunding = new Crowdfunding(
             address(this),
             _goal,
-            _timeAhead,
+            _deadline,
             _acceptingThisToken
         );
 
@@ -74,29 +84,28 @@ contract CrowdfundingFactory is Ownable {
 
         ProjectDetails storage newProject = projects[address(crowdfunding)];
 
-        newProject.description = _description;
+        newProject.title = _title;
         newProject.project = crowdfunding;
 
-        emit NewProjectInitiated(
+        emit CreateNewProjectEvent(
             address(crowdfunding),
-            _description,
+            msg.sender,
+            _title,
             _goal,
-            _timeAhead,
+            _deadline,
             _acceptingThisToken
         );
-        address addy = address(crowdfunding);
-        return addy;
     }
 
     function contributeToProject(address _projectAddress, uint _amount) public {
         Crowdfunding project = Crowdfunding(_projectAddress);
-        address _contributer;
+        address _contributor;
         address _tokenAddress = project.tokenAddress();
 
-        (_contributer) = project.contribute(_amount, msg.sender);
-        emit ContributeEvent(
+        (_contributor) = project.contribute(_amount, msg.sender);
+        emit ContributeToProjectEvent(
             _projectAddress,
-            _contributer,
+            _contributor,
             _tokenAddress,
             _amount
         );
@@ -109,32 +118,30 @@ contract CrowdfundingFactory is Ownable {
         return project.getBalance();
     }
 
-    function getRefundFromProject(
-        address _projectAddress
-    ) public returns (uint) {
+    function getRefundFromProject(address _projectAddress) public {
         Crowdfunding project = Crowdfunding(_projectAddress);
         uint _RefundAmount = project.getRefund(msg.sender);
-        emit RefundFromProject(
+        emit GetRefundFromProjectEvent(
             _projectAddress,
             msg.sender,
             project.tokenAddress(),
             _RefundAmount
         );
-        return _RefundAmount;
     }
 
     function createRequestForProject(
         address _projectAddress,
-        string memory _description,
+        string memory _title,
         address _recipient,
         uint _amount
     ) public {
         Crowdfunding project = Crowdfunding(_projectAddress);
-        project.createRequest(_description, _recipient, _amount);
+        project.createRequest(_title, _recipient, _amount);
 
-        emit CreateRequestEvent(
+        emit CreateRequestForProjectEvent(
             _projectAddress,
-            _description,
+            msg.sender,
+            _title,
             _recipient,
             _amount
         );
@@ -145,7 +152,14 @@ contract CrowdfundingFactory is Ownable {
         uint _requestNo
     ) public {
         Crowdfunding project = Crowdfunding(_projectAddress);
-        project.voteRequest(_requestNo, msg.sender);
+        uint valueOfVote = project.voteRequest(_requestNo, msg.sender);
+
+        emit voteRequestForProjectEvent(
+            _projectAddress,
+            msg.sender,
+            _requestNo,
+            valueOfVote
+        );
     }
 
     function receiveContributionFromProject(
@@ -157,22 +171,14 @@ contract CrowdfundingFactory is Ownable {
         uint _amount;
         (_recipient, _amount) = project.receiveContribution(_requestNo);
 
-        emit ReceiveContributionEvent(_projectAddress, _recipient, _amount);
+        emit ReceiveContributionFromProjectEvent(
+            _projectAddress,
+            msg.sender,
+            _recipient,
+            _amount,
+            _requestNo
+        );
     }
-
-    // function getContributerAmountOfProject(
-    //     address _projectAddress
-    // ) public view returns (uint) {
-    //     Crowdfunding project = Crowdfunding(_projectAddress);
-    //     return project.contributers(msg.sender);
-    // }
-
-    // function getDeadlineOfProject(
-    //     address _projectAddress
-    // ) public view returns (uint) {
-    //     Crowdfunding project = Crowdfunding(_projectAddress);
-    //     return project.deadline();
-    // }
 
     function allowAddress(address _allowThisAddress) public onlyOwner {
         require(allowedAddresses[_allowThisAddress] == false);
@@ -190,7 +196,7 @@ contract CrowdfundingFactory is Ownable {
     ) public view returns (string memory, address, uint, bool, uint, uint) {
         Crowdfunding project = Crowdfunding(_projectAddress);
         return (
-            project.getRequestDescription(_requestNo),
+            project.getRequestTitle(_requestNo),
             project.getRequestRecipient(_requestNo),
             project.getRequestAmount(_requestNo),
             project.getRequestCompleted(_requestNo),
@@ -206,15 +212,24 @@ contract CrowdfundingFactory is Ownable {
         return project.numRequests();
     }
 
-    function getDescriptionOfProject(
+    function getTitleOfProject(
         address _projectAddress
     ) public view returns (string memory, address) {
-        string memory d = projects[_projectAddress].description;
+        string memory d = projects[_projectAddress].title;
         Crowdfunding a = projects[_projectAddress].project;
         return (d, address(a));
     }
 
     function toggleFreeForAll() public {
         isFreeForAll = !isFreeForAll;
+    }
+
+    function approveTokenForProject(
+        address _projectAddress,
+        uint _amount
+    ) public {
+        Crowdfunding project = Crowdfunding(_projectAddress);
+        IERC20 token = IERC20(project.tokenAddress());
+        token.approve(_projectAddress, _amount);
     }
 }

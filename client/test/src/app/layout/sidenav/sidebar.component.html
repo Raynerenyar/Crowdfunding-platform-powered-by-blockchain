@@ -1,0 +1,6 @@
+<p-sidebar styleClass="w-15rem text-primary surface-200 shadow-2" [(visible)]="sidebarVisible" >
+    <ng-template pTemplate="content" styleClass="text-primary">
+        <p-menu [model]="items" styleClass="text-primary w-auto shadow-2 surface-200" (click)="sidebarVisible = false"></p-menu>
+    </ng-template>
+</p-sidebar>
+<p-button (click)="sidebarVisible = true" icon="pi pi-bars" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>

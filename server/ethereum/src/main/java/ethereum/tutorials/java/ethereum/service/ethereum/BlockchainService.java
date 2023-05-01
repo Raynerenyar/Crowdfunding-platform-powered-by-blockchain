@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,8 +37,10 @@ import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.utils.Numeric;
 
+import ethereum.tutorials.java.ethereum.eventHandler.BlockchainEventHandler;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TwlvFaucet;
 import ethereum.tutorials.java.ethereum.util.contractEncodedFunctions.FactoryEncodedFunctions;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -52,10 +55,10 @@ public class BlockchainService {
     private String publicKey;
     @Value("${wallet.private.key}")
     private String privateKey;
-    @Value("${contract.address}")
-    private String contractAddress;
     @Value("${crowdfunding.factory.contract.address}")
     private String crowdfundingFactoryContractAddress;
+    @Value("${faucet.contract.address}")
+    private String FaucetContractAddress;
     @Value("${rpc.url}")
     private String rpcUrl;
     @Value("${chain.id}")
@@ -65,66 +68,14 @@ public class BlockchainService {
     private Web3j web3;
     @Autowired
     private LoadContractService lcSvc;
+    @Autowired
+    private BlockchainEventHandler BcEventHandler;
 
     //https://eth-mainnet.gateway.pokt.network/v1/5f3453978e354ab992c4da79
 
     // Web3j webThree = Web3j
     //         .build(new HttpService(rpcUrl));
     // Web3ClientVersion clientVersion = webThree.web3ClientVersion().send();
-
-    public String testRun(String fromAddress) {
-
-        System.out.println("rpcUrl >>>>>>>> " + rpcUrl);
-        System.out.println("contractAddress >>>>>>>> " + contractAddress);
-        System.out.println("publickey >>>>>>> " + publicKey);
-        System.out.println("fromAddress" + fromAddress);
-        System.out.println("privateKey >>>>>>>> " + privateKey);
-        Web3j webThree = Web3j.build(new HttpService(rpcUrl));
-        ContractGasProvider contractGasProvider = new DefaultGasProvider();
-        ECKeyPair keyPair = Credentials.create(privateKey, publicKey).getEcKeyPair();
-        Credentials cred = Credentials.create(privateKey);
-        TransactionManager cManager = new ClientTransactionManager(webThree, fromAddress.toLowerCase());
-        TransactionManager txManager = new RawTransactionManager(webThree,
-                cred, chaintId);
-
-        String encodedFunction = "";
-        try {
-            System.out.println("loading contract");
-            // Crowdfunding.load(fromAddress, webThree, cred, contractGasProvider)
-            // Crowdfunding.deploy(webThree, txManager, contractGasProvider, fromAddress, null, null, encodedFunction)
-            Crowdfunding crowdfunding = Crowdfunding.load(contractAddress, webThree, txManager, contractGasProvider);
-            // Crowdfunding crowdfunding = Crowdfunding.deploy(webThree, txManager, contractGasProvider,
-            //         BigInteger.valueOf(1000), BigInteger.valueOf(3000)).send();
-            if (crowdfunding.isValid()) {
-                System.out.println("contract is valid");
-                // encodedFunction = crowdfunding.contribute(BigInteger.valueOf(100)).encodeFunctionCall();
-                // TransactionReceipt receipt = crowdfunding.contribute(BigInteger.valueOf(100)).send();
-                crowdfunding.contribute(null, encodedFunction);
-
-                // encodedFunction = crowdfunding.contribute(BigInteger.valueOf(100)).encodeFunctionCall();
-                // crowdfunding.voteRequest(BigInteger.valueOf(0));
-
-                System.out.println("the encoded function >>>> " + encodedFunction);
-                // encodedFunction = receipt.getTransactionHash();
-                // Numeric.toHexString(TransactionEncoder.encode(transactionReceipt));
-            }
-        } catch (Exception e) {
-            logger.info(e.getMessage());
-        }
-        return encodedFunction;
-    }
-
-    public String verifyContract() {
-        /* https://api.etherscan.io/api
-        ?module=contract
-        &action=getsourcecode
-        &address=0xBB9bc244D798123fDe783fCc1C72d3Bb8C189413
-        &apikey=YourApiKeyToken
-         */
-        UriComponentsBuilder.fromUriString(privateKey);
-
-        return "";
-    }
 
     public Boolean verifySignedMessage(String signature, String nonce, String address) {
         String PERSONAL_MESSAGE_PREFIX = "\u0019Ethereum Signed Message:\n";
@@ -172,19 +123,27 @@ public class BlockchainService {
         return r;
     }
 
-    public Optional<String> getEncoded(String contractName, String contractAddress, String functionName,
+    public Optional<String> getEncoded(String contractName, String functionName,
             Object... params) {
         Optional<String> opt;
         try {
-
-            // can create other if statements for interaction with other contracts
-            if (contractName.equalsIgnoreCase("CrowdfundingFactory")) {
-                CrowdfundingFactory crowdfundingFactory = lcSvc
-                        .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
-                opt = getFunctionEncoded(crowdfundingFactory, contractAddress, functionName,
-                        CrowdfundingFactory.class,
-                        params);
-                return opt;
+            switch (contractName) {
+                case "CrowdfundingFactory":
+                    System.out.println("loading crowdfunding contract " + crowdfundingFactoryContractAddress);
+                    CrowdfundingFactory crowdfundingFactory = lcSvc
+                            .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
+                    System.out
+                            .println("Crowdfunding contract has been " + crowdfundingFactory.isValid() + "ly uploaded");
+                    opt = getFunctionEncoded(crowdfundingFactory, functionName,
+                            CrowdfundingFactory.class,
+                            params);
+                    return opt;
+                case "TwlvFaucet":
+                    System.out.println("loading faucet contract " + FaucetContractAddress);
+                    TwlvFaucet tokenFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
+                    System.out.println("Faucet contract has been " + tokenFaucet.isValid() + "ly uploaded");
+                    opt = getFunctionEncoded(tokenFaucet, functionName, TwlvFaucet.class, params);
+                    return opt;
             }
             return Optional.empty();
         } catch (Exception e) {
@@ -193,65 +152,105 @@ public class BlockchainService {
         }
     }
 
-    public <T> Optional<String> getFunctionEncoded(
+    private <T> Optional<String> getFunctionEncoded(
             T loadedContract,
-            String contractAddress,
             String functionName,
             Class<T> contractClass,
             Object... params)
             throws Exception {
         String encodedFunction = "";
         if (((Contract) contractClass.cast(loadedContract)).isValid()) {
+            RemoteFunctionCall<TransactionReceipt> function;
 
-            // return (method.getReturnType().getSimpleName().contains("RemoteFunctionCall")
-            //         && method.getName().equalsIgnoreCase(functionName));
-            // method names have to be exact and same case as defined in the contract
-            Iterator<Method> iter = Arrays.asList(contractClass.getDeclaredMethods()).stream()
-                    .filter((method) -> method.getName().equalsIgnoreCase(functionName))
-                    .iterator();
-
-            while (iter.hasNext()) {
-                System.out.println("iter next");
-                Method contractFunction = iter.next();
-                contractFunction.getParameterTypes();
-                if (contractFunction.getName().equalsIgnoreCase(functionName)) {
-                    RemoteFunctionCall<TransactionReceipt> function;
-
-                    if (params.length == 0) {
-                        @SuppressWarnings("unchecked") // unchecked type conversion
-                        RemoteFunctionCall<TransactionReceipt> sfunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-                                .invoke(contractClass.cast(loadedContract));
-                        function = sfunction;
-
+            if (params.length == 0) {
+                Method contractFunction = contractClass.getMethod(functionName);
+                @SuppressWarnings("unchecked") // unchecked type conversion
+                RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+                        .invoke(contractClass.cast(loadedContract));
+                function = afunction;
+            } else {
+                Class<?>[] paramsTypeList = new Class<?>[params.length];
+                Object[] paramsArray = new Object[params.length];
+                for (int i = 0; i < params.length; i++) {
+                    Class<?> paramClass = params[i].getClass();
+                    if (paramClass.getSimpleName().contains("Integer")) {
+                        paramsTypeList[i] = BigInteger.class;
+                        paramsArray[i] = BigInteger.valueOf(((Integer) params[i]).longValue());
+                    } else if (paramClass.getSimpleName().contains("Long")) {
+                        paramsTypeList[i] = BigInteger.class;
+                        paramsArray[i] = BigInteger.valueOf((long) params[i]);
                     } else {
-                        List<Object> list = new LinkedList<Object>();
-                        Class<?>[] typeArr = contractFunction.getParameterTypes();
-                        for (int i = 0; i < params.length; i++) {
-                            if (typeArr[i].getSimpleName().equals("BigInteger")) {
-                                System.out.println(params[i].getClass().getSimpleName());
-                                if (params[i].getClass().getSimpleName().contains("Integer")) {
-                                    list.add(BigInteger.valueOf(((Integer) params[i]).longValue()));
-                                } else {
-                                    // list.add(BigInteger.valueOf(((Long) ((Integer) params[i]).longValue())));
-                                    list.add(BigInteger.valueOf((long) params[i]));
-                                }
-                            } else
-                                list.add(typeArr[i].cast(params[i]));
-                        }
-
-                        Object[] paramsArr = list.toArray();
-                        @SuppressWarnings("unchecked") // unchecked type conversion
-                        RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-                                .invoke(contractClass.cast(loadedContract), paramsArr);
-                        function = afunction;
+                        paramsTypeList[i] = paramClass;
+                        paramsArray[i] = paramClass.cast(params[i]);
                     }
-                    encodedFunction = function.encodeFunctionCall();
-                    System.out.println("getFunctionEncoded breaking...");
-                    break;
                 }
+                Method contractFunction = contractClass.getMethod(functionName, paramsTypeList);
+                @SuppressWarnings("unchecked") // unchecked type conversion
+                RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+                        .invoke(contractClass.cast(loadedContract), paramsArray);
+                function = afunction;
             }
+            encodedFunction = function.encodeFunctionCall();
+        } else {
+            throw new Exception("contract not found");
         }
+        System.out.println("got Function Encoded");
         return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
+
+        // if (((Contract) contractClass.cast(loadedContract)).isValid()) {
+        //     // can try contractClass.getMethod()
+
+        //     // return (method.getReturnType().getSimpleName().contains("RemoteFunctionCall")
+        //     //         && method.getName().equalsIgnoreCase(functionName));
+        //     // method names have to be exact and same case as defined in the contract
+        //     Iterator<Method> iter = Arrays.asList(contractClass.getDeclaredMethods()).stream()
+        //             .filter((method) -> method.getName().equalsIgnoreCase(functionName))
+        //             .iterator();
+        //     while (iter.hasNext()) {
+        //         System.out.println("iter next");
+        //         Method contractFunction = iter.next();
+        //         contractFunction.getParameterTypes();
+
+        //         // may be unnecessary to check name equality again
+        //         if (contractFunction.getName().equalsIgnoreCase(functionName)) {
+        //             RemoteFunctionCall<TransactionReceipt> function;
+        //             System.out.println("getting encoded function for >>> " + contractFunction.getName());
+        //             if (params.length == 0) {
+        //                 @SuppressWarnings("unchecked") // unchecked type conversion
+        //                 RemoteFunctionCall<TransactionReceipt> sfunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+        //                         .invoke(contractClass.cast(loadedContract));
+        //                 function = sfunction;
+
+        //             } else {
+        //                 List<Object> list = new LinkedList<Object>();
+        //                 Class<?>[] typeArr = contractFunction.getParameterTypes();
+        //                 for (int i = 0; i < params.length; i++) {
+        //                     if (typeArr[i].getSimpleName().equals("BigInteger")) {
+        //                         System.out.println(params[i].getClass().getSimpleName());
+        //                         if (params[i].getClass().getSimpleName().contains("Integer")) {
+        //                             list.add(BigInteger.valueOf(((Integer) params[i]).longValue()));
+        //                         } else {
+        //                             // list.add(BigInteger.valueOf(((Long) ((Integer) params[i]).longValue())));
+        //                             list.add(BigInteger.valueOf((long) params[i]));
+        //                         }
+        //                     } else
+        //                         list.add(typeArr[i].cast(params[i]));
+        //                 }
+
+        //                 Object[] paramsArr = list.toArray();
+        //                 @SuppressWarnings("unchecked") // unchecked type conversion
+        //                 RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+        //                         .invoke(contractClass.cast(loadedContract), paramsArr);
+        //                 function = afunction;
+        //             }
+        //             encodedFunction = function.encodeFunctionCall();
+        //             System.out.println("getFunctionEncoded breaking...");
+        //             break;
+        //         }
+        //     }
+        // } else
+        //     throw new Exception("contract not found");
+        // return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
     }
 
     public Optional<String> getContractFunctionEncoded(
@@ -373,21 +372,27 @@ public class BlockchainService {
         return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
     }
 
-    @Bean(name = "crowdfundingAbi")
-    public String getAbi() {
-        FileReader fr;
-        String abi = "";
-        try {
-            fr = new FileReader(
-                    "src/main/java/ethereum/tutorials/java/ethereum/javaethereum/abi/Crowdfunding.json");
-            // Reader reader = new StringReader("");
-            JsonReader jsonReader = Json.createReader(fr);
-            JsonArray abiArray = jsonReader.readObject().getJsonArray("abi");
-            abi = abiArray.toString();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    public void getEvent(String contractName, String functionName, String blockHash, String... description) {
+        switch (contractName) {
+
+            case "CrowdfundingFactory" -> {
+                CrowdfundingFactory loadedContract = lcSvc
+                        .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
+                switch (functionName) {
+                    case "createNewProject" ->
+                        BcEventHandler.createNewProject(loadedContract, blockHash, description[0]);
+                    case "contributeToProject" -> BcEventHandler.contributeToProject(loadedContract, blockHash);
+                    case "getRefundFromProject" -> BcEventHandler.refundFromProject(loadedContract, blockHash);
+                    case "createRequestForProject" -> BcEventHandler.createRequestForProject(loadedContract, blockHash);
+                    case "voteRequestForProject" -> BcEventHandler.voteRequestForProject(loadedContract, blockHash);
+                    case "receiveContributionFromProject" ->
+                        BcEventHandler.receiveContributionProject(loadedContract, blockHash);
+                }
+            }
+            case "TwlvFaucet" -> {
+                TwlvFaucet loadedContract = lcSvc.loadFaucetContract(contractName);
+                BcEventHandler.faucetDistribution(loadedContract, blockHash);
+            }
         }
-        return abi;
     }
 }

@@ -14,8 +14,6 @@ public class EthConfig {
     private String publicKey;
     @Value("${wallet.private.key}")
     private String privateKey;
-    @Value("${contract.address}")
-    private String contractAddress;
     @Value("${rpc.url}")
     private String rpcUrl;
     @Value("${chain.id}")
@@ -23,6 +21,8 @@ public class EthConfig {
 
     @Bean
     Web3j initWeb3j() {
+        System.out.println("rpc connected to > " + rpcUrl);
+        System.out.println("and connected to chain id" + chaintId);
         return Web3j.build(new HttpService(rpcUrl));
     }
 

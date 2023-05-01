@@ -2,8 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-// import "@openzeppelin/contracts/access/AccessControl.sol";
-
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -22,7 +21,7 @@ contract Crowdfunding is Ownable {
     uint decimals = 10 ** 6;
 
     struct Request {
-        string description;
+        string title;
         address recipient;
         uint amount;
         bool completed;
@@ -36,26 +35,11 @@ contract Crowdfunding is Ownable {
     mapping(uint => Request) public requests;
     mapping(address => uint) public contributers;
 
-    // Events
-    event ContributeEvent(address _sender, uint _value);
-    event ReceiveContributionEvent(address _recipient, uint _value);
-    event CreateRequestEvent(
-        string _desrciption,
-        address _recipient,
-        uint _value
-    );
-    event RefundFromProject(
-        address projectAddress,
-        address contributer,
-        address RefundToken,
-        uint RefundAmount
-    );
-
     // allows factory to call the functions here
     modifier sharedOwner() {
         require(
             msg.sender == owner() || msg.sender == crowdfundingFactory,
-            "You are neither the factory nor the owner"
+            "You are neither the owner nor the factory"
         );
         _;
     }
@@ -63,14 +47,21 @@ contract Crowdfunding is Ownable {
     constructor(
         address _crowdfundingFactory,
         uint _goal,
-        uint _timeAhead,
+        uint _deadline,
         address _acceptingThisToken
     ) {
+        require(_deadline > block.timestamp);
+        require(isToken(_acceptingThisToken), "Address provided is not token");
+        require(
+            isContract(_acceptingThisToken),
+            "Address provided is not a contract"
+        );
         crowdfundingFactory = _crowdfundingFactory;
         goal = _goal;
-        deadline = block.timestamp + _timeAhead;
+        deadline = _deadline;
         minimumContribution = 100;
         admin = msg.sender;
+
         token = IERC20(_acceptingThisToken);
         tokenAddress = _acceptingThisToken;
     }
@@ -111,27 +102,27 @@ contract Crowdfunding is Ownable {
         contributers[caller] = 0;
         token.transfer(caller, amount);
         return amount;
-        // emit RefundFromProject(address(this), caller, address(token), amount);
     }
 
     function createRequest(
-        string memory _description,
+        string memory _title,
         address _recipient,
         uint _amount
     ) public sharedOwner {
         Request storage newRequest = requests[numRequests];
         numRequests++;
 
-        newRequest.description = _description;
+        newRequest.title = _title;
         newRequest.recipient = _recipient;
         newRequest.amount = _amount;
         newRequest.completed = false;
         newRequest.noOfVoters = 0;
-
-        emit CreateRequestEvent(_description, _recipient, _amount);
     }
 
-    function voteRequest(uint _requestNo, address caller) public {
+    function voteRequest(
+        uint _requestNo,
+        address caller
+    ) public returns (uint) {
         require(numRequests >= _requestNo, "Request does not exist.");
 
         // owner of crowdfunding project cannot vote for their own requests
@@ -147,12 +138,14 @@ contract Crowdfunding is Ownable {
             "Request has not been initiated"
         );
 
-        // ratio of the value of contribution by one user to the raisedAmount
-        // the higher the contribute the more value msg.sender contributes
-        // solidity that no float or double
-        thisRequest.valueOfVotes += (contributers[caller] * decimals) / goal;
+        // Ratio of the value of contribution by one user to the goal.
+        // The higher the contribution the more the proportion in comparison to the goal.
+        // Solidity has no float or double, therefore valueOfVotes is represents the ratio.
+        uint valueOfVote = (contributers[caller] * decimals) / goal;
+        thisRequest.valueOfVotes += valueOfVote;
         thisRequest.noOfVoters++;
         thisRequest.voters[caller] = true;
+        return valueOfVote;
     }
 
     function receiveContribution(
@@ -174,23 +167,18 @@ contract Crowdfunding is Ownable {
         // value of votes more than 0.5 to pass
         require(
             thisRequest.valueOfVotes > (numerator * decimals) / denominator,
-            "error"
+            "value of votes fail to meet requirement"
         );
 
         token.transfer(thisRequest.recipient, uint(thisRequest.amount));
         thisRequest.completed = true;
-
-        emit ReceiveContributionEvent(
-            thisRequest.recipient,
-            thisRequest.amount
-        );
         return (thisRequest.recipient, thisRequest.amount);
     }
 
-    function getRequestDescription(
+    function getRequestTitle(
         uint _requestNo
     ) external view returns (string memory) {
-        return requests[_requestNo].description;
+        return requests[_requestNo].title;
     }
 
     function getRequestRecipient(
@@ -217,5 +205,24 @@ contract Crowdfunding is Ownable {
         uint _requestNo
     ) external view returns (uint) {
         return requests[_requestNo].valueOfVotes;
+    }
+
+    function isContract(address _address) internal view returns (bool) {
+        uint size;
+        assembly {
+            size := extcodesize(_address)
+        }
+        return size > 0;
+    }
+
+    // this function will run at constructor
+    function isToken(address _address) internal view returns (bool) {
+        ERC20 testAddress = ERC20(_address);
+        require(testAddress.balanceOf(msg.sender) >= 0, "method doesn't exist");
+        require(testAddress.totalSupply() > 0, "Supply is 0");
+        bytes memory _testString = bytes(testAddress.name());
+
+        if (_testString.length > 0) return true;
+        return false;
     }
 }

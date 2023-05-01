@@ -7,7 +7,7 @@ import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TwlvFaucet.SupplyCh
 import io.reactivex.Flowable;
 
 public class FaucetEvents {
-    static Flowable<SupplyChangeEventResponse> contributeEvent(
+    public static Flowable<SupplyChangeEventResponse> distributionEvent(
             TwlvFaucet loadedContract,
             String contractAddress,
             String blockHash) {

@@ -10,8 +10,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import ethereum.tutorials.java.ethereum.config.FirebaseConfig;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
+import ethereum.tutorials.java.ethereum.repository.CrowdfundingRepository;
 import ethereum.tutorials.java.ethereum.service.ethereum.BlockchainService;
-import ethereum.tutorials.java.ethereum.subscription.BlockchainEventListener;
+import ethereum.tutorials.java.ethereum.service.ethereum.LoadContractService;
 import jnr.ffi.provider.SigType;
 
 import java.io.IOException;
@@ -22,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.DefaultBlockParameterNumber;
+import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
@@ -38,9 +42,11 @@ import com.google.firebase.database.FirebaseDatabase;
 public class EthereumApplication implements CommandLineRunner {
 
 	@Autowired
-	BlockchainService ethSvc;
-	@Autowired
 	FirebaseApp firebase; // might not need to autowire it
+	@Autowired
+	Web3j web3;
+	@Autowired
+	CrowdfundingRepository sqlRepo;
 
 	@Value("${firebase.project.id}")
 	private String firebaseProjId;
@@ -48,12 +54,8 @@ public class EthereumApplication implements CommandLineRunner {
 	@Value("${firebase.app.id}")
 	private String firebaseAppId;
 
-	@Autowired
-	@Qualifier("crowdfundingAbi")
-	private String crowdfundingAbi;
-
-	@Autowired
-	private BlockchainEventListener bcEventListener;
+	@Value("${crowdfunding.factory.contract.address}")
+	private String crowdfundingFactoryContractAddress;
 
 	private static final Logger logger = LoggerFactory.getLogger(EthereumApplication.class);
 
@@ -87,7 +89,46 @@ public class EthereumApplication implements CommandLineRunner {
 		// System.out.println(clientVersion.getWeb3ClientVersion());
 
 		// ethSvc.testRun();
-
+		// testSql();
 	}
+
+	// public void testSql() {
+	// 	String testAddress = "0x0";
+	// 	sqlRepo.insertContributor(testAddress);
+	// 	sqlRepo.insertProjectCreator(testAddress, "testName");
+
+	// 	sqlRepo.insertProject(
+	// 			testAddress,
+	// 			testAddress,
+	// 			"test",
+	// 			0,
+	// 			0,
+	// 			0,
+	// 			false,
+	// 			false,
+	// 			0,
+	// 			testAddress);
+
+	// 	sqlRepo.insertProjectRequest(
+	// 			testAddress,
+	// 			"test tilte",
+	// 			testAddress,
+	// 			0,
+	// 			0,
+	// 			false,
+	// 			0.00);
+
+	// 	sqlRepo.insertVote(0, testAddress, 0);
+
+	// 	sqlRepo.insertContribution(
+	// 			testAddress,
+	// 			0,
+	// 			testAddress,
+	// 			false);
+
+	// 	sqlRepo.updateContribution(true, testAddress, testAddress);
+
+	// 	sqlRepo.updateRequest(1, true);
+	// }
 
 }

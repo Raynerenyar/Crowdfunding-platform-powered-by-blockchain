@@ -66,8 +66,8 @@ public class FactoryEncodedFunctions {
         return loadedContract.getNumOfRequestOfProject(projectAddress).encodeFunctionCall();
     }
 
-    public static String getdescriptionOfProject(CrowdfundingFactory loadedContract, String projectAddress) {
-        return loadedContract.getDescriptionOfProject(projectAddress).encodeFunctionCall();
+    public static String getTitleOfProject(CrowdfundingFactory loadedContract, String projectAddress) {
+        return loadedContract.getTitleOfProject(projectAddress).encodeFunctionCall();
     }
 
 }

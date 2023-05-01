@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-// import "@openzeppelin/contracts/access/AccessControl.sol";
-// import "./TWLV.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -12,37 +10,35 @@ contract twlvFaucet is Ownable {
     mapping(address => uint) public timestampOfLastMint;
     uint public balance;
     address public tokenAddress;
-    address public twlvOwner;
     uint timer;
 
-    IERC20 public twlv;
+    IERC20 public token;
     Ownable ownableToken;
 
     event SupplyChange(address mintedToAddress, uint amount);
 
     constructor(address _tokenAddress, uint mintTimer) {
+        // only owner of twlv can deploy this faucet
+        tokenAddress = _tokenAddress;
+        token = IERC20(_tokenAddress);
+        ownableToken = Ownable(address(token));
+        require(ownableToken.owner() == msg.sender, "not owner of twlv");
+
         timer = mintTimer;
         mintable = true;
-        tokenAddress = _tokenAddress;
-        twlv = IERC20(_tokenAddress);
-        ownableToken = Ownable(address(twlv));
-
-        // only owner of twlv can deploy this faucet
-        require(ownableToken.owner() == msg.sender, "not owner of twlv");
     }
 
     function distribute() public {
         require(mintable == true, "unable to mint right now");
-        balance = twlv.balanceOf(address(this));
-        // require(block.timestamp >= blockSinceLastMint[to] + 90000, Your last mint is less than 25 hours);
+        balance = token.balanceOf(address(this));
         require(
             block.timestamp >= timestampOfLastMint[msg.sender] + timer,
-            "your last mint is less than 1000 seconds"
+            "Cannot mint yet, still on cooldown."
         );
         require(msg.sender != address(0), "address not be 0x0");
         uint amount = 1000;
-        twlv.approve(msg.sender, amount);
-        twlv.transfer(msg.sender, amount);
+        token.approve(msg.sender, amount);
+        token.transfer(msg.sender, amount);
         balance -= amount;
         timestampOfLastMint[msg.sender] = block.timestamp;
 

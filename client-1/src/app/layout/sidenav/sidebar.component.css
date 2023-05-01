@@ -1,0 +1,6 @@
+:host ::ng-deep .p-menu .p-menuitem-text {
+    color: #6366F1;
+    /* color: white; */
+    /* color: #adf163; */
+    text-align: center;
+}

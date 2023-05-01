@@ -2,52 +2,62 @@ package ethereum.tutorials.java.ethereum.util.eventFlowable;
 
 import org.web3j.protocol.core.methods.request.EthFilter;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.ContributeEventEventResponse;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.CreateRequestEventEventResponse;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.NewProjectInitiatedEventResponse;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.ReceiveContributionEventEventResponse;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.RefundFromProjectEventResponse;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.ContributeToProjectEventEventResponse;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.CreateRequestForProjectEventEventResponse;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.CreateNewProjectEventEventResponse;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.ReceiveContributionFromProjectEventEventResponse;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.VoteRequestForProjectEventEventResponse;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.GetRefundFromProjectEventEventResponse;
 import io.reactivex.Flowable;
 
+// method are named according to the functions on solidity that emits their respective events
 public class FactoryEvents {
-    static Flowable<ContributeEventEventResponse> contributeEvent(
+    public static Flowable<ContributeToProjectEventEventResponse> contributeToProject(
             CrowdfundingFactory loadedContract,
             String contractAddress,
             String blockHash) {
         EthFilter ethFilter = new EthFilter(blockHash, contractAddress);
-        return loadedContract.contributeEventEventFlowable(ethFilter);
+        return loadedContract.contributeToProjectEventEventFlowable(ethFilter);
     }
 
-    static Flowable<NewProjectInitiatedEventResponse> newProjectInitiated(
+    public static Flowable<CreateNewProjectEventEventResponse> createNewProject(
             CrowdfundingFactory loadedContract,
             String contractAddress,
             String blockHash) {
         EthFilter ethFilter = new EthFilter(blockHash, contractAddress);
-        return loadedContract.newProjectInitiatedEventFlowable(ethFilter);
+        return loadedContract.createNewProjectEventEventFlowable(ethFilter);
     }
 
-    static Flowable<RefundFromProjectEventResponse> refundFromProject(
+    public static Flowable<GetRefundFromProjectEventEventResponse> getRefundFromProject(
             CrowdfundingFactory loadedContract,
             String contractAddress,
             String blockHash) {
         EthFilter ethFilter = new EthFilter(blockHash, contractAddress);
-        return loadedContract.refundFromProjectEventFlowable(ethFilter);
+        return loadedContract.getRefundFromProjectEventEventFlowable(ethFilter);
     }
 
-    static Flowable<CreateRequestEventEventResponse> createRequestForProject(
+    public static Flowable<CreateRequestForProjectEventEventResponse> createRequestForProject(
             CrowdfundingFactory loadedContract,
             String contractAddress,
             String blockHash) {
         EthFilter ethFilter = new EthFilter(blockHash, contractAddress);
-        return loadedContract.createRequestEventEventFlowable(ethFilter);
+        return loadedContract.createRequestForProjectEventEventFlowable(ethFilter);
     }
 
-    static Flowable<ReceiveContributionEventEventResponse> receiveContribution(
+    public static Flowable<ReceiveContributionFromProjectEventEventResponse> receiveContributionFromProject(
             CrowdfundingFactory loadedContract,
             String contractAddress,
             String blockHash) {
         EthFilter ethFilter = new EthFilter(blockHash, contractAddress);
-        return loadedContract.receiveContributionEventEventFlowable(ethFilter);
+        return loadedContract.receiveContributionFromProjectEventEventFlowable(ethFilter);
+    }
+
+    public static Flowable<VoteRequestForProjectEventEventResponse> voteRequestForProject(
+            CrowdfundingFactory loadedContract,
+            String contractAddress,
+            String blockHash) {
+        EthFilter ethFilter = new EthFilter(blockHash, contractAddress);
+        return loadedContract.voteRequestForProjectEventEventFlowable(ethFilter);
     }
 
 }

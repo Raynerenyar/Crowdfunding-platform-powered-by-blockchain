@@ -9,8 +9,8 @@ export class CrowdfundingFactoryFunctions {
     }
 
     // blockchain transactions (changes the state of the blockchain)
-    createNewProject(goal: number, timeAhead: number, tokenAddress: string, description: string) {
-        let param = [goal, timeAhead, tokenAddress, description]
+    createNewProject(goal: number, deadline: number, tokenAddress: string, title: string) {
+        let param = [goal, deadline, tokenAddress, title]
         return { contractName: this.contractName, functionName: 'createNewProject', parameters: param } as ContractTxProperties
     }
     contributeToProject(projectAddress: string, amount: number) {
@@ -21,8 +21,8 @@ export class CrowdfundingFactoryFunctions {
         let param = [projectAddress]
         return { contractName: this.contractName, functionName: 'getRefundFromProject', parameters: param } as ContractTxProperties
     }
-    createRequestForProject(projectAddress: string, description: string, recipient: string, amount: number) {
-        let param = [projectAddress, description, recipient, amount]
+    createRequestForProject(projectAddress: string, title: string, recipient: string, amount: number) {
+        let param = [projectAddress, title, recipient, amount]
         return { contractName: this.contractName, functionName: 'createRequestForProject', parameters: param } as ContractTxProperties
     }
     voteRequestForProject(projectAddress: string, requestNum: number) {
@@ -41,20 +41,29 @@ export class CrowdfundingFactoryFunctions {
         let param = [projectAddress]
         return { contractName: this.contractName, functionName: 'disallowAddress', parameters: param } as ContractTxProperties
     }
+    approveTokenForProject(projectAddress: string, amount: number) {
+        let param = [projectAddress, amount]
+        return { contractName: this.contractName, functionName: 'approveTokenForProject', parameters: param } as ContractTxProperties
+    }
+    toggleFreeForAll() { return { contractName: this.contractName, functionName: 'toggleFreeForAll' } as ContractTxProperties }
 
     /*
         view functions of the crowdfunding factory r    
      */
-    getRequestOfProject(projectAddress: string, requestNo: number) {
-        let param = [projectAddress, requestNo]
+    getRequestOfProject(projectAddress: string, requestNum: number) {
+        let param = [projectAddress, requestNum]
         return { contractName: this.contractName, functionName: 'getRequestOfProject', parameters: param } as ContractTxProperties
     }
     getNumOfRequestOfProject(projectAddress: string) {
         let param = [projectAddress]
         return { contractName: this.contractName, functionName: 'getNumOfRequestOfProject', parameters: param } as ContractTxProperties
     }
-    getdescriptionOfProject(projectAddress: string) {
+    getTitleOfProject(projectAddress: string) {
         let param = [projectAddress]
-        return { contractName: this.contractName, functionName: 'getDescriptionOfProject', parameters: param } as ContractTxProperties
+        return { contractName: this.contractName, functionName: 'getTitleOfProject', parameters: param } as ContractTxProperties
+    }
+    getBalanceOfProject(projectAddress: string) {
+        let param = [projectAddress]
+        return { contractName: this.contractName, functionName: 'getBalanceOfProject', parameters: param } as ContractTxProperties
     }
 }

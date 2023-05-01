@@ -1,0 +1,17 @@
+/* .ui-datepicker-year-panel {
+    width: 50%;
+} */
+
+::ng-deep .p-datepicker{
+    min-width: 30%!important;
+    /* height: 40%; */
+}
+
+app-project-admin {
+    width: 100%!important;
+}
+
+body{
+    /* width: 7000px!important; */
+    width: 100%!important;
+ }
