@@ -1,6 +1,8 @@
 package ethereum.tutorials.java.ethereum.models;
 
 import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,11 +14,14 @@ import lombok.NoArgsConstructor;
 public class Project {
     private String projectAddress;
     private String creatorAddress;
+    private String title;
     private String description;
-    private BigInteger goal;
-    private BigInteger deadline;
-    private BigInteger raisedAmount;
+    private Integer goal; // might need BigInteger
+    private Timestamp deadline;
+    private Integer raisedAmount; // might need BigInteger
     private boolean completed;
-    private BigInteger numOfRequests;
+    private boolean expired;
+    private Integer numOfRequests; // might need BigInteger
     private String acceptingToken;
+    private Timestamp createdDate;
 }

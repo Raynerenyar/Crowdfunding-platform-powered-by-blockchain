@@ -23,6 +23,7 @@ export class CrowdfundingFactoryFunctions {
     }
     createRequestForProject(projectAddress: string, title: string, recipient: string, amount: number) {
         let param = [projectAddress, title, recipient, amount]
+        console.log(param)
         return { contractName: this.contractName, functionName: 'createRequestForProject', parameters: param } as ContractTxProperties
     }
     voteRequestForProject(projectAddress: string, requestNum: number) {

@@ -4,14 +4,15 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { Auth, signOut, signInWithCustomToken } from '@angular/fire/auth';
 import { Observable, async, from } from 'rxjs';
 import { catchError, switchMap, exhaustMap, filter } from 'rxjs/operators';
-import { VerifyRequest, TokenResponse, NonceResponse, ContractFunctions } from '../model/model'
+import { VerifyRequest, TokenResponse, NonceResponse } from '../model/model'
 import { constants } from '../../environments/environment'
 import Web3 from 'web3';
+import { Url } from '../util/url.util';
 
 const AUTH_API = constants.SERVER_URL + 'api/auth/';
-
+// 'Access-Control-Allow-Credentials': 'true' }
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Credentials': 'true' })
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 
 
@@ -62,6 +63,7 @@ export class AuthService {
     return this.http.post(AUTH_API + 'signout', {}, httpOptions);
   }
 
+  // firebase stuff here
   public signOut() {
     return signOut(this.auth);
   }
@@ -106,7 +108,11 @@ export class AuthService {
         console.log(resp)
         this.walletAddress = accounts[0];
         // console.log(walletAddress)
-        let url = constants.SERVER_URL + 'get-nonce'
+        let url = new Url()
+          .add(constants.SERVER_URL)
+          .add("api/")
+          .add("get-nonce")
+          .getUrl()
         return this.http.post<NonceResponse>(url, { address: this.walletAddress });
 
       }),
@@ -115,7 +121,12 @@ export class AuthService {
         return await this.web3.eth.personal.sign(this.nonce, this.walletAddress, '')
       }),
       switchMap((sig) => {
-        let url = constants.SERVER_URL + 'verify-signature'
+        // let url = constants.SERVER_URL + 'verify-signature'
+        let url = new Url()
+          .add(constants.SERVER_URL)
+          .add("api/")
+          .add("verify-signature")
+          .getUrl()
         const params = new HttpParams()
           .set('nonce', this.nonce)
           .set('sig', sig)

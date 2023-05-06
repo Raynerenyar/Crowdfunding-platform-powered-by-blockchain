@@ -18,8 +18,8 @@
     color: #f1a763;
 } */
 
-/* :host ::ng-deep .faucet-icon{
+:host ::ng-deep .faucet-icon{
         width: 1.5rem;
         height: 1.5rem;
         background-image: url("https://img.icons8.com/material-outlined/24/null/water-tap-.png");
-} */
+}

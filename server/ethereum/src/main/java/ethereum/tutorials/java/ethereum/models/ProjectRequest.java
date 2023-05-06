@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 public class ProjectRequest {
     private int requestId;
     private String projectAddress;
+    private String title;
     private String description;
     private String recipientAddress;
-    private BigInteger amount;
-    private BigInteger numOfVotes;
+    private Integer amount; // might need BigInteger
+    private Integer numOfVotes; // might need BigInteger
     private boolean completed;
-    private BigInteger valueOfVotes;
+    private Integer valueOfVotes; // might need BigInteger
 }

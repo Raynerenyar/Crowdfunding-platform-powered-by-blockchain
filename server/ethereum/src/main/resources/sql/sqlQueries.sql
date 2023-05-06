@@ -19,6 +19,7 @@ CREATE TABLE Projects (
     expired BOOLEAN NOT NULL,
     num_of_requests	INT NOT NULL,
     accepting_token VARCHAR(42) NOT NULL,
+    created_date DATETIME,
     PRIMARY KEY (project_address),
     CONSTRAINT fk_username FOREIGN KEY (creator_address) REFERENCES ProjectCreators(username)
 );

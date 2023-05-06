@@ -12,13 +12,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ethereum.tutorials.java.ethereum.config.FirebaseConfig;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.tutorials.java.ethereum.repository.CrowdfundingRepository;
-import ethereum.tutorials.java.ethereum.service.ethereum.BlockchainService;
-import ethereum.tutorials.java.ethereum.service.ethereum.LoadContractService;
+import ethereum.tutorials.java.ethereum.services.ethereum.BlockchainService;
+import ethereum.tutorials.java.ethereum.services.ethereum.LoadContractService;
+import ethereum.tutorials.java.ethereum.services.repository.RepoService;
 import jnr.ffi.provider.SigType;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.web3j.protocol.Web3j;
@@ -47,6 +50,8 @@ public class EthereumApplication implements CommandLineRunner {
 	Web3j web3;
 	@Autowired
 	CrowdfundingRepository sqlRepo;
+	@Autowired
+	RepoService repoSvc;
 
 	@Value("${firebase.project.id}")
 	private String firebaseProjId;
@@ -90,6 +95,14 @@ public class EthereumApplication implements CommandLineRunner {
 
 		// ethSvc.testRun();
 		// testSql();
+
+		repoSvc.getProjectsByCreatorAddress("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C");
+		System.out.println("getting addresses >>>>>>>> <<<<<<<< ");
+		Optional<List<String>> opt = repoSvc.getListOfProjectAddress("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C");
+		List<String> addresses = opt.get();
+		for (String strings : addresses) {
+			System.out.println(strings);
+		}
 	}
 
 	// public void testSql() {

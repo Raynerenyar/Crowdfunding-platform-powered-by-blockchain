@@ -35,6 +35,7 @@ contract CrowdfundingFactory is Ownable {
         uint _RefundAmount
     );
     event CreateRequestForProjectEvent(
+        uint requestNum,
         address _projectAddress,
         address _projectCreator,
         string _title,
@@ -136,9 +137,10 @@ contract CrowdfundingFactory is Ownable {
         uint _amount
     ) public {
         Crowdfunding project = Crowdfunding(_projectAddress);
-        project.createRequest(_title, _recipient, _amount);
+        uint requestNum = project.createRequest(_title, _recipient, _amount);
 
         emit CreateRequestForProjectEvent(
+            requestNum,
             _projectAddress,
             msg.sender,
             _title,

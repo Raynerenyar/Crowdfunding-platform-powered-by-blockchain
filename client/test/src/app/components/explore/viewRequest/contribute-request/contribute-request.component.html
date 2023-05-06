@@ -1,0 +1,40 @@
+<div>
+    <h3>{{request.title | titlecase}}</h3>
+    <p>{{request.description}}</p>
+    <form [formGroup]="currentRequest">
+        <div class="grid grid-nogutter">
+            
+            <div class="col-8 grid grid-nogutter align-items-center">
+                <div class="col-6 field p-float-label flex align-items-center mb-2 mt-2">
+                    <p-inputNumber formControlName="contributeAmount" styleClass="w-full" class="w-full"></p-inputNumber>
+                    <label htmlFor="number-input">Contribute (You have balance of {{tokenBalance}} {{request.tokenName}})</label>
+                </div>
+                <div class="col-4 ml-2">
+                    <p-button styleClass="p-button-raised font-normal" (click)="contribute()">Contribute</p-button>
+                </div>        
+            </div>
+            <div class="col-4 mb-2 mt-2"></div>
+
+            <div class="col-8 grid grid-nogutter align-items-center mb-2 mt-2">
+                <div class="col-6">
+                    <span>{{'vote for this request'| titlecase }}</span>
+                </div>
+                <div class="col-4 ml-2">
+                    <p-button styleClass="p-button-raised font-normal" (click)="voteRequest()">Send Vote</p-button>
+                </div>
+            </div>
+            <div class="col-4 mb-2 mt-2"></div>
+            
+            <div class="col-8 grid grid-nogutter align-items-center mb-2  mt-2">
+                <div class="col-6">
+                    You want out?
+                </div>
+                <div class="col-4 ml-2 flex flex-row">
+                    <p-button styleClass="p-button-raised font-normal" [disabled]="notRefundable" (click)="refund()">Get Refund</p-button>
+                    <p-tag icon="pi pi-info-circle" pTooltip="Deadline has not passed" value="Info" styleClass="bg-white text-primary" class="text-xs"></p-tag>
+                </div>
+            </div>
+            <div class="col-4 mb-2 mt-2"></div>
+        </div>
+    </form>
+</div>

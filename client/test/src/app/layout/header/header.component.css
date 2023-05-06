@@ -8,8 +8,8 @@
     position: -webkit-sticky; /* Needed for Safari browsers.*/
     z-index: 10000; /* This prevents elements to be seen through the toolbar.*/
     top: 0; /* Required for "position: sticky" to take effect.*/
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 :host ::ng-deep .p-toast {

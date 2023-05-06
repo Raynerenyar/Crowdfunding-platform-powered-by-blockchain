@@ -17,13 +17,37 @@ export interface VerifySignature {
 
 }
 
-export const ContractFunctions = {
-    contribute: "contribute",
-    another: "another"
-}
-
 export interface ContractTxProperties {
     contractName: string
     functionName: string
     parameters?: any[]
+}
+
+
+export interface ProjectDetails {
+    projectAddress: string
+    creatorAddress: string
+    title: string
+    description: string
+    goal: string
+    deadline: Date
+    raisedAmount: number
+    completed: boolean
+    expired: boolean
+    numOfRequests: number
+    acceptingToken: string
+    createdDate: Date
+}
+
+export interface RequestDetails {
+    requestId: number
+    projectAddress: string
+    title: string
+    description: string
+    recipientAddress: string
+    amount: number
+    numOfVotes: number
+    completed: boolean
+    valueOfVotes: number
+    tokenName: string
 }

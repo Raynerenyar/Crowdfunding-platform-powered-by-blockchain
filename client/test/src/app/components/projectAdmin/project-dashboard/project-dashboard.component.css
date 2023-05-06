@@ -1,0 +1,36 @@
+/* .ui-datepicker-year-panel {
+    width: 50%;
+} */
+
+::ng-deep .p-datepicker{
+    min-width: 30%!important;
+    /* height: 40%; */
+}
+
+app-project-admin {
+    width: 100%!important;
+}
+
+body{
+    /* width: 7000px!important; */
+    width: 100%!important;
+ }
+
+ :host ::ng-deep .tooth-icon{
+        width: 1.5rem;
+        height: 1.5rem;
+        background-image: url("../../../../assets/icons/tooth.svg");
+        background-size: contain;
+}
+
+:host ::ng-deep .p-megamenu-submenu{
+    width: 100%;
+}
+
+:host ::ng-deep .p-megamenu-root-list{
+    justify-content: center;
+}
+
+/* :host ::ng-deep .p-megamenu-submenu-header{
+    font-weight: 400;
+} */

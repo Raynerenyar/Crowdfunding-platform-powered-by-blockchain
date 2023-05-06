@@ -6,9 +6,10 @@ public class Queries {
 
         public static String INSERT_PROJECT_CREATOR = """
                         INSERT INTO ProjectCreators (
-                            creator_address,
-                            name)
-                        VALUES (?,?)
+                            username,
+                            name,
+                            password)
+                        VALUES (?,?,?)
                         """;
 
         public static String INSERT_PROJECT = """
@@ -23,8 +24,9 @@ public class Queries {
                             completed,
                             expired,
                             num_of_requests,
-                            accepting_token)
-                        VALUES (?,?,?,?,?,?,?,?,?,?)
+                            accepting_token,
+                            created_date)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
                         """;
 
         public static String UPDATE_PROJECT_COMPLETED = """
@@ -43,12 +45,13 @@ public class Queries {
                         INSERT INTO ProjectRequests (
                             project_address,
                             title,
+                            description,
                             recipient_address,
                             amount,
                             num_of_votes,
                             completed,
                             value_of_votes)
-                        VALUES (?,?,?,?,?,?,?)
+                        VALUES (?,?,?,?,?,?,?,?)
                         """;
 
         public static String UPDATE_REQUEST_COMPLETED = """
@@ -88,29 +91,78 @@ public class Queries {
                         VALUES (?,?,?)
                         """;
 
-        public static String SELECT_PROJECT = """
-                        SELECT
-                        creator_address,
-                        description,
-                        goal,
-                        deadline,
-                        raised_amount,
-                        completed,
-                        num_of_requests,
-                        accepting_token
-                        FROM Projects
+        // public static String SELECT_PROJECT = """
+        //                 SELECT
+        //                 creator_address,
+        //                 description,
+        //                 goal,
+        //                 deadline,
+        //                 raised_amount,
+        //                 completed,
+        //                 num_of_requests,
+        //                 accepting_token
+        //                 FROM Projects
+        //                 WHERE project_address = ?
+        //                 """;
+
+        public static String SELECT_REQUEST = """
+                        SELECT *
+                        FROM ProjectRequests
                         WHERE project_address = ?
                         """;
 
-        public static String SELECT_REQUEST = """
-                        SELECT
-                        request_id,
-                        description,
-                        recipient_address,
-                        amount, num_of_votes,
-                        completed,
-                        value_of_votes
-                        FROM ProjectRequests
+        public static String SELECT_PROJECT_BY_CREATOR_ADDRESS = """
+                        SELECT *
+                        FROM projects
+                        WHERE creator_address = ?
+                        """;
+
+        public static String SELECT_PROJECT_BY_CREATOR_ADDRESS_FOR_PROJ_ADDRESS = """
+                        SELECT project_address
+                        FROM projects
+                        WHERE creator_address = ?
+                        """;
+
+        public static String FIND_PROJECT_CREATOR = """
+                         SELECT *
+                         FROM ProjectCreators
+                         WHERE username = ?
+                        """;
+
+        public static String SELECT_PROJECT_BY_PROJECT_ADDRESS = """
+                        SELECT *
+                        FROM projects
+                        WHERE project_address = ?
+                        """;
+
+        public static String SELECT_PROJECTS_W_PAGE = """
+                        SELECT *
+                        FROM projects
+                        ORDER BY created_date DESC
+                        LIMIT ?, ?
+                        """;
+
+        public static String SELECT_PROJECTS_W_PAGE_BY_DATE = """
+                        SELECT *
+                        FROM projects
+                        WHERE creator_address = ?
+                        ORDER BY created_date DESC
+                        LIMIT 1;
+                        """;
+
+        public static String SELECT_ALL_PROJECTS = """
+                        SELECT *
+                        FROM projects
+                        """;
+
+        public static String COUNT_PROJECTS = """
+                        SELECT COUNT(*)
+                        FROM projects
+                        """;
+
+        public static String COUNT_REQUESTS_BY_PROJECT_ADDRESS = """
+                        SELECT COUNT(*)
+                        FROM projectrequests
                         WHERE project_address = ?
                         """;
 }

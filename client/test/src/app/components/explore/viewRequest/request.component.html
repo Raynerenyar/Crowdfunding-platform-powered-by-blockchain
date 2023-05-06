@@ -1,0 +1,44 @@
+<div *ngIf="!requests">
+    <h2>Project has no requests</h2>
+</div>
+<div class="grid grid-nogutter" *ngIf="requests">
+    <div class="col-12 lg:col-9">
+        <h2 *ngIf="!(selectedRequestIndex >= 0) && requests.length > 0">{{'select a request to view.'|titlecase}}</h2>
+        <h2 *ngIf="requests.length == 0">{{'There are no request for this project.'| titlecase}}</h2>
+        <div *ngIf="selectedRequestIndex >= 0">
+            <app-contribute-request [request]="request" [tokenBalance]="tokenBalance" [projectAddress]="projectAddress" [tokenAddress]="tokenAddress" [project]="project"></app-contribute-request>
+        </div>
+    </div>
+    <div class="col-12 lg:col-3">
+        <p-scrollPanel [style]="{width: '100%',height: '50%', margin: 0 }" styleClass="h-full">
+            <div class="flex flex-column-reverse">
+                <span *ngFor="let request of requests; let i = index">
+                    <!-- routerLink="/explore/{{projectAddress}}/request/" [routerLink]="['/explore',projectAddress,'request',i]" -->
+                    <a class="no-underline">
+                        <div class="shadow-5 mb-3 border-round cursor-pointer h-full border-3" 
+                        [ngClass]="(i == selectedRequestIndex) ? 'border-primary' : 'border-transparent'" (click)="onChosenRequest(i)">
+                            <h3 class="m-5">
+                                {{request.title}}
+                            </h3>
+                            <div class="m-5">
+                                {{request.description | truncate:[100,'...']}}
+                            </div>
+                            <div class="m-5">
+                                {{i == selectedRequestIndex}}                                            
+                            </div>
+                        </div>
+                    </a>
+                </span>
+            </div>
+        </p-scrollPanel>
+    </div>
+</div>
+
+<!-- <p-card header="Requests" styleClass="shadow-2 m-2" class="w-full">
+    <div>
+        {{request.title}}
+        {{request.description}}
+        {{request.amount}}
+    </div>
+</p-card> -->
+

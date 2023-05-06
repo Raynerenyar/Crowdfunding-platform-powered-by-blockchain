@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
 import { StorageService } from './services/storage.service';
-import { AuthService } from './auth/services/auth.service';
+import { AuthService } from './components/auth/services/auth.service';
 
 
 @Component({

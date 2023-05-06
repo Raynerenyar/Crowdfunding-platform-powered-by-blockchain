@@ -3,6 +3,8 @@ package ethereum.tutorials.java.ethereum.eventHandler;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
@@ -26,8 +28,8 @@ import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TwlvFaucet;
 import ethereum.tutorials.java.ethereum.repository.CrowdfundingRepository;
-import ethereum.tutorials.java.ethereum.service.ethereum.BlockchainService;
-import ethereum.tutorials.java.ethereum.service.ethereum.LoadContractService;
+import ethereum.tutorials.java.ethereum.services.ethereum.BlockchainService;
+import ethereum.tutorials.java.ethereum.services.ethereum.LoadContractService;
 import ethereum.tutorials.java.ethereum.util.eventFlowable.FactoryEvents;
 import ethereum.tutorials.java.ethereum.util.eventFlowable.FaucetEvents;
 import io.reactivex.Flowable;
@@ -70,20 +72,22 @@ public class BlockchainEventHandler {
         createNewProjectSub$ = FactoryEvents
                 .createNewProject(loadedContract, crowdfundingFactoryAddress, blockHash)
                 .subscribe((event) -> {
-                    System.out.println("event inserting project ");
+                    System.out.println("getting event " + event._title);
                     sqlRepo.insertProject(
                             event._projectAddress,
                             event._projectCreator,
                             event._title,
                             description,
                             event._goal.intValue(),
-                            event._deadline.intValue(),
+                            new Timestamp(event._deadline.longValue()),
                             0,
                             false,
                             false,
                             0,
-                            event._tokenUsed);
+                            event._tokenUsed,
+                            new Timestamp(System.currentTimeMillis()));
                 });
+
     }
 
     public void refundFromProject(CrowdfundingFactory loadedContract, String blockHash) {
@@ -98,7 +102,7 @@ public class BlockchainEventHandler {
                 });
     }
 
-    public void createRequestForProject(CrowdfundingFactory loadedContract, String blockHash) {
+    public void createRequestForProject(CrowdfundingFactory loadedContract, String blockHash, String description) {
         createRequestForProjectSub$ = FactoryEvents
                 .createRequestForProject(loadedContract, crowdfundingFactoryAddress, blockHash)
                 .subscribe((event) -> {
@@ -106,6 +110,7 @@ public class BlockchainEventHandler {
                     sqlRepo.insertProjectRequest(
                             event._projectAddress,
                             event._title,
+                            description,
                             event._recipient,
                             event._amount.intValue(),
                             0,

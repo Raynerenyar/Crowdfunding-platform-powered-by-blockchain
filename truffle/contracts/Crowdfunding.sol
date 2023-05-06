@@ -108,7 +108,8 @@ contract Crowdfunding is Ownable {
         string memory _title,
         address _recipient,
         uint _amount
-    ) public sharedOwner {
+    ) public sharedOwner returns (uint) {
+        uint requestNum = numRequests;
         Request storage newRequest = requests[numRequests];
         numRequests++;
 
@@ -117,6 +118,8 @@ contract Crowdfunding is Ownable {
         newRequest.amount = _amount;
         newRequest.completed = false;
         newRequest.noOfVoters = 0;
+
+        return requestNum;
     }
 
     function voteRequest(

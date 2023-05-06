@@ -5,7 +5,7 @@ import { Subscription, timer } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class alertMessageService implements OnDestroy {
+export class AlertMessageService implements OnDestroy {
   isVisible!: boolean;
   timerSub$!: Subscription;
   commonProperty = {
@@ -18,10 +18,6 @@ export class alertMessageService implements OnDestroy {
     this.timerSub$ = timer(5000).subscribe(t => {
       this.isVisible = false
     })
-  }
-
-  enableMsg() {
-    this.primeMsgSvc.add({ severity: 'success', summary: 'Please connect wallet', detail: 'Sepolia', ...this.commonProperty });
   }
 
   connectWalletMsg() {
@@ -58,6 +54,24 @@ export class alertMessageService implements OnDestroy {
   generalErrorMethod(msg: string) {
     this.primeMsgSvc.add({
       severity: 'error', summary: 'Error!', detail: msg, ...this.commonProperty
+    })
+  }
+
+  generalSuccessMethod(msg: string) {
+    this.primeMsgSvc.add({
+      severity: 'success', summary: 'Success!', detail: msg, ...this.commonProperty
+    })
+  }
+
+  generalInfoMethod(summary: string, msg: string) {
+    this.primeMsgSvc.add({
+      severity: 'info', summary: summary, detail: msg, ...this.commonProperty
+    })
+  }
+
+  generalWarnMethod(summary: string, msg: string) {
+    this.primeMsgSvc.add({
+      severity: 'warn', summary: summary, detail: msg, ...this.commonProperty
     })
   }
 

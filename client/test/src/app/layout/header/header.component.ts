@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { alertMessageService } from '../../services/alert.message.service';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AlertMessageService } from '../../services/alert.message.service';
 import { Observable, Subscription, timer } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ConfirmationService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -22,7 +23,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('op')
   overlayPanel!: OverlayPanel
 
-  constructor(private authSvc: AuthService, private storageService: StorageService, private msgSvc: alertMessageService, private confirmSvc: ConfirmationService) { }
+  constructor(private authSvc: AuthService, private storageService: StorageService, private msgSvc: AlertMessageService, private confirmSvc: ConfirmationService, private router: Router, private cdr: ChangeDetectorRef) { }
 
 
   ngOnInit(): void {
@@ -60,6 +61,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             console.log(res)
             this.msgSvc.signedOut();
             this.storageService.clean();
+            this.isLoggedIn = false
           },
           error: err => {
             console.log(err);
@@ -68,7 +70,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         });
 
         this.timerSub$ = timer(4000).subscribe(t => {
-          window.location.reload()
+          this.router.navigate([''])
+          // window.location.reload()
         })
       },
 

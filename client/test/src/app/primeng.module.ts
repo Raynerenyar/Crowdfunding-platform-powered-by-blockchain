@@ -14,10 +14,21 @@ import { MessagesModule } from 'primeng/messages';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { TabViewModule } from 'primeng/tabview';
-import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
 import { FieldsetModule } from 'primeng/fieldset';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { MegaMenuModule } from 'primeng/megamenu';
+import { TieredMenuModule } from 'primeng/tieredmenu';
+import { CardModule } from 'primeng/card';
+import { CarouselModule } from 'primeng/carousel';
+import { PaginatorModule } from 'primeng/paginator';
+import { SplitterModule } from 'primeng/splitter';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { TabMenuModule } from 'primeng/tabmenu';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 
 const PrimeNgModules = [
     ButtonModule,
@@ -31,14 +42,23 @@ const PrimeNgModules = [
     PanelModule,
     ToolbarModule,
     OverlayPanelModule,
-    // MessagesModule,
-    // MessageModule,
-    // PasswordModule,
     ToastModule,
     TabViewModule,
     DividerModule,
     FieldsetModule,
-    ConfirmPopupModule
+    ConfirmPopupModule,
+    MegaMenuModule,
+    TieredMenuModule,
+    CardModule,
+    CarouselModule,
+    PaginatorModule,
+    SplitterModule,
+    ScrollPanelModule,
+    TabMenuModule,
+    SelectButtonModule,
+    ToggleButtonModule,
+    TagModule,
+    TooltipModule,
 ]
 
 @NgModule({

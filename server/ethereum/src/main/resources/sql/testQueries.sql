@@ -36,10 +36,10 @@ INSERT INTO Projects (
 	accepting_token)
 VALUES ("0x0","0x0","test",100,1000,100,false,false,0,"0x0");
 
-INSERT INTO roles(name) VALUES('ROLE_USER');
-INSERT INTO roles(name) VALUES('ROLE_MODERATOR');
-INSERT INTO roles(name) VALUES('ROLE_ADMIN');
+
 
 SELECT *
 FROM ProjectCreators
 WHERE creator_address = "0x0";
+
+Select * from projects where creator_address="0x149aaea6f804ba0ea228dfc929c4f42798b54d4c";

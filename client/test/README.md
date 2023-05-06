@@ -49,3 +49,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ### components used
 1. overlay - sidebar
 2. menu - panelmenu
+
+## google icons
+[Google icons](https://fonts.google.com/icons?selected=Material+Symbols+Outlined:dentistry:FILL@0;wght@400;GRAD@0;opsz@48&icon.platform=web)

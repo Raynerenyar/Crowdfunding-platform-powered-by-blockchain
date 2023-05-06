@@ -21,14 +21,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.firebase.auth.FirebaseAuthException;
 
 import ethereum.tutorials.java.ethereum.models.NonceResponse;
-import ethereum.tutorials.java.ethereum.service.ethereum.BlockchainService;
-import ethereum.tutorials.java.ethereum.service.firebase.FirebaseService;
+import ethereum.tutorials.java.ethereum.services.ethereum.BlockchainService;
+import ethereum.tutorials.java.ethereum.services.firebase.FirebaseService;
 import ethereum.tutorials.java.ethereum.util.misc.Util;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -38,6 +39,7 @@ import jakarta.json.JsonReader;
 // @CrossOrigin(origins = "*")
 // @CrossOrigin(origins = "#{'${client.url}'}")
 @CrossOrigin(origins = "#{'${client.url}'}", maxAge = 3600, allowCredentials = "true")
+@RequestMapping("/api")
 public class AuthFireBaseController {
 
     @Autowired

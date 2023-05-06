@@ -1,0 +1,25 @@
+<div class="ml-2 mr-2">
+    <span *ngIf="projectDetails">
+        <h1>Project Overview</h1>
+        <p-panel header="Title">
+            <p>
+                {{projectDetails.title}}
+            </p>
+        </p-panel>
+        <p-panel header="Descpition">
+            <p>
+                {{projectDetails.description}}
+            </p>
+        </p-panel>
+        <p-panel header="Raised Amount">
+            <p>
+                {{projectDetails.raisedAmount}}
+            </p>
+        </p-panel>
+        <p-panel header="Project Address">
+            <p>
+                {{projectDetails.projectAddress}}
+            </p>
+        </p-panel>
+    </span>
+</div>

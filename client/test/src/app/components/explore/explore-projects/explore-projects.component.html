@@ -1,0 +1,21 @@
+<p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+<!-- *ngIf="fadingLeft; else fadeRight" -->
+    <div>
+        <div class="grid justify-content-center">
+            <div *ngFor="let project of projects">
+                <div class="col-4 w-full" [ngClass]="{'fadeinleft': fadingLeft,'fadeinright': !fadingLeft}">
+                    <a routerLink="/explore/{{project.projectAddress}}" class="no-underline">
+                        <p-card class="m-3" styleClass="shadow-4 animation-duration-200" header={{project.title}} subheader="Raised Amount: {{project.raisedAmount}}">
+                            <ng-template pTemplate="header">
+                                <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" />
+                            </ng-template>
+                            <p>
+                                {{project.projectAddress}}
+                            </p>
+                        </p-card>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+<p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>

@@ -1,0 +1,25 @@
+<div class="ml-2 mr-2">
+    <span *ngIf="request">
+        <h1>Request Overview</h1>
+        <p-panel header="Title">
+            <p>
+                {{request.title}}
+            </p>
+        </p-panel>
+        <p-panel header="Descpition">
+            <p>
+                {{request.description}}
+            </p>
+        </p-panel>
+        <p-panel header="Request Amount">
+            <p>
+                {{request.amount}}
+            </p>
+        </p-panel>
+        <p-panel header="Project Address">
+            <p>
+                {{request.projectAddress}}
+            </p>
+        </p-panel>
+    </span>
+</div>
