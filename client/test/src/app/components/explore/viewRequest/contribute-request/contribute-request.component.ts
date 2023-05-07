@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
@@ -11,7 +11,7 @@ import { StorageService } from 'src/app/services/storage.service';
   templateUrl: './contribute-request.component.html',
   styleUrls: ['./contribute-request.component.css']
 })
-export class ContributeRequestComponent implements OnDestroy {
+export class ContributeRequestComponent implements OnDestroy, AfterViewInit {
   currentRequest!: FormGroup
 
   @Input()
@@ -29,6 +29,12 @@ export class ContributeRequestComponent implements OnDestroy {
   notifier$ = new Subject<true>()
 
   notRefundable = true
+
+  @ViewChild('contributeReq')
+  contributeBody!: ElementRef
+  @Output()
+  contributeHeight = new Subject<number>()
+
 
   constructor(private fb: FormBuilder, private bcSvc: BlockchainService, private storageSvc: StorageService, private msgSvc: AlertMessageService) { }
 
@@ -50,6 +56,13 @@ export class ContributeRequestComponent implements OnDestroy {
       })
     console.log(this.tokenBalance)
     console.log(this.projectAddress)
+  }
+
+  ngAfterViewInit(): void {
+    // contributeReq
+    console.log(this.contributeBody.nativeElement.offsetHeight)
+    this.contributeHeight.next(this.contributeBody.nativeElement.offsetHeight)
+
   }
 
   voteRequest() {

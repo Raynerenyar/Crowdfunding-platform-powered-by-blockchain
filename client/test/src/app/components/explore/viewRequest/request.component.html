@@ -2,15 +2,16 @@
     <h2>Project has no requests</h2>
 </div>
 <div class="grid grid-nogutter" *ngIf="requests">
-    <div class="col-12 lg:col-9">
+    <div class="col-12 lg:col-8 xl:col-9 pr-5">
         <h2 *ngIf="!(selectedRequestIndex >= 0) && requests.length > 0">{{'select a request to view.'|titlecase}}</h2>
         <h2 *ngIf="requests.length == 0">{{'There are no request for this project.'| titlecase}}</h2>
         <div *ngIf="selectedRequestIndex >= 0">
-            <app-contribute-request [request]="request" [tokenBalance]="tokenBalance" [projectAddress]="projectAddress" [tokenAddress]="tokenAddress" [project]="project"></app-contribute-request>
+            <app-contribute-request [request]="request" [tokenBalance]="tokenBalance" [projectAddress]="projectAddress" [tokenAddress]="tokenAddress" [project]="project" (contributeHeight)="onContributeRequestInit($event)"></app-contribute-request>
         </div>
     </div>
-    <div class="col-12 lg:col-3">
-        <p-scrollPanel [style]="{width: '100%',height: '50%', margin: 0 }" styleClass="h-full">
+    <div class="col-12 lg:col-4 xl:col-3">
+        <!-- [style]="{width: '100%',height: '500px', margin: 0 }" [ngStyle]="{ 'height': scrollHeight }" -->
+        <p-scrollPanel #sp [style]="{width: '100%', margin: 0 }" >
             <div class="flex flex-column-reverse">
                 <span *ngFor="let request of requests; let i = index">
                     <!-- routerLink="/explore/{{projectAddress}}/request/" [routerLink]="['/explore',projectAddress,'request',i]" -->
@@ -20,7 +21,7 @@
                             <h3 class="m-5">
                                 {{request.title}}
                             </h3>
-                            <div class="m-5">
+                            <div class="m-5 text-justify">
                                 {{request.description | truncate:[100,'...']}}
                             </div>
                             <div class="m-5">

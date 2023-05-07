@@ -75,8 +75,9 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
           if (projects != null) {
             projects.forEach((projectDetails: ProjectDetails) => {
               this.projects.set(projectDetails.projectAddress, projectDetails)
+              // push into megamenu
               this.itemz[this.indexProject].items![0][1].items?.push({
-                label: projectDetails.title,
+                label: this.truncate(projectDetails.title),
                 routerLink: ['current', projectDetails.projectAddress]
               })
             });
@@ -86,10 +87,10 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
       })
 
     // when project is selected
+    // show list of requests if available
     this.repoSvc.projectAddressEvent
       .pipe(takeUntil(this.notifier$))
       .subscribe((address) => {
-        console.log('testing')
         // transferring data to display on project details component
         this.repoSvc.emitProjectDetails(this.projects.get(address))
 
@@ -115,7 +116,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
 
                   // assigning router link to each requests
                   this.itemz[this.indexRequests].items![0][1].items?.push({
-                    label: request.title,
+                    label: this.truncate(request.title),
                     routerLink: ['current', address, request.requestId]
                   })
                   // deleting db causes it to close, therefore reopen it to add requests
@@ -129,6 +130,10 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
       })
   }
 
+  private truncate(text: string) {
+    if (text.length > 22) return text.substring(0, 19) + '...'
+    return text
+  }
 
   ngOnDestroy(): void {
     this.notifier$.next(true)

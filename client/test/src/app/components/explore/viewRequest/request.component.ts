@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
@@ -7,16 +7,14 @@ import { AlertMessageService } from 'src/app/services/alert.message.service';
 import { BlockchainService } from 'src/app/services/blockchain.service';
 import { RepositoryService } from 'src/app/services/repository.service';
 import { StorageService } from 'src/app/services/storage.service';
-import { TruncatePipe } from "../../../util/truncatePipe";
+import { ScrollPanel } from 'primeng/scrollpanel';
 
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
   styleUrls: ['./request.component.css']
 })
-export class RequestComponent implements OnInit, OnDestroy {
-  // projectAddress!: string
-  // notifier$ = new Subject<boolean>()
+export class RequestComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input()
   requests!: RequestDetails[]
@@ -26,14 +24,19 @@ export class RequestComponent implements OnInit, OnDestroy {
   tokenAddress!: string
   @Input()
   projectAddress!: string
+
   userAddress!: string
   tokenBalance!: number
   selectedRequestIndex!: number
   request!: RequestDetails
+
   notifier$ = new Subject<boolean>()
 
+  @ViewChild('sp')
+  scrollPanel!: ScrollPanel
+  scrollPanelHeight = 800 // in px
 
-  constructor(private route: ActivatedRoute, private repoSvc: RepositoryService, private msgSvc: AlertMessageService, private storageSvc: StorageService, private blockchainSvc: BlockchainService) { }
+  constructor(private route: ActivatedRoute, private repoSvc: RepositoryService, private msgSvc: AlertMessageService, private storageSvc: StorageService, private blockchainSvc: BlockchainService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
     console.log("request loaded")
@@ -50,16 +53,23 @@ export class RequestComponent implements OnInit, OnDestroy {
       })
   }
 
+  ngAfterViewInit(): void {
+    this.renderer.setStyle(this.scrollPanel, 'height', `${this.scrollPanelHeight}px`)
+  }
 
 
   onChosenRequest(index: number) {
     this.request = this.requests[index]
     this.selectedRequestIndex = index
-    console.log(this.request)
+  }
+
+  onContributeRequestInit(height: number) {
+    if (height > this.scrollPanelHeight) this.renderer.setStyle(this.scrollPanel, 'height', `${height}px`)
   }
 
   ngOnDestroy(): void {
     this.notifier$.next(true)
     this.notifier$.unsubscribe()
   }
+
 }
