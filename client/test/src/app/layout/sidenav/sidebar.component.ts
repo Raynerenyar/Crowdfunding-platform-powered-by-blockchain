@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
-import { RepositoryService } from 'src/app/services/repository.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,7 +13,7 @@ import { StorageService } from 'src/app/services/storage.service';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor(private storageSvc: StorageService) { }
+  constructor(private storageSvc: SessionStorageService) { }
 
   private roles: string[] = []
   sidebarVisible!: boolean;

@@ -2,7 +2,7 @@
  using StorageService and show information 
  (username, token, email, roles). */
 import { Component, OnInit } from '@angular/core';
-import { StorageService } from '../../../../services/storage.service';
+import { SessionStorageService } from '../../../../services/session.storage.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,7 +12,7 @@ import { StorageService } from '../../../../services/storage.service';
 export class ProfileComponent implements OnInit {
   currentUser!: any;
 
-  constructor(private storageService: StorageService) { }
+  constructor(private storageService: SessionStorageService) { }
 
   ngOnInit(): void {
     this.currentUser = this.storageService.getUser();

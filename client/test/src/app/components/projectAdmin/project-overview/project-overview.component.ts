@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, Output } from '@angular/co
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
-import { RepositoryService } from 'src/app/services/repository.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 
 @Component({
   selector: 'app-project-overview',
@@ -18,7 +18,7 @@ export class ProjectOverviewComponent implements AfterViewInit {
   projectAddress!: string
 
 
-  constructor(private route: ActivatedRoute, private repoSvc: RepositoryService, private cdr: ChangeDetectorRef) {
+  constructor(private route: ActivatedRoute, private repoSvc: SqlRepositoryService, private cdr: ChangeDetectorRef) {
 
   }
   ngAfterViewInit(): void {

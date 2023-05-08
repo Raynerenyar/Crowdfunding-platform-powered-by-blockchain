@@ -1,10 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
-import { RepositoryService } from 'src/app/services/repository.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 import { RequestComponent } from '../../viewRequest/request.component';
 
 @Component({
@@ -12,7 +12,7 @@ import { RequestComponent } from '../../viewRequest/request.component';
   templateUrl: './project-main.component.html',
   styleUrls: ['./project-main.component.css']
 })
-export class ProjectMainComponent implements OnInit {
+export class ProjectMainComponent implements OnInit, OnDestroy {
 
   projectAddress!: string
   notifier$ = new Subject<boolean>()
@@ -24,6 +24,7 @@ export class ProjectMainComponent implements OnInit {
   showAnnouncement = false
   showComments = false
   showSingleRequest = false
+  showNewComment = false
 
   items!: MenuItem[]
   activeItem!: MenuItem;
@@ -31,7 +32,7 @@ export class ProjectMainComponent implements OnInit {
   @ViewChild(RequestComponent)
   requestCompo?: RequestComponent
 
-  constructor(private route: ActivatedRoute, private repoSvc: RepositoryService) { }
+  constructor(private route: ActivatedRoute, private repoSvc: SqlRepositoryService) { }
 
   ngOnInit(): void {
     this.route.paramMap
@@ -74,47 +75,92 @@ export class ProjectMainComponent implements OnInit {
 
   onActiveItemChange($event: MenuItem) {
     console.log($event.label)
-    switch ($event.label) {
-      case "Project":
-        this.showProject = true
-        this.showAnnouncement = false
-        this.showComments = false
-        this.showSingleRequest = false
-        break;
-      case "Announcements":
-        this.showProject = false
-        this.showAnnouncement = true
-        this.showComments = false
-        this.showSingleRequest = false
-        break
-      case "Comments":
-        this.showProject = false
-        this.showAnnouncement = false
-        this.showComments = true
-        this.showSingleRequest = false
-        break
-      case "Requests":
-        this.showProject = false
-        this.showAnnouncement = false
-        this.showComments = false
-        this.showSingleRequest = true
-        break
-      default:
-        this.showProject = true
-        this.showAnnouncement = false
-        this.showComments = false
-        this.showSingleRequest = false
-        break;
-    }
+    this.selectView($event.label)
+    // switch ($event.label) {
+    //   case "Project":
+    //     this.showProject = true
+    //     this.showAnnouncement = false
+    //     this.showComments = false
+    //     this.showSingleRequest = false
+    //     this.showNewComment = false
+    //     break;
+    //   case "Announcements":
+    //     this.showProject = false
+    //     this.showAnnouncement = true
+    //     this.showComments = false
+    //     this.showSingleRequest = false
+    //     this.showNewComment = false
+    //     break
+    //   case "Comments":
+    //     this.showProject = false
+    //     this.showAnnouncement = false
+    //     this.showComments = true
+    //     this.showSingleRequest = false
+    //     this.showNewComment = false
+    //     break
+    //   case "Requests":
+    //     this.showProject = false
+    //     this.showAnnouncement = false
+    //     this.showComments = false
+    //     this.showSingleRequest = true
+    //     this.showNewComment = false
+    //     break
+    //   case "new comments":
+    //     this.showProject = false
+    //     this.showAnnouncement = false
+    //     this.showComments = false
+    //     this.showSingleRequest = false
+    //     this.showNewComment = true
+    //     break
+    //   default:
+    //     this.showProject = true
+    //     this.showAnnouncement = false
+    //     this.showComments = false
+    //     this.showSingleRequest = false
+    //     this.showNewComment = false
+    //     break;
+    // }
     this.selectedRequestIndex = undefined
   }
 
   onChosenRequest(index: number) {
     console.log(index)
     this.selectedRequestIndex = index
-    this.showProject = false
-    this.showAnnouncement = false
-    this.showComments = false
-    this.showSingleRequest = true
+    this.selectView("Requests")
+    // this.showProject = false
+    // this.showAnnouncement = false
+    // this.showComments = false
+    // this.showNewComment = false
+    // this.showSingleRequest = true
+  }
+
+  onNewComment() {
+    this.selectView("New comments")
+    // this.showProject = false
+    // this.showAnnouncement = false
+    // this.showComments = false
+    // this.showSingleRequest = false
+    // this.showNewComment = true
+    this.activeItem = {}
+  }
+
+  onCommentSubmission() {
+    console.log("comment submission")
+    // return back to comments tab
+    this.onActiveItemChange({ label: 'Comments' })
+    this.activeItem = this.items[3];
+  }
+
+  selectView(view: string | undefined) {
+    this.showProject = (view === 'Project') ? true : false;
+    this.showAnnouncement = (view === 'Announcements') ? true : false;
+    this.showComments = (view === 'Comments') ? true : false;
+    this.showSingleRequest = (view === 'Requests') ? true : false;
+    this.showNewComment = (view === 'New comments') ? true : false;
+  }
+
+  ngOnDestroy(): void {
+    this.notifier$.next(true)
+    this.notifier$.unsubscribe()
   }
 }

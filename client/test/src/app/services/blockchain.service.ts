@@ -8,9 +8,10 @@ import { Url } from '../util/url.util';
 import { AuthService } from './auth.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { WalletService } from './wallet.service';
-import { StorageService } from './storage.service';
+import { SessionStorageService } from './session.storage.service';
 import { Router } from '@angular/router';
-import { AlertMessageService } from './alert.message.service';
+import { PrimeMessageService } from './prime.message.service';
+import { UrlBuilderService } from './url-builder.service';
 // import * as contract from "../../assets/tokenInterface/token.json";
 
 @Injectable({
@@ -24,7 +25,7 @@ export class BlockchainService implements OnDestroy, OnInit {
 
   notifier$ = new Subject<boolean>();
 
-  constructor(private http: HttpClient, private authSvc: AuthService, private storageSvc: StorageService, private router: Router, private msgSvc: AlertMessageService) { }
+  constructor(private http: HttpClient, private authSvc: AuthService, private storageSvc: SessionStorageService, private router: Router, private msgSvc: PrimeMessageService, private urlBuilder: UrlBuilderService) { }
   ngOnInit(): void {
     this.web3.eth.handleRevert = true;
   }
@@ -340,11 +341,14 @@ export class BlockchainService implements OnDestroy, OnInit {
     if (properties.parameters) {
       requestBody = properties.parameters
     }
-    let url: string = new Url()
-      .add(constants.SERVER_URL)
-      .add("api/")
-      .add("get-balance-function-encoded")
-      .getUrl()
+    // let url: string = new Url()
+    //   .add(constants.SERVER_URL)
+    //   .add("api/")
+    //   .add("get-balance-function-encoded")
+    //   .getUrl()
+    let url = this.urlBuilder
+      .setPath("api/get-balance-function-encoded")
+      .build()
     console.log(requestBody)
     let params = new HttpParams()
       .set('tokenAddress', tokenAddress)

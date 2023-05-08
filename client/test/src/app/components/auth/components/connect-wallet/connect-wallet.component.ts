@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { AlertMessageService } from 'src/app/services/alert.message.service';
+import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { WalletService } from 'src/app/services/wallet.service';
-import { StorageService } from '../../../../services/storage.service';
+import { SessionStorageService } from '../../../../services/session.storage.service';
 
 @Component({
   selector: 'app-connect-wallet',
@@ -16,7 +16,7 @@ export class ConnectWalletComponent implements OnInit, OnDestroy {
   shortenedAddress!: string;
   walletAddressSub$!: Subscription;
 
-  constructor(private alertMsgSvc: AlertMessageService, private walletSvc: WalletService, private storageSvc: StorageService, private cdr: ChangeDetectorRef) { }
+  constructor(private alertMsgSvc: PrimeMessageService, private walletSvc: WalletService, private storageSvc: SessionStorageService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.walletAddressSub$ = this.walletSvc.walletAddressEvent.subscribe((address: string) => {

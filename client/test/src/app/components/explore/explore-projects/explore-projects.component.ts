@@ -2,8 +2,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails } from 'src/app/model/model';
-import { AlertMessageService } from 'src/app/services/alert.message.service';
-import { RepositoryService } from 'src/app/services/repository.service';
+import { PrimeMessageService } from 'src/app/services/prime.message.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 
 @Component({
   selector: 'app-explore-projects',
@@ -38,7 +38,7 @@ export class ExploreProjectsComponent implements OnInit {
 
   fadingLeft = true
 
-  constructor(private repoSvc: RepositoryService, private msgSvc: AlertMessageService) { }
+  constructor(private repoSvc: SqlRepositoryService, private msgSvc: PrimeMessageService) { }
 
   ngOnInit(): void {
     this.repoSvc.getProjectsWithPage(this.first, this.rows)

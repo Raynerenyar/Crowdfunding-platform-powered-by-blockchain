@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
-import { StorageService } from '../../../../services/storage.service';
+import { SessionStorageService } from '../../../../services/session.storage.service';
 import { Subscription } from 'rxjs';
 import { WalletService } from 'src/app/services/wallet.service';
 
@@ -22,7 +22,7 @@ export class BoardUserComponent implements OnInit, OnDestroy {
   onChainIdChangeSub$!: Subscription
   onGettingUserBoard$!: Subscription
 
-  constructor(private userService: UserService, private walletSvc: WalletService, private storageSvc: StorageService, private cdr: ChangeDetectorRef) { }
+  constructor(private userService: UserService, private walletSvc: WalletService, private storageSvc: SessionStorageService, private cdr: ChangeDetectorRef) { }
   ngOnInit(): void {
     // check if logged in to project creator account
     if (this.storageSvc.isLoggedIn()) {

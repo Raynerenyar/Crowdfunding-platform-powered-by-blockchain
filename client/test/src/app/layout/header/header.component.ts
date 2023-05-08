@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AlertMessageService } from '../../services/alert.message.service';
+import { PrimeMessageService } from '../../services/prime.message.service';
 import { Observable, Subscription, timer } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ConfirmationService } from 'primeng/api';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('op')
   overlayPanel!: OverlayPanel
 
-  constructor(private authSvc: AuthService, private storageService: StorageService, private msgSvc: AlertMessageService, private confirmSvc: ConfirmationService, private router: Router, private cdr: ChangeDetectorRef) { }
+  constructor(private authSvc: AuthService, private storageService: SessionStorageService, private msgSvc: PrimeMessageService, private confirmSvc: ConfirmationService, private router: Router, private cdr: ChangeDetectorRef) { }
 
 
   ngOnInit(): void {

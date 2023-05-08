@@ -1,0 +1,4 @@
+:host ::ng-deep .ProseMirror{
+    height: 60vh;
+    overflow-y: scroll;
+}

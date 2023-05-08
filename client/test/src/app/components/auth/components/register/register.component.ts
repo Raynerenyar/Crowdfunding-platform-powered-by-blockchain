@@ -7,8 +7,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { WalletService } from 'src/app/services/wallet.service';
 import { AuthService as AuthzService } from '../../../../services/auth.service'
-import { AlertMessageService } from 'src/app/services/alert.message.service';
-import { StorageService } from '../../../../services/storage.service';
+import { PrimeMessageService } from 'src/app/services/prime.message.service';
+import { SessionStorageService } from '../../../../services/session.storage.service';
 
 @Component({
   selector: 'app-register',
@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   onSigningInWeb3Sub$!: Subscription
   onRegisteringSub$!: Subscription
 
-  constructor(private authService: AuthService, private storageService: StorageService, private walletSvc: WalletService, private cdr: ChangeDetectorRef, private fb: FormBuilder, private authSvc: AuthzService, private msgSvc: AlertMessageService) { }
+  constructor(private authService: AuthService, private storageService: SessionStorageService, private walletSvc: WalletService, private cdr: ChangeDetectorRef, private fb: FormBuilder, private authSvc: AuthzService, private msgSvc: PrimeMessageService) { }
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {

@@ -51,3 +51,18 @@ export interface RequestDetails {
     valueOfVotes: number
     tokenName: string
 }
+
+export interface Announcement {
+    projectAddress: string
+    creatorAddress: string
+    body: string
+    datetimePosted: Date
+    datetimeEdited?: Date
+}
+
+export interface NewComment {
+    projectAddress: string
+    posterAddress: string
+    body: string
+    datetimePosted: Date
+}

@@ -7,8 +7,8 @@ import { MegaMenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
 import { BlockchainService } from 'src/app/services/blockchain.service';
-import { RepositoryService } from 'src/app/services/repository.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
 import { ProjectOverviewComponent } from '../project-overview/project-overview.component';
 import { DexieDBService } from 'src/app/services/dexie-db.service';
 import { liveQuery } from 'dexie';
@@ -28,11 +28,16 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
     },
     {
       label: 'Requests', icon: 'pi pi-fw pi-calendar', disabled: true, items: [[
-        { label: 'Request', items: [{ label: 'New Funding', routerLink: ['new-request'] }], disabled: true },
+        { label: 'Request', items: [{ label: 'New Funding', routerLink: [] }] },
         { label: 'Current Requests', items: [] }
       ]]
     },
-    { label: 'Announcements', icon: 'pi pi-fw pi-pencil', disabled: false },
+    {
+      label: 'Announcements', icon: 'pi pi-fw pi-pencil', disabled: true, items: [[
+        { label: 'Announce', items: [{ label: 'New Announcement', routerLink: [] }] },
+        { label: 'Current Announcements', items: [] }
+      ]]
+    },
     { label: 'Comments', icon: 'pi pi-fw pi-file', disabled: false },
   ]
   item: MenuItem = { label: '', routerLink: '' }
@@ -49,8 +54,8 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
   notifier$ = new Subject<boolean>();
 
   constructor(
-    private repoSvc: RepositoryService,
-    private storageSvc: StorageService,
+    private repoSvc: SqlRepositoryService,
+    private storageSvc: SessionStorageService,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -78,7 +83,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
               // push into megamenu
               this.itemz[this.indexProject].items![0][1].items?.push({
                 label: this.truncate(projectDetails.title),
-                routerLink: ['current', projectDetails.projectAddress]
+                routerLink: [projectDetails.projectAddress]
               })
             });
           }
@@ -101,7 +106,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
         this.itemz[this.indexRequests].items![0][0].disabled = false
 
         // assigning router link to new requests
-        this.itemz[this.indexRequests].items![0][0].items![0].routerLink = ['new-request', address]
+        this.itemz[this.indexRequests].items![0][0].items![0].routerLink = [address, 'new-request']
         this.cdr.detectChanges()
 
         // getting list of requests from database
@@ -117,7 +122,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
                   // assigning router link to each requests
                   this.itemz[this.indexRequests].items![0][1].items?.push({
                     label: this.truncate(request.title),
-                    routerLink: ['current', address, request.requestId]
+                    routerLink: [address, request.requestId]
                   })
                   // deleting db causes it to close, therefore reopen it to add requests
                   this.dexie.open()
@@ -127,6 +132,12 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
             },
             error: (error) => console.log(error)
           })
+
+        // TODO: get list of announcements based on the project address
+        // enable announcement menu
+        this.itemz[this.indexAnnouncements].disabled = false
+
+        this.itemz[this.indexAnnouncements].items![0][0].items![0].routerLink = [address, 'new-announcement']
       })
   }
 

@@ -3,7 +3,7 @@ import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
-import { RepositoryService } from 'src/app/services/repository.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 
 @Component({
   selector: 'app-project-header',
@@ -18,5 +18,5 @@ export class ProjectHeaderComponent {
   @Input()
   project!: ProjectDetails
 
-  constructor(private route: ActivatedRoute, private repoSvc: RepositoryService) { }
+  constructor(private route: ActivatedRoute, private repoSvc: SqlRepositoryService) { }
 }

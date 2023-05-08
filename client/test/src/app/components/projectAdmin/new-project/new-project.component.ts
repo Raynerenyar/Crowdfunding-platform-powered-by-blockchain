@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails } from 'src/app/model/model';
 import { BlockchainService } from 'src/app/services/blockchain.service';
-import { RepositoryService } from 'src/app/services/repository.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
 
 @Component({
   selector: 'app-new-project',
@@ -20,7 +20,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
 
   notifier$ = new Subject<boolean>()
 
-  constructor(private fb: FormBuilder, private bcSvc: BlockchainService, private router: Router, private repoSvc: RepositoryService, private storageSvc: StorageService) { }
+  constructor(private fb: FormBuilder, private bcSvc: BlockchainService, private router: Router, private repoSvc: SqlRepositoryService, private storageSvc: SessionStorageService) { }
 
   ngOnInit(): void {
     this.newProjectForm = this.fb.group({

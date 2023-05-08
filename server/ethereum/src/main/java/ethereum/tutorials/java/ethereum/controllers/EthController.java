@@ -117,7 +117,7 @@ public class EthController {
         try {
             // Optional<String> opt = BcSvc.getTokenBalanceFuncEncoded(tokenAddress, params);
             Optional<BigInteger> opt = BcSvc.getTokenBalance(tokenAddress, params);
-
+            System.out.println("getting balance" + functionName);
             if (opt.isPresent()) {
                 String encodedFunction = Json.createObjectBuilder()
                         .add("tokenBalance", opt.get())

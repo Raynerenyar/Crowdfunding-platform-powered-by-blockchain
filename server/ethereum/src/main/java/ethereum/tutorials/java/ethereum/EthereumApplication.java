@@ -11,10 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import ethereum.tutorials.java.ethereum.config.FirebaseConfig;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
-import ethereum.tutorials.java.ethereum.repository.CrowdfundingRepository;
+import ethereum.tutorials.java.ethereum.repository.SqlCrowdfundingRepo;
 import ethereum.tutorials.java.ethereum.services.ethereum.BlockchainService;
 import ethereum.tutorials.java.ethereum.services.ethereum.LoadContractService;
-import ethereum.tutorials.java.ethereum.services.repository.RepoService;
+import ethereum.tutorials.java.ethereum.services.repository.SqlRepoService;
 import jnr.ffi.provider.SigType;
 
 import java.io.IOException;
@@ -49,9 +49,9 @@ public class EthereumApplication implements CommandLineRunner {
 	@Autowired
 	Web3j web3;
 	@Autowired
-	CrowdfundingRepository sqlRepo;
+	SqlCrowdfundingRepo sqlRepo;
 	@Autowired
-	RepoService repoSvc;
+	SqlRepoService repoSvc;
 
 	@Value("${firebase.project.id}")
 	private String firebaseProjId;

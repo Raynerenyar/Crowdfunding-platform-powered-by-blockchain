@@ -19,6 +19,8 @@ import { RequestComponent } from './components/explore/viewRequest/request.compo
 import { ProjectMainComponent } from './components/explore/project/project-main/project-main.component';
 import { ProjectBodyComponent } from './components/explore/project/project-body/project-body.component';
 import { RequestDetailsComponent } from './components/projectAdmin/request-details/request-details.component';
+import { AnnouncementEditorComponent } from './components/projectAdmin/announcement-editor/announcement-editor.component';
+import { ProjectCommentsComponent } from './components/projectAdmin/project-comments/project-comments.component';
 
 
 const routes: Routes = [
@@ -28,10 +30,13 @@ const routes: Routes = [
       {
         path: 'project-admin', component: ProjectDashboardComponent,
         children: [
-          { path: 'current/:address', component: ProjectOverviewComponent },
-          { path: 'current/:address/:requestId', component: RequestDetailsComponent },
           { path: 'new-project', component: NewProjectComponent },
-          { path: 'new-request/:address', component: NewRequestComponent },
+          { path: ':address', component: ProjectOverviewComponent },
+          { path: ':address/new-request', component: NewRequestComponent },
+          { path: ':address/new-announcement', component: AnnouncementEditorComponent },
+          { path: ':address/comments', component: ProjectCommentsComponent },
+          { path: ':address/:requestId', component: RequestDetailsComponent },
+
         ]
       },
       { path: 'explore', component: ExploreProjectsComponent },
@@ -41,8 +46,6 @@ const routes: Routes = [
           { path: 'request/:requestNum', component: RequestComponent },
         ]
       },
-      // { path: 'explore/:projectAddress/project', component: ProjectBodyComponent },
-      // { path: 'explore/:projectAddress/request', component: RequestComponent },
       { path: 'faucet', component: FaucetComponent },
       { path: 'home', component: HomeComponent, },
       { path: 'profile', component: ProfileComponent },

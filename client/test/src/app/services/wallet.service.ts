@@ -2,8 +2,8 @@ import { Injectable, NgZone, Output } from '@angular/core';
 import { Subject, from, switchMap } from 'rxjs';
 
 import Web3 from 'web3';
-import { AlertMessageService } from './alert.message.service';
-import { StorageService } from './storage.service';
+import { PrimeMessageService } from './prime.message.service';
+import { SessionStorageService } from './session.storage.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -27,7 +27,7 @@ export class WalletService {
 
   web3: Web3 = new Web3(window.ethereum);
 
-  constructor(private messageSvc: AlertMessageService, private storageSvc: StorageService, private router: Router, private ngZone: NgZone, private authSvc: AuthService) {
+  constructor(private messageSvc: PrimeMessageService, private storageSvc: SessionStorageService, private router: Router, private ngZone: NgZone, private authSvc: AuthService) {
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', async (accounts: string | any[]) => {
         if (accounts.length >= 1) {

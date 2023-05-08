@@ -3,12 +3,12 @@
  methods to check loggedIn status and save User info to Session Storage. */
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { StorageService } from '../../../../services/storage.service';
+import { SessionStorageService } from '../../../../services/session.storage.service';
 import { WalletService } from 'src/app/services/wallet.service';
 import { Subject, Subscription, timer } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService as AuthzService } from '../../../../services/auth.service'
-import { AlertMessageService } from 'src/app/services/alert.message.service';
+import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { Router } from '@angular/router';
 
@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   @Output()
   onLoginEvent = new Subject<string>()
 
-  constructor(private storageService: StorageService, private walletSvc: WalletService, private cdr: ChangeDetectorRef, private fb: FormBuilder, private authSvc: AuthzService, private msgSvc: AlertMessageService, private router: Router, private storageSvc: StorageService) { }
+  constructor(private storageService: SessionStorageService, private walletSvc: WalletService, private cdr: ChangeDetectorRef, private fb: FormBuilder, private authSvc: AuthzService, private msgSvc: PrimeMessageService, private router: Router, private storageSvc: SessionStorageService) { }
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {

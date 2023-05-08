@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
-import { StorageService } from './services/storage.service';
+import { SessionStorageService } from './services/session.storage.service';
 import { AuthService } from './components/auth/services/auth.service';
 
 
@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
   showModeratorBoard = false;
   username?: string;
 
-  constructor(private primengConfig: PrimeNGConfig, private storageService: StorageService, private authService: AuthService) { }
+  constructor(private primengConfig: PrimeNGConfig, private storageService: SessionStorageService, private authService: AuthService) { }
 
   ngOnInit() {
     this.primengConfig.overlayOptions;

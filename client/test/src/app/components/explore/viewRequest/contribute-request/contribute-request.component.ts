@@ -2,9 +2,9 @@ import { AfterViewInit, Component, ElementRef, Input, OnDestroy, Output, ViewChi
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
-import { AlertMessageService } from 'src/app/services/alert.message.service';
+import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { BlockchainService } from 'src/app/services/blockchain.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
 
 @Component({
   selector: 'app-contribute-request',
@@ -36,7 +36,7 @@ export class ContributeRequestComponent implements OnDestroy, AfterViewInit {
   contributeHeight = new Subject<number>()
 
 
-  constructor(private fb: FormBuilder, private bcSvc: BlockchainService, private storageSvc: StorageService, private msgSvc: AlertMessageService) { }
+  constructor(private fb: FormBuilder, private bcSvc: BlockchainService, private storageSvc: SessionStorageService, private msgSvc: PrimeMessageService) { }
 
   ngOnInit(): void {
     this.currentRequest = this.fb.group({

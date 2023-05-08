@@ -33,6 +33,7 @@ import org.web3j.tx.ClientTransactionManager;
 import org.web3j.tx.Contract;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
+import org.web3j.tx.exceptions.ContractCallException;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.utils.Numeric;
@@ -481,6 +482,9 @@ public class BlockchainService {
         try {
             BigInteger balance = tokenContract.balanceOf(accountAddress).send();
             return Optional.of(balance);
+        } catch (ContractCallException e) {
+            // this exception is the result of 0 balance
+            return Optional.of(BigInteger.valueOf(0));
         } catch (Exception e) {
             return Optional.empty();
         }

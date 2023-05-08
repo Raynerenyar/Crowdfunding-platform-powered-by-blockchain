@@ -19,22 +19,19 @@ import { SidebarComponent } from './layout/sidenav/sidebar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRequestComponent } from './components/projectAdmin/newRequest/new-request.component';
 import { ReceivenContributionComponent } from './components/projectAdmin/receiveContribution/receiven-contribution.component';
-import { AppLayoutComponent } from './layout/app.layout.component';
 import { AuthComponents } from "./components/auth/auth.index"
 import { httpInterceptorProviders } from './components/auth/auth.interceptor';
-import { AlertMessageService } from './services/alert.message.service';
+import { PrimeMessageService } from './services/prime.message.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { WalletService } from './services/wallet.service';
 import { layoutComponents } from "./layout/layout.index";
 import { projectAdminComponents } from "./components/projectAdmin/projectAdmin.index";
-import { RepositoryService } from './services/repository.service';
-import { ExploreProjectsComponent } from './components/explore/explore-projects/explore-projects.component';
-import { RequestComponent } from './components/explore/viewRequest/request.component';
-import { ContributeRequestComponent } from './components/explore/viewRequest/contribute-request/contribute-request.component';
-import { ProjectBodyComponent } from './components/explore/project/project-body/project-body.component';
-import { ProjectMainComponent } from './components/explore/project/project-main/project-main.component';
+import { SqlRepositoryService as SqlRepoService } from './services/sql.repo.service';
 import { DexieDBService } from './services/dexie-db.service';
 import { TruncatePipe } from './util/truncatePipe';
+import { NgxEditorImportsModule } from './ngxEditor.imports.module';
+import { MongoRepoService } from './services/mongo.repo.service';
+import { exploreComponents } from './components/explore/explore.index';
 
 @NgModule({
   declarations: [
@@ -42,20 +39,13 @@ import { TruncatePipe } from './util/truncatePipe';
     FaucetComponent,
     HeaderComponent,
     SidebarComponent,
-    ExploreProjectsComponent,
-    RequestComponent,
-    ContributeRequestComponent,
-    ProjectMainComponent,
-    ProjectHeaderComponent,
-    ProjectBodyComponent,
     // NewRequestComponent,
     // ReceivenContributionComponent,
-    AppLayoutComponent,
     ...layoutComponents,
     ...AuthComponents,
     ...projectAdminComponents,
+    ...exploreComponents,
     TruncatePipe,
-
   ],
   imports: [
     BrowserModule,
@@ -65,19 +55,21 @@ import { TruncatePipe } from './util/truncatePipe';
     ReactiveFormsModule,
     FormsModule,
     PrimeNgModule,
+    NgxEditorImportsModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore())
   ],
   providers: [
+    httpInterceptorProviders,
     AuthService,
     BlockchainService,
-    httpInterceptorProviders,
-    AlertMessageService,
+    PrimeMessageService,
     MessageService,
     WalletService,
     ConfirmationService,
-    RepositoryService,
+    SqlRepoService,
+    MongoRepoService,
     DexieDBService
   ],
   bootstrap: [AppComponent]

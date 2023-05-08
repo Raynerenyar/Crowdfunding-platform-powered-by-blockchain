@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { Subject } from 'rxjs';
-import { StorageService } from 'src/app/services/storage.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
 
 @Component({
   selector: 'app-overlayPanel',
@@ -15,7 +15,7 @@ export class OverlayPanelComponent implements OnInit {
   @Output()
   onLoginEvent = new Subject<string>()
 
-  constructor(private storageService: StorageService) { }
+  constructor(private storageService: SessionStorageService) { }
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {

@@ -27,7 +27,7 @@ import org.web3j.tx.Contract;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TwlvFaucet;
-import ethereum.tutorials.java.ethereum.repository.CrowdfundingRepository;
+import ethereum.tutorials.java.ethereum.repository.SqlCrowdfundingRepo;
 import ethereum.tutorials.java.ethereum.services.ethereum.BlockchainService;
 import ethereum.tutorials.java.ethereum.services.ethereum.LoadContractService;
 import ethereum.tutorials.java.ethereum.util.eventFlowable.FactoryEvents;
@@ -43,7 +43,7 @@ public class BlockchainEventHandler {
     @Autowired
     private LoadContractService lcSvc;
     @Autowired
-    private CrowdfundingRepository sqlRepo;
+    private SqlCrowdfundingRepo sqlRepo;
     @Value("${crowdfunding.factory.contract.address}")
     private String crowdfundingFactoryAddress;
 

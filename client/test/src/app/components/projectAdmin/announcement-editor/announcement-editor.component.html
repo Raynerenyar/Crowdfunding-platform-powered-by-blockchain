@@ -1,0 +1,16 @@
+<div>
+    <h2>Create Announcement For </h2>
+</div>
+<div class="p-3" height="500px" minHeight="500px">
+    <div>
+        <form [formGroup]="editorForm">
+            <div class="NgxEditor__Wrapper">
+                <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
+                <ngx-editor [editor]="editor" [placeholder]="'Write your announcement here'" formControlName="editor"></ngx-editor>
+            </div>
+        </form>
+    </div>
+    <div class="pt-2">
+        <p-button styleClass="p-button-raised p-button-sm" [disabled]="editorForm.invalid" (click)="onSubmit()">Submit</p-button>
+    </div>
+</div>

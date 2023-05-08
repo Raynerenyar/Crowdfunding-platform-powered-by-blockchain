@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { BlockchainService } from 'src/app/services/blockchain.service';
-import { RepositoryService } from 'src/app/services/repository.service';
-import { StorageService } from 'src/app/services/storage.service';
+import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
 
 @Component({
   selector: 'app-new-request',
@@ -17,7 +17,7 @@ export class NewRequestComponent implements OnInit, OnDestroy {
   projectAddress!: string
   notifier$ = new Subject<boolean>()
 
-  constructor(private fb: FormBuilder, private bcSvc: BlockchainService, private repoSvc: RepositoryService, private route: ActivatedRoute, private storageSvc: StorageService, private router: Router) { }
+  constructor(private fb: FormBuilder, private bcSvc: BlockchainService, private repoSvc: SqlRepositoryService, private route: ActivatedRoute, private storageSvc: SessionStorageService, private router: Router) { }
 
   ngOnInit(): void {
     let walletAddress = this.storageSvc.getUser()
