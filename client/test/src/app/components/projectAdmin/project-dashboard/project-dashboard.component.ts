@@ -64,7 +64,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
     private router: Router,
     private cdr: ChangeDetectorRef,
     private dexie: DexieDBService,
-    private datePipe: DatePipe) { }
+  ) { }
 
   ngOnInit() {
     // clear dexie
@@ -131,7 +131,10 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
                   })
                   // deleting db causes it to close, therefore reopen it to add requests
                   this.dexie.open()
-                  if (!this.dexie.requests.get(request.requestId)) {
+                  let requestId
+                  this.dexie.requests.get(request.requestId).then((_requestId) => requestId = _requestId)
+                  console.log(requestId)
+                  if (!requestId) {
                     this.dexie.requests.add(request)
                   }
                 });

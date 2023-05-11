@@ -12,7 +12,8 @@ import { UrlBuilderService } from './url-builder.service';
 export class SqlRepositoryService {
 
   projectAddressEvent = new Subject<string>()
-  projectDetails = new Subject<ProjectDetails>()
+  projectDetailsEvent = new Subject<ProjectDetails>()
+  projectDetails!: ProjectDetails
 
   constructor(private http: HttpClient, private urlBuilder: UrlBuilderService) { }
 
@@ -29,7 +30,7 @@ export class SqlRepositoryService {
       .addPathVariable('address', address)
       .build()
     console.log(url, url2)
-    return this.http.get(url, { responseType: 'json' })
+    return this.http.get(url2)
   }
 
   getRequests(projectAddress: string): Observable<any> {
@@ -44,7 +45,7 @@ export class SqlRepositoryService {
       .addPathVariable('projectAddress', projectAddress)
       .build()
     console.log(url, url2)
-    return this.http.get(url, { responseType: 'json' })
+    return this.http.get(url2)
   }
 
   getProjectsWithPage(offset: number, limit: number): Observable<any> {
@@ -58,7 +59,7 @@ export class SqlRepositoryService {
     let params = new HttpParams()
       .append('offset', offset)
       .append('limit', limit)
-    return this.http.get(url, { params })
+    return this.http.get(url2, { params })
   }
 
   getLatestProject(creatorAddress: string): Observable<any> {
@@ -73,7 +74,7 @@ export class SqlRepositoryService {
       .addPathVariable('creatorAddress', creatorAddress)
       .build()
     console.log(url, url2)
-    return this.http.get(url)
+    return this.http.get(url2)
   }
 
   getCountProjects(): Observable<any> {
@@ -86,7 +87,7 @@ export class SqlRepositoryService {
       .setPath('api/get-count-projects')
       .build()
     console.log(url, url2)
-    return this.http.get(url)
+    return this.http.get(url2)
   }
 
   // get single project with all the column data
@@ -102,7 +103,7 @@ export class SqlRepositoryService {
       .addPathVariable('projectAddress', projectAddress)
       .build()
     console.log(url, url2)
-    return this.http.get(url)
+    return this.http.get(url2)
   }
 
   emitProjectAddress(projectAddress: string) {
@@ -110,7 +111,8 @@ export class SqlRepositoryService {
   }
 
   emitProjectDetails(project: ProjectDetails) {
-    this.projectDetails.next(project)
+    console.log("emitting project Details")
+    this.projectDetailsEvent.next(project)
   }
 
 }

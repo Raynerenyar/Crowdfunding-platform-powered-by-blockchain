@@ -1,5 +1,5 @@
 <div class="justify-content-center">
-    <app-project-header  [project]="project" [projectAddress]="projectAddress"></app-project-header>
+    <app-project-header  [projectAddress]="projectAddress"></app-project-header>
 </div>
 <div class="m-2">
     <p-card styleClass="shadow-5">
@@ -17,7 +17,7 @@
                 <app-request *ngIf="showSingleRequest" [requests]="requests" [tokenAddress]="project.acceptingToken" [projectAddress]="projectAddress" [project]="project"></app-request>
                 <app-view-announcement *ngIf="showAnnouncement" [projectAddress]="projectAddress"></app-view-announcement>
                 <app-comments *ngIf="showComments" [projectAddress]="projectAddress"></app-comments>
-                <app-new-comment *ngIf="showNewComment" [projectAddress]="projectAddress"></app-new-comment>
+                <app-new-comment *ngIf="showNewComment" [projectAddress]="projectAddress" (onSubmission)="onCommentSubmission()"></app-new-comment>
             </span>
         </span>
     </p-card>

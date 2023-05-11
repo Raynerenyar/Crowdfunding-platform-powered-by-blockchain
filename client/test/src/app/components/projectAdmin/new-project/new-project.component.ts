@@ -48,8 +48,9 @@ export class NewProjectComponent implements OnInit, OnDestroy {
         this.repoSvc.getLatestProject(this.creatorAddress)
           .pipe(takeUntil(this.notifier$))
           .subscribe(projectAddress => {
+            console.log(projectAddress)
             let project = projectAddress as ProjectDetails
-            this.router.navigate(['current', project.projectAddress])
+            this.router.navigateByUrl(`/project-admin/${project.projectAddress}?project=new`)
           })
       })
   }

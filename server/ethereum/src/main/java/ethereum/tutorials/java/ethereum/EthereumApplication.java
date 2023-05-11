@@ -96,13 +96,13 @@ public class EthereumApplication implements CommandLineRunner {
 		// ethSvc.testRun();
 		// testSql();
 
-		repoSvc.getProjectsByCreatorAddress("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C");
-		System.out.println("getting addresses >>>>>>>> <<<<<<<< ");
-		Optional<List<String>> opt = repoSvc.getListOfProjectAddress("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C");
-		List<String> addresses = opt.get();
-		for (String strings : addresses) {
-			System.out.println(strings);
-		}
+		// repoSvc.getProjectsByCreatorAddress("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C");
+		// System.out.println("getting addresses >>>>>>>> <<<<<<<< ");
+		// Optional<List<String>> opt = repoSvc.getListOfProjectAddress("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C");
+		// List<String> addresses = opt.get();
+		// for (String strings : addresses) {
+		// 	System.out.println(strings);
+		// }
 	}
 
 	// public void testSql() {

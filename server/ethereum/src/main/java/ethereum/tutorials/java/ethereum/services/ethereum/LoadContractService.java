@@ -13,8 +13,8 @@ import org.web3j.tx.gas.DefaultGasProvider;
 
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TWLV;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TwlvFaucet;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Token;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.DevFaucet;
 
 @Service
 public class LoadContractService {
@@ -29,6 +29,7 @@ public class LoadContractService {
     private String rpcUrl;
 
     public Crowdfunding loadCrowdfundingContract(String contractAddress) {
+        System.out.println("loading crowdfunding contract");
         Credentials cred = Credentials.create(privateKey);
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
@@ -37,10 +38,8 @@ public class LoadContractService {
     }
 
     public CrowdfundingFactory loadCrowdfundingFactoryContract(String contractAddress) {
-        System.out.println("loading crowdfunding contract");
-        System.out.println("loading with private key: " + privateKey);
-        System.out.println("to chain id" + chainId);
-        System.out.println(web3.ethAccounts().toString());
+        System.out.println("loading factory contract");
+        System.out.println(privateKey);
         Credentials cred = Credentials.create(privateKey);
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
@@ -48,7 +47,7 @@ public class LoadContractService {
         return CrowdfundingFactory.load(contractAddress, web3, txManager, contractGasProvider);
     }
 
-    public TwlvFaucet loadFaucetContract(String contractAddress) {
+    public DevFaucet loadFaucetContract(String contractAddress) {
         // Web3j web3j = Web3j.build(new HttpService(rpcUrl));
         System.out.println("loading faucet contract" + contractAddress);
         System.out.println("loading with private key: " + privateKey);
@@ -57,16 +56,16 @@ public class LoadContractService {
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
                 cred, chainId);
-        return TwlvFaucet.load(contractAddress, web3, txManager, contractGasProvider);
+        return DevFaucet.load(contractAddress, web3, txManager, contractGasProvider);
     }
 
-    public TWLV loadTokenContract(String tokenAddress) {
+    public Token loadTokenContract(String tokenAddress) {
         System.out.println(tokenAddress);
         Credentials cred = Credentials.create(privateKey);
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
                 cred, chainId);
-        return TWLV.load(tokenAddress, web3, txManager, contractGasProvider);
+        return Token.load(tokenAddress, web3, txManager, contractGasProvider);
     }
 
 }

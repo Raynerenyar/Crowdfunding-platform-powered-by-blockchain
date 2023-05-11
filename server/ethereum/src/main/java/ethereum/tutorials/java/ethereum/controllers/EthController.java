@@ -39,6 +39,9 @@ public class EthController {
     @Value("${crowdfunding.factory.contract.address}")
     private String crowdfundingFactoryContractAddress;
 
+    @Value("${faucet.contract.address}")
+    private String faucetContractAddress;
+
     @PostMapping(path = "/get-function-encoded")
     @ResponseBody
     public ResponseEntity<String> getFunctionEncoded(
@@ -46,20 +49,29 @@ public class EthController {
             @RequestParam String functionName,
             @RequestParam(required = false) String contractAddress,
             @RequestBody(required = false) Object... params) {
-        Optional<String> opt;
         // // if (params != null) {
-        // for (Object object : params) {
-        //     System.out.println("params >>>>> " + object);
-        //     System.out.println(object.getClass().getSimpleName());
-        //     System.out.println(object);
-        // }
-        if (contractAddress == null) {
+        for (Object object : params) {
+            System.out.println("params >>>>> " + object);
+            System.out.println(object.getClass().getSimpleName());
+            System.out.println(object);
+        }
+        // if (contractName.equalsIgnoreCase("CrowdfundingFactory"))
+        //     contractAddress = crowdfundingFactoryContractAddress;
+        System.out.println("getting function for >> " + contractAddress);
+        System.out.println("getting function for >> " + contractName);
+        System.out.println("getting function for >> " + functionName);
+        Optional<String> opt;
+        if (contractName.equalsIgnoreCase("CrowdfundingFactory") || contractName.equalsIgnoreCase("DevFaucet")) {
             opt = BcSvc.getEncoded(contractName, functionName, params);
-        } else
+            Optional<String> optAddress = BcSvc.getContractAddress(contractName);
+            contractAddress = (optAddress.isPresent()) ? optAddress.get() : contractAddress;
+        } else {
             opt = BcSvc.getEncoded(contractName, functionName, contractAddress, params);
+        }
         if (opt.isPresent()) {
             String encodedFunction = Json.createObjectBuilder()
                     .add("encodedFunction", opt.get())
+                    .add("contractAddress", contractAddress)
                     .build()
                     .toString();
             return ResponseEntity.status(HttpStatus.OK).body((encodedFunction));
@@ -76,13 +88,30 @@ public class EthController {
         String contractName = job.getString("contractName");
         String functionName = job.getString("functionName");
         String blockHash = job.getString("blockHash");
-        // handle description in body in sql, done for createNewProject, not done for request
+
         if (job.containsKey("description")) {
             String description = job.getString("description");
-            BcSvc.getEvent(contractName, functionName, blockHash, description);
+            switch (contractName) {
+                case "CrowdfundingFactory" ->
+                    BcSvc.getEvent(contractName, functionName, blockHash, crowdfundingFactoryContractAddress,
+                            description);
+                default -> {
+                    String contractAddress = job.getString("address");
+                    BcSvc.getEvent(contractName, functionName, blockHash, contractAddress,
+                            description);
+                }
+            }
             return ResponseEntity.status(HttpStatus.OK).body(null);
         } else {
-            BcSvc.getEvent(contractName, functionName, blockHash);
+            switch (contractName) {
+                case "DevFaucet" ->
+                    BcSvc.getEvent(contractName, functionName, blockHash, faucetContractAddress);
+                default -> {
+                    String address = job.getString("address");
+                    BcSvc.getEvent(contractName, functionName, blockHash, address);
+                    return ResponseEntity.status(HttpStatus.OK).body(null);
+                }
+            }
             return ResponseEntity.status(HttpStatus.OK).body(null);
         }
     }

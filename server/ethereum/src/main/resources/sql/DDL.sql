@@ -1,4 +1,6 @@
-USE crowdfunding; 
+CREATE DATABASE IF NOT EXISTS crowdfunding2;
+
+USE crowdfunding2;
 
 CREATE TABLE ProjectCreators (
     username VARCHAR(42) NOT NULL,
@@ -19,6 +21,8 @@ CREATE TABLE Projects (
     expired BOOLEAN NOT NULL,
     num_of_requests	INT NOT NULL,
     accepting_token VARCHAR(42) NOT NULL,
+    token_name VARCHAR(15) NOT NULL,
+    token_symbol VARCHAR(10) NOT NULL, 
     created_date TIMESTAMP NOT NULL,
     PRIMARY KEY (project_address),
     CONSTRAINT fk_username FOREIGN KEY (creator_address) REFERENCES ProjectCreators(username)
@@ -26,6 +30,7 @@ CREATE TABLE Projects (
 
 CREATE TABLE ProjectRequests (
     request_id INT NOT NULL AUTO_INCREMENT,
+    request_no INT NOT NULL,
     project_address VARCHAR(42) NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
@@ -33,7 +38,6 @@ CREATE TABLE ProjectRequests (
     amount INT NOT NULL,
     num_of_votes INT,
     completed BOOLEAN NOT NULL,
-    value_of_votes DOUBLE,
     PRIMARY KEY (request_id),
     CONSTRAINT fk_requests_project_address FOREIGN KEY (project_address)
         REFERENCES Projects (project_address)

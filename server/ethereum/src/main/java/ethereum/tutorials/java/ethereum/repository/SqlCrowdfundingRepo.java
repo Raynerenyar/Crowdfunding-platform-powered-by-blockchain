@@ -28,9 +28,9 @@ public class SqlCrowdfundingRepo {
         private JdbcTemplate jdbc;
 
         // public int insertProjectCreator(String creatorAddress, String name) {
-        //     Object[] args = new Object[] { creatorAddress, name };
-        //     int[] argTypes = new int[] { Types.VARCHAR, Types.VARCHAR };
-        //     return jdbc.update(INSERT_PROJECT_CREATOR, args, argTypes);
+        //         Object[] args = new Object[] { creatorAddress, name };
+        //         int[] argTypes = new int[] { Types.VARCHAR, Types.VARCHAR };
+        //         return jdbc.update(INSERT_PROJECT_CREATOR, args, argTypes);
         // }
 
         public int insertProject(
@@ -45,6 +45,8 @@ public class SqlCrowdfundingRepo {
                         boolean expired,
                         int numOfRequests,
                         String acceptingtoken,
+                        String tokenName,
+                        String tokenSymbol,
                         Timestamp createdDate) {
                 Object[] args = new Object[] {
                                 projectAddress,
@@ -58,6 +60,8 @@ public class SqlCrowdfundingRepo {
                                 expired,
                                 numOfRequests,
                                 acceptingtoken,
+                                tokenName,
+                                tokenSymbol,
                                 createdDate
                 };
                 int[] argTypes = new int[] {
@@ -72,39 +76,39 @@ public class SqlCrowdfundingRepo {
                                 Types.BOOLEAN,
                                 Types.INTEGER,
                                 Types.VARCHAR,
+                                Types.VARCHAR,
+                                Types.VARCHAR,
                                 Types.TIMESTAMP };
                 return jdbc.update(INSERT_PROJECT, args, argTypes);
         }
 
         public int insertProjectRequest(
+                        int requestNo,
                         String projectAddress,
                         String title,
                         String description,
                         String recipientAddress,
                         int amount,
                         int numOfVotes,
-                        boolean completed,
-                        double value_of_votes) {
+                        boolean completed) {
                 Object[] args = new Object[] {
+                                requestNo,
                                 projectAddress,
                                 title,
                                 description,
                                 recipientAddress,
                                 amount,
                                 numOfVotes,
-                                completed,
-                                value_of_votes
-                };
+                                completed };
                 int[] argTypes = new int[] {
+                                Types.INTEGER,
                                 Types.VARCHAR,
                                 Types.VARCHAR,
                                 Types.VARCHAR,
                                 Types.VARCHAR,
                                 Types.INTEGER,
                                 Types.INTEGER,
-                                Types.BOOLEAN,
-                                Types.DOUBLE
-                };
+                                Types.BOOLEAN };
                 return jdbc.update(INSERT_PROJECT_REQUEST, args, argTypes);
         }
 
@@ -158,15 +162,18 @@ public class SqlCrowdfundingRepo {
         public int updateContribution(
                         boolean refunded,
                         String contributorAddress,
-                        String projectAddress) {
+                        String projectAddress,
+                        int amount) {
                 Object[] args = new Object[] {
                                 refunded,
                                 contributorAddress,
-                                projectAddress };
+                                projectAddress,
+                                amount };
                 int[] argTypes = new int[] {
                                 Types.BOOLEAN,
                                 Types.VARCHAR,
-                                Types.VARCHAR };
+                                Types.VARCHAR,
+                                Types.INTEGER };
                 return jdbc.update(UPDATE_CONTRIBUTION, args, argTypes);
         }
 

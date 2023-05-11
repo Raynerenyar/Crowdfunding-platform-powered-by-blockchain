@@ -12,7 +12,7 @@ contract Crowdfunding is Ownable {
     address public crowdfundingFactory;
 
     IERC20 public token;
-
+    string public title;
     uint public noOfContributors;
     uint public minimumContribution;
     uint public deadline;
@@ -29,6 +29,41 @@ contract Crowdfunding is Ownable {
         uint valueOfVotes;
         mapping(address => bool) voters;
     }
+
+    event ContributeEvent(
+        // address _projectAddress,
+        address _contributor,
+        address _tokenAddress,
+        uint _amount
+    );
+    event GetRefundEvent(
+        // address _projectAddress,
+        address _contributor,
+        address _RefundToken,
+        uint _RefundAmount
+    );
+    event CreateRequestEvent(
+        uint requestNum,
+        // address _projectAddress,
+        address _projectCreator,
+        string _title,
+        address _recipient,
+        uint _amount
+    );
+    event ReceiveContributionEvent(
+        // address _projectAddress,
+        address _projectCreator,
+        address _recipient,
+        uint _amount,
+        uint _requestNo
+    );
+    event voteRequestEvent(
+        // address _projectAddress,
+        address _voter,
+        uint _requestNo,
+        uint _valueOfVote
+    );
+
     // cannot store Request in array as it contains mapping
     // therefore use mapping
     uint public numRequests;
@@ -48,7 +83,8 @@ contract Crowdfunding is Ownable {
         address _crowdfundingFactory,
         uint _goal,
         uint _deadline,
-        address _acceptingThisToken
+        address _acceptingThisToken,
+        string memory _title
     ) {
         require(_deadline > block.timestamp);
         require(isToken(_acceptingThisToken), "Address provided is not token");
@@ -56,6 +92,7 @@ contract Crowdfunding is Ownable {
             isContract(_acceptingThisToken),
             "Address provided is not a contract"
         );
+        title = _title;
         crowdfundingFactory = _crowdfundingFactory;
         goal = _goal;
         deadline = _deadline;
@@ -66,50 +103,51 @@ contract Crowdfunding is Ownable {
         tokenAddress = _acceptingThisToken;
     }
 
-    function contribute(uint amount, address caller) public returns (address) {
+    function contribute(uint _amount) public {
         // require(block.timestamp < deadline, "Deadline has passed");
-        require(amount >= minimumContribution, "minimum contribution not met");
+        require(_amount >= minimumContribution, "minimum contribution not met");
 
         require(
-            token.allowance(caller, address(this)) >= amount,
+            token.allowance(msg.sender, address(this)) >= _amount,
             "token spend not approved"
         );
 
-        if (contributers[caller] == 0) {
+        if (contributers[msg.sender] == 0) {
             unchecked {
                 noOfContributors++;
             }
         }
-        token.transferFrom(caller, address(this), amount);
+        token.transferFrom(msg.sender, address(this), _amount);
         unchecked {
-            contributers[caller] += amount;
-            raisedAmount += amount;
+            contributers[msg.sender] += _amount;
+            raisedAmount += _amount;
         }
 
-        return (caller);
-        // emit ContributeEvent(msg.sender, amount);
+        emit ContributeEvent(msg.sender, tokenAddress, _amount);
     }
 
     function getBalance() public view returns (uint) {
         return token.balanceOf(address(this));
     }
 
-    function getRefund(address caller) public returns (uint) {
-        require(block.timestamp >= deadline && raisedAmount < goal);
-        require(contributers[caller] > 0);
+    function getRefund() public returns (uint) {
+        require(block.timestamp >= deadline, "Deadline has not passed");
+        require(raisedAmount < goal, "Raised amount is more than goal");
+        require(contributers[msg.sender] > 0, "You need to be a contributer");
 
-        uint amount = contributers[caller];
-        contributers[caller] = 0;
-        token.transfer(caller, amount);
-        return amount;
+        uint _amount = contributers[msg.sender];
+        contributers[msg.sender] = 0;
+        token.transfer(msg.sender, _amount);
+        emit GetRefundEvent(msg.sender, address(token), _amount);
+        return _amount;
     }
 
     function createRequest(
         string memory _title,
         address _recipient,
         uint _amount
-    ) public sharedOwner returns (uint) {
-        uint requestNum = numRequests;
+    ) public onlyOwner {
+        uint _requestNo = numRequests;
         Request storage newRequest = requests[numRequests];
         numRequests++;
 
@@ -119,23 +157,35 @@ contract Crowdfunding is Ownable {
         newRequest.completed = false;
         newRequest.noOfVoters = 0;
 
-        return requestNum;
+        emit CreateRequestEvent(
+            _requestNo,
+            msg.sender,
+            _title,
+            _recipient,
+            _amount
+        );
     }
 
-    function voteRequest(
-        uint _requestNo,
-        address caller
-    ) public returns (uint) {
+    function voteRequest(uint _requestNo) public returns (uint) {
         require(numRequests >= _requestNo, "Request does not exist.");
 
         // owner of crowdfunding project cannot vote for their own requests
-        require(caller != owner(), "You're not allowed to contribute");
+        require(
+            msg.sender != owner(),
+            "You're not allowed to vote for this request"
+        );
 
         // must have contributed before voting
-        require(contributers[caller] > 0, "You must be a contributor to vote!");
+        require(
+            contributers[msg.sender] > 0,
+            "You must be a contributor to vote!"
+        );
 
         Request storage thisRequest = requests[_requestNo];
-        require(thisRequest.voters[caller] == false, "You have already voted");
+        require(
+            thisRequest.voters[msg.sender] == false,
+            "You have already voted"
+        );
         require(
             thisRequest.recipient != address(0),
             "Request has not been initiated"
@@ -144,16 +194,17 @@ contract Crowdfunding is Ownable {
         // Ratio of the value of contribution by one user to the goal.
         // The higher the contribution the more the proportion in comparison to the goal.
         // Solidity has no float or double, therefore valueOfVotes is represents the ratio.
-        uint valueOfVote = (contributers[caller] * decimals) / goal;
-        thisRequest.valueOfVotes += valueOfVote;
+        uint _valueOfVote = (contributers[msg.sender] * decimals) / goal;
+        thisRequest.valueOfVotes += _valueOfVote;
         thisRequest.noOfVoters++;
-        thisRequest.voters[caller] = true;
-        return valueOfVote;
+        thisRequest.voters[msg.sender] = true;
+        emit voteRequestEvent(msg.sender, _requestNo, _valueOfVote);
+        return _valueOfVote;
     }
 
     function receiveContribution(
         uint _requestNo
-    ) public sharedOwner returns (address, uint) {
+    ) public onlyOwner returns (address, uint) {
         require(
             raisedAmount >= goal,
             "raisedAmount must be more than or equal to goal"
@@ -165,16 +216,24 @@ contract Crowdfunding is Ownable {
             "The request has been completed."
         );
 
-        uint8 numerator = 5;
-        uint8 denominator = 10;
+        uint8 _numerator = 5;
+        uint8 _denominator = 10;
         // value of votes more than 0.5 to pass
         require(
-            thisRequest.valueOfVotes > (numerator * decimals) / denominator,
+            thisRequest.valueOfVotes > (_numerator * decimals) / _denominator,
             "value of votes fail to meet requirement"
         );
 
-        token.transfer(thisRequest.recipient, uint(thisRequest.amount));
+        address _recipient = thisRequest.recipient;
+        uint _amount = thisRequest.amount;
+        token.transfer(_recipient, _amount);
         thisRequest.completed = true;
+        emit ReceiveContributionEvent(
+            msg.sender,
+            _recipient,
+            _amount,
+            _requestNo
+        );
         return (thisRequest.recipient, thisRequest.amount);
     }
 

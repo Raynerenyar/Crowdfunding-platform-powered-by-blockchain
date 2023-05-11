@@ -35,7 +35,8 @@ public class SqlRepoController {
         if (opt.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(opt.get());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        System.out.println("throwing 404");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
     }
 

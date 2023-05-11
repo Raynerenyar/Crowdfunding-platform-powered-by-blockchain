@@ -47,7 +47,7 @@ export class NewRequestComponent implements OnInit, OnDestroy {
     console.log(this.projectAddress)
     this.bcSvc.createRequest(this.projectAddress, title, description, recipient, amount)
       .pipe(takeUntil(this.notifier$))
-      .subscribe(() => this.router.navigate(['project-admin', 'current', this.projectAddress]))
+      .subscribe(() => this.router.navigate(['project-admin', this.projectAddress]))
     // TODO: save description into mongo or sql
   }
 

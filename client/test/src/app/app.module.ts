@@ -57,9 +57,9 @@ import { DatePipe } from '@angular/common';
     FormsModule,
     PrimeNgModule,
     NgxEditorImportsModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
+    // provideFirebaseApp(() => initializeApp(environment.firebase)),
+    // provideAuth(() => getAuth()),
+    // provideFirestore(() => getFirestore())
   ],
   providers: [
     httpInterceptorProviders,

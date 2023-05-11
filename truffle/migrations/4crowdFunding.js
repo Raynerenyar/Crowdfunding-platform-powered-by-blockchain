@@ -1,27 +1,27 @@
 const Crowdfunding = artifacts.require("Crowdfunding");
-const TWLV = artifacts.require("TWLV");
-const Faucet = artifacts.require("twlvFaucet");
+const Token = artifacts.require("Token");
+const Faucet = artifacts.require("DevFaucet");
 const Factory = artifacts.require("CrowdfundingFactory");
 
 module.exports = async function (deployer, network, accounts) {
   if (network === "development") {
-    twlv = await deployer.deploy(TWLV, { from: accounts[0] });
+    token = await deployer.deploy(Token, { from: accounts[0] });
     await deployer.deploy(Factory, { from: accounts[0] });
 
-    let twlvInstance = await TWLV.deployed();
-    let faucet = await deployer.deploy(Faucet, twlvInstance.address, 90000, {
+    let tokenInstance = await Token.deployed();
+    let faucet = await deployer.deploy(Faucet, tokenInstance.address, 90000, {
       from: accounts[0],
     });
-    await twlvInstance.mint(faucet.address, 1000000, { from: accounts[0] });
+    await tokenInstance.mint(faucet.address, 1000000, { from: accounts[0] });
   }
   // deploying live
   else {
-    twlv = await deployer.deploy(TWLV);
+    token = await deployer.deploy(Token);
     await deployer.deploy(Factory);
 
-    let twlvInstance = await TWLV.deployed();
-    await deployer.deploy(Faucet, twlvInstance.address, 90000);
+    let tokenInstance = await Token.deployed();
+    await deployer.deploy(Faucet, tokenInstance.address, 90000);
     let faucetInstance = await Faucet.deployed();
-    await twlvInstance.mint(faucetInstance.address, 1000000);
+    await tokenInstance.mint(faucetInstance.address, 1000000);
   }
 };

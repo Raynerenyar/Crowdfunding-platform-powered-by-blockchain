@@ -45,7 +45,7 @@ export class AnnouncementComponent implements OnInit {
   editable(announce: Announcement): boolean {
     let datetime = announce.datetimePosted
     let timeDiff = new Date().getTime() - new Date(datetime).getTime()
-    console.log(timeDiff)
+    // after 1 hour cannot edit announcement
     if (timeDiff >= 3_600_000) {
       return true
     }

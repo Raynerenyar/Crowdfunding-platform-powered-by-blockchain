@@ -1,7 +1,7 @@
 import { CrowdfundingFunctions } from "./contract-functons/crowdfunding.contract.functions";
 import { CrowdfundingFactoryFunctions } from "./contract-functons/crowdfunding.factory.contract.functions";
 import { TokenFunctions } from "./contract-functons/tokenFunctions";
-import { TwlvFaucetFunctions } from "./contract-functons/twlv.faucet.functions";
+import { DevFaucetFunctions } from "./contract-functons/dev.faucet.functions";
 
 export class SmartContract {
 
@@ -13,11 +13,11 @@ export class SmartContract {
         return new CrowdfundingFunctions('Crowdfunding')
     }
 
-    static twlvFaucet() {
-        return new TwlvFaucetFunctions('TwlvFaucet')
+    static DevFaucet() {
+        return new DevFaucetFunctions('DevFaucet')
     }
 
-    static TWLV() {
+    static Token() {
         return new TokenFunctions('Token')
     }
 

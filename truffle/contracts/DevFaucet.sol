@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract twlvFaucet is Ownable {
+contract DevFaucet is Ownable {
     bool public mintable;
     mapping(address => uint) public timestampOfLastMint;
     uint public balance;
@@ -18,11 +18,11 @@ contract twlvFaucet is Ownable {
     event SupplyChange(address mintedToAddress, uint amount);
 
     constructor(address _tokenAddress, uint mintTimer) {
-        // only owner of twlv can deploy this faucet
+        // only owner of token can deploy this faucet
         tokenAddress = _tokenAddress;
         token = IERC20(_tokenAddress);
         ownableToken = Ownable(address(token));
-        require(ownableToken.owner() == msg.sender, "not owner of twlv");
+        require(ownableToken.owner() == msg.sender, "not owner of token");
 
         timer = mintTimer;
         mintable = true;
@@ -45,7 +45,7 @@ contract twlvFaucet is Ownable {
         emit SupplyChange(msg.sender, amount);
     }
 
-    function toggleFaucet() public onlyOwner {
+    function toggleFaucetMintable() public onlyOwner {
         mintable = !mintable;
     }
 }

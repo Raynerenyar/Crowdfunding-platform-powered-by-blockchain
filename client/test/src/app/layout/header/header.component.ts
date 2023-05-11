@@ -61,7 +61,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
 
       accept: () => {
-        this.authSvc.signOut()
+        // this.authSvc.signOut()
+        this.authSvc.logout()
         this.storageService.clean()
 
         this.logoutSub$ = this.authSvc.logout().subscribe({
@@ -104,8 +105,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   @HostListener('window:scroll', ['$event'])
   onWindowScroll(event: any) {
-    this.overlayPanel.hide()
-    this.confirmPoput.hide()
+    if (this.overlayPanel.onShow) this.overlayPanel.hide()
+    if (this.confirmPoput) this.confirmPoput.hide()
   }
 
   ngOnDestroy(): void {

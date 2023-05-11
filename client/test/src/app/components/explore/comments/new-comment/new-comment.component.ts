@@ -61,7 +61,7 @@ export class NewCommentComponent implements AfterViewInit {
       this.mongoSvc.insertComment(textBody)
         .pipe(takeUntil(this.notifier$))
         .subscribe({
-          next: () => { console.log("inserted") },
+          next: () => { this.onSubmission.next(true) },
           error: () => { }
         })
     } else {

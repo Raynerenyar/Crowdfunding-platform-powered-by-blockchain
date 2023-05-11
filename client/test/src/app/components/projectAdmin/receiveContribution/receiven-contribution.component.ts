@@ -9,6 +9,7 @@ import { BlockchainService } from 'src/app/services/blockchain.service';
 })
 export class ReceivenContributionComponent implements OnInit {
   requestNumForm!: FormGroup
+  projectAddress!: string
 
   constructor(private fb: FormBuilder, private bcSvc: BlockchainService) { }
 
@@ -20,7 +21,7 @@ export class ReceivenContributionComponent implements OnInit {
 
   receiveContribution() {
     let requestNum = this.requestNumForm.get('requestNum')?.value
-    this.bcSvc.receiveContribution(requestNum)
+    this.bcSvc.receiveContribution(this.projectAddress, requestNum)
   }
 
 }

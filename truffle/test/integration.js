@@ -3,7 +3,7 @@ const TWLV = artifacts.require("TWLV");
 const Faucet = artifacts.require("twlvFaucet");
 const Factory = artifacts.require("CrowdfundingFactory");
 
-let twlv;
+let token;
 let faucet;
 let factory;
 let crowdfunding;
@@ -29,11 +29,11 @@ contract("Crowdfunding", (accounts) => {
 
   it("check manager and token owners are the same", async () => {
     factory = await Factory.deployed();
-    twlv = await TWLV.deployed();
+    token = await TWLV.deployed();
     faucet = await Faucet.deployed();
-    await twlv.mint(faucet.address, 1000000);
+    await token.mint(faucet.address, 1000000);
 
-    const twlvOwner = await twlv.owner();
+    const twlvOwner = await token.owner();
     const factoryOwner = await factory.owner();
     assert.equal(
       factoryOwner,
@@ -42,7 +42,7 @@ contract("Crowdfunding", (accounts) => {
     );
   });
   it("check token and faucet owners are the same", async () => {
-    const twlvOwner = await twlv.owner();
+    const twlvOwner = await token.owner();
     faucetOwner = await faucet.owner();
     assert.equal(
       twlvOwner,
@@ -57,7 +57,7 @@ contract("Crowdfunding", (accounts) => {
     let CFresult = await factory.createNewProject(
       crowdfundingGoal,
       1000,
-      twlv.address,
+      token.address,
       "ok la",
       {
         from: accountTen,
@@ -86,14 +86,14 @@ contract("Crowdfunding", (accounts) => {
   });
 
   it("check faucet balance", async () => {
-    let balance = await twlv.balanceOf(faucet.address);
+    let balance = await token.balanceOf(faucet.address);
     web3;
     assert.isAbove(balance.toNumber(), 0, "faucet has no balance");
   });
 
   it("check faucet tokenAddress and twlv address", async () => {
     const result = await faucet.tokenAddress();
-    const address = await twlv.address;
+    const address = await token.address;
 
     // assert.isAbove(balance.toNumber(), 0, "faucet has no balance");
     assert.equal(address, result, " not true");
@@ -102,16 +102,16 @@ contract("Crowdfunding", (accounts) => {
   it("check faucet distribution", async () => {
     // await faucet.toggleFaucet();
     await faucet.distribute({ from: accountTwo });
-    const bal = await twlv.balanceOf(accountTwo, { from: accountTwo });
+    const bal = await token.balanceOf(accountTwo, { from: accountTwo });
 
     assert.isAbove(bal.toNumber(), 0, "faucet has no balance");
   });
 
   it("check contribution", async () => {
-    await twlv.mint(faucet.address, 1000000);
+    await token.mint(faucet.address, 1000000);
 
     let amountToBeContributed = 100;
-    await twlv.approve(crowdfundingAddress, amountToBeContributed, {
+    await token.approve(crowdfundingAddress, amountToBeContributed, {
       from: accountTwo,
     });
     await factory.contributeToProject(
@@ -147,13 +147,13 @@ contract("Crowdfunding", (accounts) => {
     let amountToBeContributed4 = 200;
     let amountToBeContributed5 = 300;
 
-    await twlv.approve(crowdfundingAddress, amountToBeContributed3, {
+    await token.approve(crowdfundingAddress, amountToBeContributed3, {
       from: accountThree,
     });
-    await twlv.approve(crowdfundingAddress, amountToBeContributed4, {
+    await token.approve(crowdfundingAddress, amountToBeContributed4, {
       from: accountFour,
     });
-    await twlv.approve(crowdfundingAddress, amountToBeContributed5, {
+    await token.approve(crowdfundingAddress, amountToBeContributed5, {
       from: accountFive,
     });
     await factory.contributeToProject(
@@ -231,7 +231,7 @@ contract("Crowdfunding", (accounts) => {
       from: accountTen,
     });
     // await crowdfunding.receiveContribution(0, { from: accountTen });
-    let bal = await twlv.balanceOf(accountTen);
+    let bal = await token.balanceOf(accountTen);
     assert.equal(bal.toNumber(), requestValue, "contribution amount wrong");
   });
 });

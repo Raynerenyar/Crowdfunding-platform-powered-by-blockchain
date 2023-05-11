@@ -36,11 +36,14 @@ export interface ProjectDetails {
     expired: boolean
     numOfRequests: number
     acceptingToken: string
+    tokenName: string
+    tokenSymbol: string
     createdDate: Date
 }
 
 export interface RequestDetails {
     requestId: number
+    requestNo: number
     projectAddress: string
     title: string
     description: string
@@ -48,8 +51,6 @@ export interface RequestDetails {
     amount: number
     numOfVotes: number
     completed: boolean
-    valueOfVotes: number
-    tokenName: string
 }
 
 export interface Announcement {

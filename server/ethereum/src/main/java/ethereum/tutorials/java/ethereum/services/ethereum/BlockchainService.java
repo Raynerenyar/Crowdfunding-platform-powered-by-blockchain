@@ -43,8 +43,8 @@ import com.mysql.cj.jdbc.ha.BalanceStrategy;
 import ethereum.tutorials.java.ethereum.eventHandler.BlockchainEventHandler;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TWLV;
-import ethereum.tutorials.java.ethereum.javaethereum.wrapper.TwlvFaucet;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Token;
+import ethereum.tutorials.java.ethereum.javaethereum.wrapper.DevFaucet;
 import ethereum.tutorials.java.ethereum.util.contractEncodedFunctions.FactoryEncodedFunctions;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -142,11 +142,11 @@ public class BlockchainService {
                             CrowdfundingFactory.class,
                             params);
                     return opt;
-                case "TwlvFaucet":
+                case "DevFaucet":
                     System.out.println("loading faucet contract " + FaucetContractAddress);
-                    TwlvFaucet tokenFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
-                    System.out.println("Faucet contract has been " + tokenFaucet.isValid() + "ly uploaded");
-                    opt = getFunctionEncoded(tokenFaucet, functionName, TwlvFaucet.class, params);
+                    DevFaucet devFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
+                    System.out.println("Faucet contract has been " + devFaucet.isValid() + "ly uploaded");
+                    opt = getFunctionEncoded(devFaucet, functionName, DevFaucet.class, params);
                     return opt;
             }
             return Optional.empty();
@@ -168,22 +168,30 @@ public class BlockchainService {
                     CrowdfundingFactory crowdfundingFactory = lcSvc
                             .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
                     System.out
-                            .println("Crowdfunding contract has been " + crowdfundingFactory.isValid() + "ly loaded");
+                            .println("factory contract has been " + crowdfundingFactory.isValid() + "ly loaded");
                     opt = getFunctionEncoded(crowdfundingFactory, functionName,
                             CrowdfundingFactory.class,
                             params);
                     return opt;
-                case "TwlvFaucet":
+                case "Crowdfunding":
+                    Crowdfunding crowdfunding = lcSvc.loadCrowdfundingContract(contractAddress);
+                    System.out
+                            .println("Crowdfunding contract has been " + crowdfunding.isValid() + "ly loaded");
+                    opt = getFunctionEncoded(crowdfunding, functionName,
+                            Crowdfunding.class,
+                            params);
+                    return opt;
+                case "DevFaucet":
                     System.out.println("loading faucet contract " + FaucetContractAddress);
-                    TwlvFaucet tokenFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
-                    System.out.println("Faucet contract has been " + tokenFaucet.isValid() + "ly uploaded");
-                    opt = getFunctionEncoded(tokenFaucet, functionName, TwlvFaucet.class, params);
+                    DevFaucet devFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
+                    System.out.println("Faucet contract has been " + devFaucet.isValid() + "ly uploaded");
+                    opt = getFunctionEncoded(devFaucet, functionName, DevFaucet.class, params);
                     return opt;
                 case "Token":
                     System.out.println("loading token contract" + contractAddress);
-                    TWLV tokenContract = lcSvc.loadTokenContract(contractAddress);
+                    Token tokenContract = lcSvc.loadTokenContract(contractAddress);
                     System.out.println("Faucet contract has been " + tokenContract.isValid() + "ly uploaded");
-                    opt = getFunctionEncoded(tokenContract, functionName, TWLV.class, params);
+                    opt = getFunctionEncoded(tokenContract, functionName, Token.class, params);
                     return opt;
             }
             return Optional.empty();
@@ -226,6 +234,10 @@ public class BlockchainService {
                         paramsArray[i] = paramClass.cast(params[i]);
                     }
                 }
+                for (Class<?> classtype : paramsTypeList) {
+                    System.out.println(classtype.getName());
+                }
+                System.out.println(functionName);
                 Method contractFunction = contractClass.getMethod(functionName, paramsTypeList);
                 @SuppressWarnings("unchecked") // unchecked type conversion
                 RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
@@ -414,47 +426,43 @@ public class BlockchainService {
         return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
     }
 
-    public void getEvent(String contractName, String functionName, String blockHash, String... description) {
+    public void getEvent(String contractName, String functionName, String blockHash, String projectAddress,
+            String... description) {
         try {
             switch (contractName) {
+                // ignore projectAddress
                 case "CrowdfundingFactory" -> {
-                    CrowdfundingFactory loadedContract = lcSvc
+                    CrowdfundingFactory loadedFactoryContract = lcSvc
                             .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
                     switch (functionName) {
                         case "createNewProject" ->
-                            BcEventHandler.createNewProject(loadedContract, blockHash, description[0]);
-                        case "contributeToProject" -> BcEventHandler.contributeToProject(loadedContract, blockHash);
-                        case "getRefundFromProject" -> BcEventHandler.refundFromProject(loadedContract, blockHash);
-                        case "createRequestForProject" ->
-                            BcEventHandler.createRequestForProject(loadedContract, blockHash, description[0]);
-                        case "voteRequestForProject" -> BcEventHandler.voteRequestForProject(loadedContract, blockHash);
-                        case "receiveContributionFromProject" ->
-                            BcEventHandler.receiveContributionProject(loadedContract, blockHash);
+                            BcEventHandler.createNewProject(loadedFactoryContract, blockHash, description[0]);
                     }
                 }
-                case "TwlvFaucet" -> {
-                    TwlvFaucet loadedContract = lcSvc.loadFaucetContract(contractName);
+                // ignore projectAddress
+                case "DevFaucet" -> {
+                    DevFaucet loadedContract = lcSvc.loadFaucetContract(FaucetContractAddress);
                     BcEventHandler.faucetDistribution(loadedContract, blockHash);
+                }
+                case "Crowdfunding" -> {
+                    Crowdfunding loadedCrowdContract = lcSvc.loadCrowdfundingContract(projectAddress);
+                    switch (functionName) {
+                        case "contribute" ->
+                            BcEventHandler.contributeToProject(loadedCrowdContract, blockHash, projectAddress);
+                        case "getRefund" ->
+                            BcEventHandler.refundFromProject(loadedCrowdContract, blockHash, projectAddress);
+                        case "createRequest" ->
+                            BcEventHandler.createRequestForProject(loadedCrowdContract, blockHash, description[0],
+                                    projectAddress);
+                        case "voteRequest" ->
+                            BcEventHandler.voteRequestForProject(loadedCrowdContract, blockHash, projectAddress);
+                        case "receiveContribution" ->
+                            BcEventHandler.receiveContributionProject(loadedCrowdContract, blockHash, projectAddress);
+                    }
                 }
             }
         } finally {
-            if (BcEventHandler.contributeSub$ != null && !BcEventHandler.contributeSub$.isDisposed())
-                BcEventHandler.contributeSub$.dispose();
-            if (BcEventHandler.createNewProjectSub$ != null && !BcEventHandler.createNewProjectSub$.isDisposed())
-                BcEventHandler.createNewProjectSub$.dispose();
-            if (BcEventHandler.createRequestForProjectSub$ != null
-                    && !BcEventHandler.createRequestForProjectSub$.isDisposed())
-                BcEventHandler.createRequestForProjectSub$.dispose();
-            if (BcEventHandler.faucetDistributedSub$ != null && !BcEventHandler.faucetDistributedSub$.isDisposed())
-                BcEventHandler.faucetDistributedSub$.dispose();
-            if (BcEventHandler.receiveContributionFromProjectSub$ != null
-                    && !BcEventHandler.receiveContributionFromProjectSub$.isDisposed())
-                BcEventHandler.receiveContributionFromProjectSub$.dispose();
-            if (BcEventHandler.refundFromProjectSub$ != null && !BcEventHandler.refundFromProjectSub$.isDisposed())
-                BcEventHandler.refundFromProjectSub$.dispose();
-            if (BcEventHandler.voteRequestProjectSub$ != null
-                    && !BcEventHandler.voteRequestProjectSub$.isDisposed())
-                BcEventHandler.voteRequestProjectSub$.dispose();
+            disposeDisposable();
         }
 
     }
@@ -462,13 +470,13 @@ public class BlockchainService {
     // this is just calling the contract function which does not cost gas
     // therefore can call the contract from the server side instead of the client side
     public Optional<String> getTokenBalanceFuncEncoded(String tokenAddress, Object... params) throws Exception {
-        TWLV tokenContract = lcSvc.loadTokenContract(tokenAddress);
+        Token tokenContract = lcSvc.loadTokenContract(tokenAddress);
         String accountAddress = (String) params[0];
         BigInteger balance = tokenContract.balanceOf(accountAddress).send();
         System.out.println("balance is > " + balance);
         // String abiFunction;
         try {
-            return getFunctionEncoded(tokenContract, "balanceOf", TWLV.class, params);
+            return getFunctionEncoded(tokenContract, "balanceOf", Token.class, params);
             // abiFunction = tokenContract.balanceOf(address).encodeFunctionCall();
             // return Optional.of(abiFunction);
         } catch (Exception e) {
@@ -477,7 +485,7 @@ public class BlockchainService {
     }
 
     public Optional<BigInteger> getTokenBalance(String tokenAddress, Object... params) {
-        TWLV tokenContract = lcSvc.loadTokenContract(tokenAddress);
+        Token tokenContract = lcSvc.loadTokenContract(tokenAddress);
         String accountAddress = (String) params[0];
         try {
             BigInteger balance = tokenContract.balanceOf(accountAddress).send();
@@ -488,5 +496,35 @@ public class BlockchainService {
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    public Optional<String> getContractAddress(String contractName) {
+        switch (contractName) {
+            case ("CrowdfundingFactory"):
+                return Optional.of(crowdfundingFactoryContractAddress);
+            case ("DevFaucet"):
+                return Optional.of(FaucetContractAddress);
+        }
+        return Optional.empty();
+    }
+
+    private void disposeDisposable() {
+        if (BcEventHandler.contributeSub$ != null && !BcEventHandler.contributeSub$.isDisposed())
+            BcEventHandler.contributeSub$.dispose();
+        if (BcEventHandler.createNewProjectSub$ != null && !BcEventHandler.createNewProjectSub$.isDisposed())
+            BcEventHandler.createNewProjectSub$.dispose();
+        if (BcEventHandler.createRequestForProjectSub$ != null
+                && !BcEventHandler.createRequestForProjectSub$.isDisposed())
+            BcEventHandler.createRequestForProjectSub$.dispose();
+        if (BcEventHandler.faucetDistributedSub$ != null && !BcEventHandler.faucetDistributedSub$.isDisposed())
+            BcEventHandler.faucetDistributedSub$.dispose();
+        if (BcEventHandler.receiveContributionFromProjectSub$ != null
+                && !BcEventHandler.receiveContributionFromProjectSub$.isDisposed())
+            BcEventHandler.receiveContributionFromProjectSub$.dispose();
+        if (BcEventHandler.refundFromProjectSub$ != null && !BcEventHandler.refundFromProjectSub$.isDisposed())
+            BcEventHandler.refundFromProjectSub$.dispose();
+        if (BcEventHandler.voteRequestProjectSub$ != null
+                && !BcEventHandler.voteRequestProjectSub$.isDisposed())
+            BcEventHandler.voteRequestProjectSub$.dispose();
     }
 }

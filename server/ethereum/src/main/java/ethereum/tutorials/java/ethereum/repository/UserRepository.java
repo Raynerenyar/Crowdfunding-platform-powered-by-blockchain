@@ -34,6 +34,7 @@ public class UserRepository {
         return Optional.empty();
     }
 
+    // insert project creator
     public int saveUser(User user) {
         System.out.println(user.getPassword());
         System.out.println(user.getUsername());

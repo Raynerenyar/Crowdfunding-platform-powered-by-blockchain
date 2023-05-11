@@ -1,6 +1,6 @@
 import { ContractTxProperties } from "src/app/model/model"
 
-export class TwlvFaucetFunctions {
+export class DevFaucetFunctions {
 
     contractName!: string
 

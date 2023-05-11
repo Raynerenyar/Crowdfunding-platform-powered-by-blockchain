@@ -45,6 +45,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
           .subscribe({
             next: (project) => {
               this.project = project as ProjectDetails
+              this.repoSvc.projectDetailsEvent.next(project)
               this.showProject = true
               this.repoSvc.getRequests(this.projectAddress)
                 .pipe(takeUntil(this.notifier$))

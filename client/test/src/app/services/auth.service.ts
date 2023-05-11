@@ -27,7 +27,7 @@ declare global {
 })
 export class AuthService {
 
-  private auth: Auth = inject(Auth);
+  // private auth: Auth = inject(Auth);
   private nonce!: string
   web3: Web3 = new Web3(window.ethereum);
   public walletAddress!: string
@@ -63,10 +63,10 @@ export class AuthService {
     return this.http.post(AUTH_API + 'signout', {}, httpOptions);
   }
 
-  // firebase stuff here
-  public signOut() {
-    return signOut(this.auth);
-  }
+  // // firebase stuff here
+  // public signOut() {
+  //   return signOut(this.auth);
+  // }
 
   public async getAccounts() {
     return await this.web3.eth.getAccounts()
@@ -137,7 +137,7 @@ export class AuthService {
       switchMap(async (tokenResp) => {
         let verifiedResp = tokenResp as TokenResponse
         console.log(tokenResp)
-        await signInWithCustomToken(this.auth, verifiedResp.token)
+        // await signInWithCustomToken(this.auth, verifiedResp.token)
       }),
       catchError((err) => {
         let errorMessage = err as Error

@@ -1,4 +1,5 @@
-import { AfterViewInit, ChangeDetectorRef, Component, Output } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProjectDetails, RequestDetails } from 'src/app/model/model';
@@ -9,7 +10,7 @@ import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
   templateUrl: './project-overview.component.html',
   styleUrls: ['./project-overview.component.css']
 })
-export class ProjectOverviewComponent implements AfterViewInit {
+export class ProjectOverviewComponent implements AfterViewInit, OnInit {
 
   requests!: RequestDetails[]
   notifier$ = new Subject<boolean>()
@@ -18,26 +19,33 @@ export class ProjectOverviewComponent implements AfterViewInit {
   projectAddress!: string
 
 
-  constructor(private route: ActivatedRoute, private repoSvc: SqlRepositoryService, private cdr: ChangeDetectorRef) {
+  constructor(private route: ActivatedRoute, private repoSvc: SqlRepositoryService, private cdr: ChangeDetectorRef) { }
 
-  }
-  ngAfterViewInit(): void {
-    this.repoSvc.projectDetails
+  ngOnInit(): void {
+    this.repoSvc.projectDetailsEvent
       .pipe(takeUntil(this.notifier$))
       .subscribe(
         (projectDetails) => {
           this.projectDetails = projectDetails
+          console.log(projectDetails)
           this.cdr.detectChanges()
         }
       )
+  }
+
+  ngAfterViewInit(): void {
 
     this.route.paramMap
       .pipe(takeUntil(this.notifier$))
       .subscribe((param: ParamMap) => {
+
+
         let address = param.get('address')
         if (address) {
+          this.projectAddress = address
           this.repoSvc.emitProjectAddress(address)
-
+          let onNewProject = this.route.snapshot.queryParamMap.get('project')
+          if (onNewProject) this.projectDetails = this.repoSvc.projectDetails
           this.repoSvc.getRequests(address)
             .pipe(takeUntil(this.notifier$))
             .subscribe((requests) => {
