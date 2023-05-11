@@ -2,13 +2,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UrlBuilderService } from './url-builder.service';
 import { Announcement } from "../model/model";
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { NewComment } from "../model/model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MongoRepoService {
+
+  announcements!: Announcement[]
 
   constructor(private http: HttpClient, private urlBuilder: UrlBuilderService) { }
 

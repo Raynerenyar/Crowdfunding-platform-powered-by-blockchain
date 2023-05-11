@@ -1,20 +1,6 @@
 <div class="justify-content-center">
     <app-project-header  [project]="project" [projectAddress]="projectAddress"></app-project-header>
 </div>
-<!-- <div>
-    <div class="col-12 grid">
-        <div class="col-12 lg:col-6">
-            <p-card>
-
-            </p-card>
-        </div>
-        <div class="col-12 lg:col-6">
-            <p-card>
-
-            </p-card>
-        </div>
-    </div>
-</div> -->
 <div class="m-2">
     <p-card styleClass="shadow-5">
         <div class="grid relative">
@@ -25,39 +11,14 @@
               <p-button (click)="onNewComment()">Compose New Comment</p-button>
             </div>
         </div>          
-        <!-- <span class="relative">
-            <p-tabMenu class="z-4" [model]="items" [activeItem]="activeItem" (activeItemChange)="onActiveItemChange($event)"></p-tabMenu>
-            <p-button *ngIf="showComments" class="z-5 absolute right-0 top-0 pt-1" (click)="onNewComment()">Compose New Comment</p-button>
-        </span> -->
         <span>
             <span>
-                <!-- <router-outlet></router-outlet> -->
                 <app-project-body *ngIf="showProject" [project]="project" [requests]="requests" [projectAddress]="projectAddress"></app-project-body>
-                <!-- <p *ngIf="showAnnouncement">announcemenst</p> -->
                 <app-request *ngIf="showSingleRequest" [requests]="requests" [tokenAddress]="project.acceptingToken" [projectAddress]="projectAddress" [project]="project"></app-request>
-                <app-announcement *ngIf="showAnnouncement" [projectAddress]="projectAddress"></app-announcement>
+                <app-view-announcement *ngIf="showAnnouncement" [projectAddress]="projectAddress"></app-view-announcement>
                 <app-comments *ngIf="showComments" [projectAddress]="projectAddress"></app-comments>
-                <app-new-comment *ngIf="showNewComment" [projectAddress]="projectAddress" (onSubmission)="onCommentSubmission()"></app-new-comment>
+                <app-new-comment *ngIf="showNewComment" [projectAddress]="projectAddress"></app-new-comment>
             </span>
         </span>
     </p-card>
-</div>    
-<!-- <span class="col-3">
-    <p-card styleClass="shadow-5 h-full">
-        <p-scrollPanel [style]="{width: '100%',height: '100%', margin: 0 }" styleClass="h-full m-0">
-            <span *ngFor="let request of requests; let i = index">
-                <div class="shadow-2  mb-5 border-round cursor-pointer h-full" [ngClass]="(i == selectedRequestIndex) ? 'border-3 border-primary' : 'border-3 border-transparent ' " (click)="onChosenRequest(i)">
-                    <h3 class="m-5 h-full">
-                        {{request.title}}
-                    </h3>
-                    <div class="m-5 h-full">
-                        {{request.description}}
-                    </div>
-                    <div class="m-5 h-full">
-                        {{i == selectedRequestIndex}}                                            
-                    </div>
-                </div>
-            </span>
-        </p-scrollPanel>
-    </p-card>
-</span> -->
+</div>

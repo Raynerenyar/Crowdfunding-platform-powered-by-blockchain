@@ -335,7 +335,7 @@ export class BlockchainService implements OnDestroy, OnInit {
     return this.getTokenBalanceObservable(properties, tokenAddress)
   }
 
-  private getTokenBalanceObservable(properties: ContractTxProperties, tokenAddress: string) {
+  private getTokenBalanceObservable(properties: ContractTxProperties, tokenAddress: string): Observable<any> {
     let requestBody: any[] = []
     console.log(properties)
     if (properties.parameters) {
@@ -356,7 +356,7 @@ export class BlockchainService implements OnDestroy, OnInit {
     return this.http.post(url, requestBody, { params })
   }
 
-  private getEncodedFunctionVariableObservable(properties: ContractTxProperties, contractAddress?: string) {
+  private getEncodedFunctionVariableObservable(properties: ContractTxProperties, contractAddress?: string): Observable<any> {
     let requestBody: any[] = []
     if (properties.parameters) {
       requestBody = properties.parameters

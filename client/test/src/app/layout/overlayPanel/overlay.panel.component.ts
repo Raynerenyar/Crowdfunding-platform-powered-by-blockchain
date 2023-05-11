@@ -19,8 +19,8 @@ export class OverlayPanelComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
-      this.isLoggedIn = true;
-    }
+      this.isLoggedIn = true
+    } else this.isLoggedIn = false
   }
 
   emitLoginEvent() {

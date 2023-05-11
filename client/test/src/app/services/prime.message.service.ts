@@ -9,7 +9,7 @@ export class PrimeMessageService implements OnDestroy {
   isVisible!: boolean;
   timerSub$!: Subscription;
   commonProperty = {
-    styleClass: 'font-size: small;', life: 5000
+    styleClass: 'font-size: small;', life: 3000
   }
 
   constructor(private primeMsgSvc: MessageService) { }

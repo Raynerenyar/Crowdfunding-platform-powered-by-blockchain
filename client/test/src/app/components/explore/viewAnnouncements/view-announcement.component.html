@@ -3,12 +3,14 @@
     <div *ngFor="let announcement of announcements; let i = index">
         <div class="px-2 py-0">
             <p-divider *ngIf="i != 0"></p-divider>
-            <span [innerHTML]="announcement.body"></span>
+            <p [innerHTML]="announcement.body"></p>
             <div class="grid grid-nogutter">
-                <div class="col-10"></div>
-                <div class="col-2 text-xs">{{announcement.datetimePosted}}</div>
+                <div class="col-12 lg:col-10"></div>
+                <div class="col-12 lg:col-2 text-xs text-right">
+                    <span>{{announcement.creatorAddress | slice:0:6}}...{{announcement.creatorAddress | slice:-4}} &nbsp;</span>
+                    <span>{{announcement.datetimePosted | date:'dd/MM/yyyy HH:mm'}}</span>    
+                </div>
             </div>
-            <br *ngIf="i == announcements.length -1">
             <p-divider *ngIf="i == announcements.length -1"></p-divider>
         </div>
     </div>

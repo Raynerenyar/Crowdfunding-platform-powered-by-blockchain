@@ -64,7 +64,6 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
           })
       })
     this.items = [
-      // routerLink: '/explore/' + this.projectAddress + '/project'
       { label: 'Project', icon: 'pi pi-user' },
       { label: 'Requests', icon: 'pi pi-wallet' },
       { label: 'Announcements', icon: 'pi pi-user', },
@@ -76,50 +75,6 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
   onActiveItemChange($event: MenuItem) {
     console.log($event.label)
     this.selectView($event.label)
-    // switch ($event.label) {
-    //   case "Project":
-    //     this.showProject = true
-    //     this.showAnnouncement = false
-    //     this.showComments = false
-    //     this.showSingleRequest = false
-    //     this.showNewComment = false
-    //     break;
-    //   case "Announcements":
-    //     this.showProject = false
-    //     this.showAnnouncement = true
-    //     this.showComments = false
-    //     this.showSingleRequest = false
-    //     this.showNewComment = false
-    //     break
-    //   case "Comments":
-    //     this.showProject = false
-    //     this.showAnnouncement = false
-    //     this.showComments = true
-    //     this.showSingleRequest = false
-    //     this.showNewComment = false
-    //     break
-    //   case "Requests":
-    //     this.showProject = false
-    //     this.showAnnouncement = false
-    //     this.showComments = false
-    //     this.showSingleRequest = true
-    //     this.showNewComment = false
-    //     break
-    //   case "new comments":
-    //     this.showProject = false
-    //     this.showAnnouncement = false
-    //     this.showComments = false
-    //     this.showSingleRequest = false
-    //     this.showNewComment = true
-    //     break
-    //   default:
-    //     this.showProject = true
-    //     this.showAnnouncement = false
-    //     this.showComments = false
-    //     this.showSingleRequest = false
-    //     this.showNewComment = false
-    //     break;
-    // }
     this.selectedRequestIndex = undefined
   }
 
@@ -127,20 +82,12 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
     console.log(index)
     this.selectedRequestIndex = index
     this.selectView("Requests")
-    // this.showProject = false
-    // this.showAnnouncement = false
-    // this.showComments = false
-    // this.showNewComment = false
-    // this.showSingleRequest = true
   }
 
   onNewComment() {
     this.selectView("New comments")
-    // this.showProject = false
-    // this.showAnnouncement = false
-    // this.showComments = false
-    // this.showSingleRequest = false
-    // this.showNewComment = true
+    console.log('on new comment')
+    console.log(this.showNewComment)
     this.activeItem = {}
   }
 

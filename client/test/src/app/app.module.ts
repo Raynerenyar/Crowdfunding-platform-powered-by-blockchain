@@ -32,6 +32,7 @@ import { TruncatePipe } from './util/truncatePipe';
 import { NgxEditorImportsModule } from './ngxEditor.imports.module';
 import { MongoRepoService } from './services/mongo.repo.service';
 import { exploreComponents } from './components/explore/explore.index';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import { exploreComponents } from './components/explore/explore.index';
     ConfirmationService,
     SqlRepoService,
     MongoRepoService,
-    DexieDBService
+    DexieDBService,
+    DatePipe,
   ],
   bootstrap: [AppComponent]
 })

@@ -1,5 +1,8 @@
 package ethereum.tutorials.java.ethereum.repository;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -11,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.result.UpdateResult;
 
 import ethereum.tutorials.java.ethereum.models.Announcement;
 import ethereum.tutorials.java.ethereum.util.mongo.MongoUtil;
@@ -29,13 +33,14 @@ public class MongoRepo {
         return mongo.insert(doc, "announcements");
     }
 
-    public long editAnnouncement(Announcement announce) {
-        Criteria criteria = Criteria.where("datetimePosted").is(announce.getDatetimePosted());
+    public long updateAnnouncement(Announcement announcement) {
+        Criteria criteria = Criteria.where("datetimePosted").is(announcement.getDatetimePosted());
         Query query = Query.query(criteria);
-        Update update = new Update()
-                .set("body", announce.getBody())
-                .set("datetimeEdited", announce.getDatetimeEdited());
-        return mongo.updateFirst(query, update, "myCollection").getModifiedCount();
+        Update update = Update
+                .update("body", announcement.getBody())
+                .set("datetimeEdited", announcement.getDatetimeEdited());
+        UpdateResult result = mongo.updateFirst(query, update, Document.class, "announcements");
+        return result.getModifiedCount();
     }
 
     public List<Document> getAnnouncements(String projectAddress) {
@@ -48,6 +53,12 @@ public class MongoRepo {
         Document doc = MongoUtil.commentToDocument(comment);
         System.out.println("inserting comment");
         return mongo.insert(doc, "comments");
+    }
+
+    public List<Document> getComments(String projectAddress) {
+        Criteria criteria = Criteria.where("projectAddress").is(projectAddress);
+        Query query = Query.query(criteria);
+        return mongo.find(query, Document.class, "comments");
     }
 
 }

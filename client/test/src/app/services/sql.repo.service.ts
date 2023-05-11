@@ -61,7 +61,7 @@ export class SqlRepositoryService {
     return this.http.get(url, { params })
   }
 
-  getLatestProject(creatorAddress: string) {
+  getLatestProject(creatorAddress: string): Observable<any> {
     let url = new Url()
       .add(constants.SERVER_URL)
       .add("api/")
@@ -90,7 +90,7 @@ export class SqlRepositoryService {
   }
 
   // get single project with all the column data
-  getSingleProject(projectAddress: string) {
+  getSingleProject(projectAddress: string): Observable<any> {
     let url = new Url()
       .add(constants.SERVER_URL)
       .add("api/")

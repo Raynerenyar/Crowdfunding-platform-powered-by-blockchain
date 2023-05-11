@@ -47,6 +47,7 @@ export class NewCommentComponent implements AfterViewInit {
 
   onSubmit() {
     let posterAddress = this.storageSvc.getAddress()
+    console.log(this.projectAddress)
     if (posterAddress) {
       let commentBody = this.commentForm.get('comment')?.value
       let textBody: NewComment = {
@@ -60,7 +61,7 @@ export class NewCommentComponent implements AfterViewInit {
       this.mongoSvc.insertComment(textBody)
         .pipe(takeUntil(this.notifier$))
         .subscribe({
-          next: () => { },
+          next: () => { console.log("inserted") },
           error: () => { }
         })
     } else {

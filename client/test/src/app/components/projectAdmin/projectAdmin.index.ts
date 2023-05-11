@@ -4,7 +4,8 @@ import { NewRequestComponent } from "./newRequest/new-request.component";
 import { ProjectDashboardComponent } from "./project-dashboard/project-dashboard.component";
 import { ProjectOverviewComponent } from "./project-overview/project-overview.component";
 import { RequestDetailsComponent } from "./request-details/request-details.component";
-import { AnnouncementEditorComponent } from "./announcement-editor/announcement-editor.component";
+import { AnnouncementEditorComponent } from "./new-announcement/new-announcement.component";
+import { AnnouncementComponent } from "./announcements/announcement.component";
 
 export const projectAdminComponents = [
     NewProjectComponent,
@@ -14,4 +15,5 @@ export const projectAdminComponents = [
     ProjectOverviewComponent,
     RequestDetailsComponent,
     AnnouncementEditorComponent,
+    AnnouncementComponent,
 ]

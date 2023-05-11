@@ -5,13 +5,16 @@ import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { MegaMenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
-import { ProjectDetails, RequestDetails } from 'src/app/model/model';
+import { Announcement, ProjectDetails, RequestDetails } from 'src/app/model/model';
 import { BlockchainService } from 'src/app/services/blockchain.service';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 import { SessionStorageService } from 'src/app/services/session.storage.service';
 import { ProjectOverviewComponent } from '../project-overview/project-overview.component';
 import { DexieDBService } from 'src/app/services/dexie-db.service';
 import { liveQuery } from 'dexie';
+import { MongoRepoService } from 'src/app/services/mongo.repo.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-project-dashboard',
@@ -35,7 +38,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
     {
       label: 'Announcements', icon: 'pi pi-fw pi-pencil', disabled: true, items: [[
         { label: 'Announce', items: [{ label: 'New Announcement', routerLink: [] }] },
-        { label: 'Current Announcements', items: [] }
+        { label: 'Current', items: [{ label: 'Announcements', routerLink: [], disabled: true }] }
       ]]
     },
     { label: 'Comments', icon: 'pi pi-fw pi-file', disabled: false },
@@ -50,16 +53,18 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
   creatorAddress!: string;
   projects = new Map()
   requests!: RequestDetails[]
-
+  announcements!: Announcement[]
   notifier$ = new Subject<boolean>();
 
   constructor(
-    private repoSvc: SqlRepositoryService,
+    private sqlRepoSvc: SqlRepositoryService,
+    private mongoRepoSvc: MongoRepoService,
     private storageSvc: SessionStorageService,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private dexie: DexieDBService) { }
+    private dexie: DexieDBService,
+    private datePipe: DatePipe) { }
 
   ngOnInit() {
     // clear dexie
@@ -71,7 +76,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
 
     // when entering project dashboard
     // get list of projects owned by this creator address
-    this.repoSvc.getProjects(this.creatorAddress)
+    this.sqlRepoSvc.getProjects(this.creatorAddress)
       .pipe(takeUntil(this.notifier$))
       .subscribe({
         next: projects => {
@@ -93,11 +98,11 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
 
     // when project is selected
     // show list of requests if available
-    this.repoSvc.projectAddressEvent
+    this.sqlRepoSvc.projectAddressEvent
       .pipe(takeUntil(this.notifier$))
-      .subscribe((address) => {
+      .subscribe((projectAddress) => {
         // transferring data to display on project details component
-        this.repoSvc.emitProjectDetails(this.projects.get(address))
+        this.sqlRepoSvc.emitProjectDetails(this.projects.get(projectAddress))
 
         // enable requests menu
         this.itemz[this.indexRequests].disabled = false
@@ -106,11 +111,11 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
         this.itemz[this.indexRequests].items![0][0].disabled = false
 
         // assigning router link to new requests
-        this.itemz[this.indexRequests].items![0][0].items![0].routerLink = [address, 'new-request']
+        this.itemz[this.indexRequests].items![0][0].items![0].routerLink = [projectAddress, 'new-request']
         this.cdr.detectChanges()
 
         // getting list of requests from database
-        this.repoSvc.getRequests(address)
+        this.sqlRepoSvc.getRequests(projectAddress)
           .pipe(takeUntil(this.notifier$))
           .subscribe({
             next: (requests: RequestDetails[]) => {
@@ -122,22 +127,25 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
                   // assigning router link to each requests
                   this.itemz[this.indexRequests].items![0][1].items?.push({
                     label: this.truncate(request.title),
-                    routerLink: [address, request.requestId]
+                    routerLink: [projectAddress, request.requestId]
                   })
                   // deleting db causes it to close, therefore reopen it to add requests
                   this.dexie.open()
-                  this.dexie.requests.add(request)
+                  if (!this.dexie.requests.get(request.requestId)) {
+                    this.dexie.requests.add(request)
+                  }
                 });
               }
             },
             error: (error) => console.log(error)
           })
 
-        // TODO: get list of announcements based on the project address
-        // enable announcement menu
-        this.itemz[this.indexAnnouncements].disabled = false
 
-        this.itemz[this.indexAnnouncements].items![0][0].items![0].routerLink = [address, 'new-announcement']
+        // get 
+        this.itemz[this.indexAnnouncements].items![0][1].items![0].routerLink = [projectAddress, 'announcements']
+        this.itemz[this.indexAnnouncements].items![0][1].items![0].disabled = false
+        this.itemz[this.indexAnnouncements].items![0][0].items![0].routerLink = [projectAddress, 'new-announcement']
+        this.itemz[this.indexAnnouncements].disabled = false
       })
   }
 

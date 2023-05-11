@@ -3,14 +3,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Editor, Toolbar } from 'ngx-editor';
 import { MongoRepoService } from 'src/app/services/mongo.repo.service';
 import { Announcement } from "../../../model/model";
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { SessionStorageService } from 'src/app/services/session.storage.service';
+import { PrimeMessageService } from 'src/app/services/prime.message.service';
 
 @Component({
-  selector: 'app-announcement-editor',
-  templateUrl: './announcement-editor.component.html',
-  styleUrls: ['./announcement-editor.component.css']
+  selector: 'app-new-announcement',
+  templateUrl: './new-announcement.component.html',
+  styleUrls: ['./new-announcement.component.css']
 })
 export class AnnouncementEditorComponent implements OnInit, OnDestroy {
   toolbar: Toolbar = [
@@ -30,8 +31,11 @@ export class AnnouncementEditorComponent implements OnInit, OnDestroy {
   editorForm!: FormGroup
   notifier$ = new Subject<boolean>()
   hasPosted = false
+  hasUpdated = false
+  editing = false
+  editedAnnouncement!: Announcement
 
-  constructor(private fb: FormBuilder, private mongo: MongoRepoService, private route: ActivatedRoute, private storageSvc: SessionStorageService) { }
+  constructor(private fb: FormBuilder, private mongoSvc: MongoRepoService, private route: ActivatedRoute, private storageSvc: SessionStorageService, private router: Router, private msgSvc: PrimeMessageService) { }
 
   ngOnInit(): void {
     // might need to put protection against unauthorised access to user-access dashboard
@@ -47,8 +51,14 @@ export class AnnouncementEditorComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.notifier$))
       .subscribe((param: ParamMap) => {
         this.projectAddress = param.get('address')
+        console.log('new announcement')
+        if (param.keys.includes('edit')) {
+          let index = parseInt(param.get('edit')!)
+          this.editing = true
+          this.editedAnnouncement = this.mongoSvc.announcements[index]
+          this.editorForm.get('editor')?.setValue(this.mongoSvc.announcements[index].body)
+        }
       })
-
 
   }
 
@@ -69,12 +79,31 @@ export class AnnouncementEditorComponent implements OnInit, OnDestroy {
         datetimePosted: datetime,
         body: textBody
       }
-      this.mongo.insertAnnouncement(announcement)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe({
-          next: (result: boolean) => { this.hasPosted = result; console.log(result) },
-          error: (result: boolean) => { this.hasPosted = result; console.log(result) }
-        })
+      if (this.editing) {
+
+        this.editedAnnouncement.body = textBody
+        this.editedAnnouncement.datetimeEdited = datetime
+
+        this.mongoSvc.editAnnouncement(this.editedAnnouncement)
+          .pipe(takeUntil(this.notifier$))
+          .subscribe({
+            next: () => {
+              this.msgSvc.generalSuccessMethod("Announcement edit submitted!")
+              this.router.navigateByUrl(`/project-admin/${this.projectAddress}/announcements`)
+            },
+            error: () => this.msgSvc.generalErrorMethod("Announcement edit failed to submit!")
+          })
+      } else {
+        this.mongoSvc.insertAnnouncement(announcement)
+          .pipe(takeUntil(this.notifier$))
+          .subscribe({
+            next: (result: boolean) => {
+              this.msgSvc.generalSuccessMethod("Announcement posted!")
+              this.router.navigateByUrl(`/project-admin/${this.projectAddress}/announcements`)
+            },
+            error: (result: boolean) => this.msgSvc.generalErrorMethod("Announcement failed to post!")
+          })
+      }
     }
   }
 }

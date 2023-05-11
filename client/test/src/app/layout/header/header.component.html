@@ -2,22 +2,22 @@
     <nav class="p-toolbar-group-start">
         <app-sidebar></app-sidebar>
     </nav>
+    <p-toast position="top-center"></p-toast>
+    <p-confirmPopup></p-confirmPopup>
+    <p-overlayPanel #op>
+        <app-overlayPanel (onLoginEvent)="hideOverlay()"></app-overlayPanel>
+    </p-overlayPanel>
     <nav class="p-toolbar-group-end">
         <div class="flex flex-row">
             
-            <p-confirmPopup></p-confirmPopup>
             <app-connect-wallet class="flex"></app-connect-wallet>
             
             <p-button *ngIf="isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-sign-out" styleClass="p-button-rounded p-button-outlined p-button-raised" (click)="signOut($event)"></p-button>
             
-            <p-button *ngIf="!isLoggedIn"  class="mr-1 ml-1 m-0 flex" icon="pi pi-sign-in" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
-            
-            <p-button *ngIf="isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-user" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
+            <p-button *ngIf="!isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-sign-in" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
+            <div>
+                <p-button *ngIf="isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-user" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
+            </div>
         </div>
     </nav>
 </p-toolbar>
-<p-toast position="top-center"></p-toast>
-
-<p-overlayPanel #op class="z-5" [baseZIndex]=10001>
-    <app-overlayPanel (onLoginEvent)="hideOverlay()"></app-overlayPanel>
-</p-overlayPanel>

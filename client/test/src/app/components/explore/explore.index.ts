@@ -4,7 +4,7 @@ import { ExploreProjectsComponent } from "./explore-projects/explore-projects.co
 import { ProjectBodyComponent } from "./project/project-body/project-body.component";
 import { ProjectMainComponent } from "./project/project-main/project-main.component";
 import { ProjectHeaderComponent } from "./project/projectHeader/project-header.component";
-import { AnnouncementComponent } from "./viewAnnouncements/announcement.component";
+import { ViewAnnouncementComponent } from "./viewAnnouncements/view-announcement.component";
 import { ContributeRequestComponent } from "./viewRequest/contribute-request/contribute-request.component";
 import { RequestComponent } from "./viewRequest/request.component";
 
@@ -17,7 +17,7 @@ export const exploreComponents = [
     ProjectMainComponent,
     ProjectHeaderComponent,
     ProjectBodyComponent,
-    AnnouncementComponent,
+    ViewAnnouncementComponent,
     CommentsComponent,
     NewCommentComponent,
 ]

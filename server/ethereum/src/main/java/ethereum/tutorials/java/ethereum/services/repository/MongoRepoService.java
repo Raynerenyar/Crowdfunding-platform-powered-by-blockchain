@@ -28,6 +28,14 @@ public class MongoRepoService {
         return false;
     }
 
+    public boolean updateAnnouncement(Announcement announcement) {
+        long modifiedCount = mongoRepo.updateAnnouncement(announcement);
+        System.out.println("modified count >> " + modifiedCount);
+        if (modifiedCount > 0)
+            return true;
+        return false;
+    }
+
     public List<Announcement> getAnnouncements(String projectAddress) {
         List<Document> docs = mongoRepo.getAnnouncements(projectAddress);
         if (docs.size() >= 1) {
@@ -43,5 +51,12 @@ public class MongoRepoService {
         if (doc != null)
             return true;
         return false;
+    }
+
+    public List<Comment> getComments(String projectAddress) {
+        List<Document> docs = mongoRepo.getComments(projectAddress);
+        if (docs.size() >= 1)
+            return docs.stream().map(doc -> documentToComment(doc)).toList();
+        return Collections.emptyList();
     }
 }

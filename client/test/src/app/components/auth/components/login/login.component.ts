@@ -114,8 +114,8 @@ export class LoginComponent implements OnInit, OnDestroy {
                 // TODO: 
                 // do router instead of reload
                 // this.router.navigate()
-
-                this.reloadPage(); // comment out for now, later enable it again
+                this.router.navigate(['project-admin'])
+                this.reloadPage() // comment out for now, later enable it again
 
               },
               error: err => {
@@ -134,10 +134,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   reloadPage(): void {
-    this.timerSub$ = timer(4000).subscribe(t => {
+    this.timerSub$ = timer(3000).subscribe(t => {
       window.location.reload();
     })
-
   }
 
   ngOnDestroy(): void {

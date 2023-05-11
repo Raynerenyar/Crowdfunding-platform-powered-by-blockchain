@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { PrimeMessageService } from '../../services/prime.message.service';
 import { Observable, Subscription, timer } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
@@ -6,6 +6,8 @@ import { SessionStorageService } from 'src/app/services/session.storage.service'
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ConfirmationService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { PrimeNGConfig, OverlayOptions } from 'primeng/api';
+import { ConfirmPopup } from 'primeng/confirmpopup';
 
 @Component({
   selector: 'app-header',
@@ -22,14 +24,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   @ViewChild('op')
   overlayPanel!: OverlayPanel
+  @ViewChild('cpop')
+  confirmPoput!: ConfirmPopup
 
-  constructor(private authSvc: AuthService, private storageService: SessionStorageService, private msgSvc: PrimeMessageService, private confirmSvc: ConfirmationService, private router: Router, private cdr: ChangeDetectorRef) { }
+  constructor(private authSvc: AuthService, private storageService: SessionStorageService, private msgSvc: PrimeMessageService, private confirmSvc: ConfirmationService, private router: Router, private cdr: ChangeDetectorRef, private primengConfig: PrimeNGConfig) { }
 
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
       this.isLoggedIn = true;
     } else this.isLoggedIn = false;
+    let o: OverlayOptions = this.primengConfig.overlayOptions
+    o = {
+      appendTo: 'body'
+    }
   }
 
   signIn() {
@@ -59,9 +67,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.logoutSub$ = this.authSvc.logout().subscribe({
           next: res => {
             console.log(res)
-            this.msgSvc.signedOut();
-            this.storageService.clean();
+            this.msgSvc.signedOut()
+            this.storageService.clean()
             this.isLoggedIn = false
+            this.reloadPage()
+            this.msgSvc.generalSuccessMethod("You have logged out.")
           },
           error: err => {
             console.log(err);
@@ -71,7 +81,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
         this.timerSub$ = timer(4000).subscribe(t => {
           this.router.navigate([''])
-          // window.location.reload()
         })
       },
 
@@ -85,6 +94,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   hideOverlay() {
     console.log("hiding overlay")
     this.overlayPanel.hide()
+  }
+
+  reloadPage(): void {
+    this.timerSub$ = timer(4000).subscribe(t => {
+      window.location.reload();
+    })
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(event: any) {
+    this.overlayPanel.hide()
+    this.confirmPoput.hide()
   }
 
   ngOnDestroy(): void {

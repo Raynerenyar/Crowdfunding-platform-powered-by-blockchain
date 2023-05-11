@@ -19,8 +19,10 @@ import { RequestComponent } from './components/explore/viewRequest/request.compo
 import { ProjectMainComponent } from './components/explore/project/project-main/project-main.component';
 import { ProjectBodyComponent } from './components/explore/project/project-body/project-body.component';
 import { RequestDetailsComponent } from './components/projectAdmin/request-details/request-details.component';
-import { AnnouncementEditorComponent } from './components/projectAdmin/announcement-editor/announcement-editor.component';
+import { AnnouncementEditorComponent } from './components/projectAdmin/new-announcement/new-announcement.component';
 import { ProjectCommentsComponent } from './components/projectAdmin/project-comments/project-comments.component';
+import { authenticationGuard } from './services/auth-guard.service';
+import { AnnouncementComponent } from './components/projectAdmin/announcements/announcement.component';
 
 
 const routes: Routes = [
@@ -28,13 +30,15 @@ const routes: Routes = [
     path: '', component: AppLayoutComponent,
     children: [
       {
-        path: 'project-admin', component: ProjectDashboardComponent,
+        path: 'project-admin', component: ProjectDashboardComponent, canActivate: [authenticationGuard()],
         children: [
           { path: 'new-project', component: NewProjectComponent },
           { path: ':address', component: ProjectOverviewComponent },
           { path: ':address/new-request', component: NewRequestComponent },
           { path: ':address/new-announcement', component: AnnouncementEditorComponent },
           { path: ':address/comments', component: ProjectCommentsComponent },
+          { path: ':address/announcements', component: AnnouncementComponent },
+          { path: ':address/edit-announcement/:edit', component: AnnouncementEditorComponent },
           { path: ':address/:requestId', component: RequestDetailsComponent },
 
         ]

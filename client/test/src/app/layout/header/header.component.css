@@ -6,7 +6,16 @@
 :host ::ng-deep .p-toolbar {
     position: sticky;
     position: -webkit-sticky; /* Needed for Safari browsers.*/
-    z-index: 10000; /* This prevents elements to be seen through the toolbar.*/
+    z-index: 1101!important; /* This prevents elements to be seen through the toolbar.*/
+    top: 0; /* Required for "position: sticky" to take effect.*/
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+:host ::ng-deep .p-overlayPanel{
+    position: sticky;
+    position: -webkit-sticky; /* Needed for Safari browsers.*/
+    z-index: 1200!important; /* This prevents elements to be seen through the toolbar.*/
     top: 0; /* Required for "position: sticky" to take effect.*/
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -15,4 +24,12 @@
 :host ::ng-deep .p-toast {
     top: 4.5rem;
     font-size: small;
+}
+
+:host ::ng-deep .p-component-overlay-enter{
+    z-index: 2000!important; /* This prevents elements to be seen through the toolbar.*/
+}
+
+.ng-trigger{
+    z-index: 1200;
 }
