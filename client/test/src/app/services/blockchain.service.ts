@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { SmartContract } from '../smartContractRelated/contracts';
 import Web3 from 'web3';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { constants } from 'src/environments/environment';
 import { ContractTxProperties, NonceResponse } from '../model/model';
 import { Url } from '../util/url.util';
@@ -12,7 +12,9 @@ import { SessionStorageService } from './session.storage.service';
 import { Router } from '@angular/router';
 import { PrimeMessageService } from './prime.message.service';
 import { UrlBuilderService } from './url-builder.service';
+import { tokenFunctionsAbi, getTransactionObject } from "../../app/smartContractRelated/contract-functons/abi.functions";
 // import * as contract from "../../assets/tokenInterface/token.json";
+
 
 @Injectable({
   providedIn: 'root'
@@ -26,12 +28,11 @@ export class BlockchainService implements OnDestroy, OnInit {
   notifier$ = new Subject<boolean>();
 
   constructor(private http: HttpClient, private authSvc: AuthService, private storageSvc: SessionStorageService, private router: Router, private msgSvc: PrimeMessageService, private urlBuilder: UrlBuilderService) { }
-  ngOnInit(): void {
-    this.web3.eth.handleRevert = true;
-  }
+  ngOnInit(): void { }
 
   // project owner functions they can interact with
   createProject(goal: number, deadline: number, tokenAddress: string, title: string, description: string) {
+    console.log("create project")
     return new Observable(observer => {
       let properties = SmartContract.crowdfundingFactory().createNewProject(goal, deadline, tokenAddress, title)
       this.getEncodedFunctionVariableObservable(properties)
@@ -42,6 +43,11 @@ export class BlockchainService implements OnDestroy, OnInit {
           console.log(abiFunction.contractAddress)
           // if error from field is undefined, can send error msg to tell user to login
           this.sendTransaction(abiFunction.encodedFunction, abiFunction.contractAddress)
+            .on('transactionHash', async (hash) => {
+              let result = await this.web3.eth.getTransactionReceipt(hash)
+              console.log(result)
+            }
+            )
             .on(('receipt'), (receipt) => {
               let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
               console.log(receiptCast.blockHash)
@@ -62,7 +68,10 @@ export class BlockchainService implements OnDestroy, OnInit {
                 })
               // this.router.navigate(['project-admin'])
             })
-            .on(('error'), (error) => {
+            .on(('error'), (error: Error) => {
+              console.log(error.message)
+              console.log(error.stack)
+              console.log(error.cause)
               this.msgSvc.generalErrorMethod(error.message)
               observer.error()
             })
@@ -255,9 +264,9 @@ export class BlockchainService implements OnDestroy, OnInit {
                 .subscribe((data) => { })
             })
             .on(('error'), (error) => {
-              console.log(error)
-              observer.error()
+              observer.error(error.message)
             })
+
         })
     })
   }
@@ -345,31 +354,29 @@ export class BlockchainService implements OnDestroy, OnInit {
         }
       })
   }
-  public getTokenBalance(tokenAddress: string, walletAddress: string) {
-    let properties = SmartContract.Token().balanceOf(walletAddress)
-    console.log(properties)
-    return this.getTokenBalanceObservable(properties, tokenAddress)
-  }
 
-  private getTokenBalanceObservable(properties: ContractTxProperties, tokenAddress: string): Observable<any> {
+  private getViewFunctionsReturn(properties: ContractTxProperties, contractAddress?: string) {
     let requestBody: any[] = []
-    console.log(properties)
     if (properties.parameters) {
       requestBody = properties.parameters
     }
-    // let url: string = new Url()
-    //   .add(constants.SERVER_URL)
-    //   .add("api/")
-    //   .add("get-balance-function-encoded")
-    //   .getUrl()
     let url = this.urlBuilder
-      .setPath("api/get-balance-function-encoded")
+      .setPath('api/get-view-functions')
       .build()
-    console.log(requestBody)
-    let params = new HttpParams()
-      .set('tokenAddress', tokenAddress)
-      .set('functionName', properties.functionName)
-    return this.http.post(url, requestBody, { params })
+    let httpParams;
+    // somehow i cant append or set new httpParams in the 'if'
+    // scope after setting it outside the 'if' scope
+    if (contractAddress) {
+      httpParams = new HttpParams()
+        .set('contractName', properties.contractName)
+        .set('functionName', properties.functionName)
+        .set('contractAddress', contractAddress)
+    } else {
+      httpParams = new HttpParams()
+        .set('contractName', properties.contractName)
+        .set('functionName', properties.functionName)
+    }
+    return this.http.post(url, requestBody, { params: httpParams })
   }
 
   private getEncodedFunctionVariableObservable(properties: ContractTxProperties, contractAddress?: string): Observable<any> {
@@ -412,42 +419,100 @@ export class BlockchainService implements OnDestroy, OnInit {
             )
         })
     })
-
   }
 
   private sendTransaction(encodedFunction: string, contractAddress: string) {
+    this.web3.eth.handleRevert = true
     let address = this.storageSvc.getAddress()
-    console.log("wallet address connected to", address)
-    try {
-      let a = this.web3.eth.sendTransaction({
-        from: address as string,
-        to: contractAddress as string,
-        data: encodedFunction as string
-      })
-      return a
-    } catch (error) {
-      console.log(error)
-      throw new Error("ok")
-    }
-
-  }
-
-  private callContract(encodedFunction: string, contractAddress: string) {
-    console.log(encodedFunction)
-    console.log(contractAddress)
-    return this.web3.eth.call({
-      to: contractAddress,
-      data: encodedFunction
+    return this.web3.eth.sendTransaction({
+      from: address as string,
+      to: contractAddress as string,
+      data: encodedFunction as string
     })
   }
 
-  private loadContract() {
-    let jsonUrl = "../../assets/tokenInterface/token.json"
-    this.http.get(jsonUrl)
-      .pipe(takeUntil(this.notifier$))
-      .subscribe((jsonInterface) => {
-        console.log(jsonInterface)
-      })
+  private callFunction(encodedFunction: string, projectAddress: string) {
+    let address = this.storageSvc.getAddress()
+    return this.web3.eth.call({
+      from: address,
+      to: projectAddress,
+      data: encodedFunction as string
+    })
+  }
+
+  public getTokenSymbol(TokenAddress: string) {
+    let abi = tokenFunctionsAbi.symbol
+    let functionParams: string[] = []
+    let data = this.web3.eth.abi.encodeFunctionCall(abi, functionParams)
+    let transactionObj = getTransactionObject(TokenAddress, data)
+    return this.web3.eth.call(transactionObj).then((result) => {
+      let symbol = this.web3.eth.abi.decodeParameters([abi.outputs[0].type], result)
+      return symbol[0]
+    }).catch((error) => { return error })
+  }
+
+  public getBalanceOf(addressToCheck: string, tokenAddress: string) {
+    let functionParams = [addressToCheck]
+    let data = this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.balanceOf, functionParams)
+    let transactionObj = getTransactionObject(tokenAddress, data)
+
+    return this.web3.eth.call(transactionObj).then((result) => {
+      let balance = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.balanceOf.outputs[0].type], result)
+      return balance[0]
+    }).catch((error) => { return error })
+  }
+
+
+
+  public async approveToken(tokenAddress: string, spenderAddress: string, fromAddress: string, amount: number) {
+    let stringAmount = amount.toString()
+    let functionParams = [spenderAddress, stringAmount]
+
+    // get decimals of token
+    let result = await this.getTokenDecimals(tokenAddress)
+    let tokenDecimals = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.decimals.outputs[0].type], result)
+    let valueString = (amount * 10 ** parseInt(tokenDecimals[0])).toString()
+
+    console.log(valueString)
+
+    let transactionObj = {
+      to: tokenAddress,
+      data: this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.approve, functionParams),
+      from: fromAddress
+    }
+    // let output = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.approve.outputs[0].type], result)
+    return this.web3.eth.sendTransaction(transactionObj)
+
+  }
+
+  private getTokenDecimals(tokenAddress: string): Promise<string> {
+    let functionParams: string[] = []
+    let transactionObj = {
+      to: tokenAddress,
+      data: this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.decimals, functionParams)
+    }
+    let returnResult: { [key: string]: any; }
+    return this.web3.eth.call(transactionObj, (error, result) => {
+      if (error) {
+        console.log(error)
+      } else {
+        returnResult = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.decimals.outputs[0].type], result)
+      }
+    })
+  }
+
+  public toChecksumAddress(address: string): string {
+    return this.web3.utils.toChecksumAddress(address)
+  }
+
+  public checkCheckSumAddress(address: string): boolean {
+    let modifiedAddress = this.toChecksumAddress(address)
+    return this.web3.utils.checkAddressChecksum(modifiedAddress)
+  }
+
+  /* this already check for checksum */
+  public isAddress(address: string): boolean {
+    return this.web3.utils.isAddress(address)
   }
 
   ngOnDestroy(): void {

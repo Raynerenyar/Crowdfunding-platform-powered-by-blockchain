@@ -7,8 +7,11 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
@@ -28,9 +31,11 @@ import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.DevFaucet;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Token;
+import ethereum.tutorials.java.ethereum.models.Request;
 import ethereum.tutorials.java.ethereum.repository.SqlCrowdfundingRepo;
 import ethereum.tutorials.java.ethereum.services.ethereum.BlockchainService;
 import ethereum.tutorials.java.ethereum.services.ethereum.LoadContractService;
+import ethereum.tutorials.java.ethereum.services.repository.SqlRepoService;
 import ethereum.tutorials.java.ethereum.util.eventFlowable.CrowdfundingEvents;
 import ethereum.tutorials.java.ethereum.util.eventFlowable.FaucetEvents;
 import io.reactivex.Flowable;
@@ -45,8 +50,14 @@ public class BlockchainEventHandler {
     private LoadContractService lcSvc;
     @Autowired
     private SqlCrowdfundingRepo sqlRepo;
+    @Autowired
+    private SqlRepoService sqlRepoSvc;
     @Value("${crowdfunding.factory.contract.address}")
     private String crowdfundingFactoryAddress;
+    @Value("${faucet.contract.address}")
+    private String faucetAddress;
+
+    private static final Logger logger = LoggerFactory.getLogger(BlockchainEventHandler.class);
 
     public Disposable contributeSub$;
     public Disposable createNewProjectSub$;
@@ -57,16 +68,14 @@ public class BlockchainEventHandler {
     public Disposable voteRequestProjectSub$;
 
     public void createNewProject(CrowdfundingFactory loadedContract, String blockHash, String description) {
-        System.out.println("getting event " + blockHash);
         createNewProjectSub$ = CrowdfundingEvents
                 .createNewProject(loadedContract, crowdfundingFactoryAddress, blockHash)
                 .subscribe((event) -> {
-                    System.out.println("getting event " + event._title);
+                    logger.info("event: create new project, blockhash >> {}, project title >> {}", blockHash,
+                            event._title);
                     Token tokenInstance = lcSvc.loadTokenContract(event._tokenUsed);
                     String tokenName = tokenInstance.name().send();
                     String tokenSymbol = tokenInstance.symbol().send();
-                    System.out.println("token name >>> " + tokenName);
-                    System.out.println("token symbol >>> " + tokenSymbol);
                     sqlRepo.insertProject(
                             event._projectAddress,
                             event._projectCreator,
@@ -90,8 +99,11 @@ public class BlockchainEventHandler {
         contributeSub$ = CrowdfundingEvents
                 .contributeToProject(loadedContract, projectAddress, blockHash)
                 .subscribe(event -> {
-                    System.out.println("event >>>>> " + event._contributor);
-                    sqlRepo.insertContributor(event._contributor);
+                    logger.info("event: contribute to project, contributor address >> {}", event._contributor);
+                    int count = sqlRepo.countContributor(event._contributor);
+                    if (count < 1) {
+                        sqlRepo.insertContributor(event._contributor);
+                    }
                     sqlRepo.insertContribution(
                             event._contributor,
                             event._amount.intValue(),
@@ -104,7 +116,7 @@ public class BlockchainEventHandler {
         refundFromProjectSub$ = CrowdfundingEvents
                 .getRefundFromProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
-                    System.out.println("event refund from project, updating contribution");
+                    logger.info("event: getting refund");
                     sqlRepo.updateContribution(
                             false,
                             event._contributor,
@@ -118,7 +130,7 @@ public class BlockchainEventHandler {
         createRequestForProjectSub$ = CrowdfundingEvents
                 .createRequestForProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
-                    System.out.println("event inserting request");
+                    logger.info("event: inserting request");
                     sqlRepo.insertProjectRequest(
                             event.requestNum.intValue(),
                             projectAddress,
@@ -126,19 +138,18 @@ public class BlockchainEventHandler {
                             description,
                             event._recipient,
                             event._amount.intValue(),
-                            0,
                             false);
                 });
     }
 
     public void voteRequestForProject(Crowdfunding loadedContract, String blockHash, String projectAddress) {
         voteRequestProjectSub$ = CrowdfundingEvents
-                .voteRequestForProject(loadedContract, crowdfundingFactoryAddress, blockHash)
+                .voteRequestForProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
-                    System.out.println("event inserting vote");
-                    // TODO: sql query to get value of votes of a request
+                    logger.info("event: inserting vote");
+                    Optional<Integer> requestId = sqlRepoSvc.getRequestId(projectAddress, event._requestNo.intValue());
                     sqlRepo.insertVote(
-                            event._requestNo.intValue(),
+                            requestId.get(),
                             event._voter,
                             event._valueOfVote.intValue());
                 });
@@ -148,7 +159,7 @@ public class BlockchainEventHandler {
         receiveContributionFromProjectSub$ = CrowdfundingEvents
                 .receiveContributionFromProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
-                    System.out.println("event update request after receiving contribution");
+                    logger.info("event: receive contribution");
                     // received contribution so request completes
                     sqlRepo.updateRequest(
                             event._requestNo.intValue(),
@@ -158,11 +169,10 @@ public class BlockchainEventHandler {
 
     // may not need to be used. can call view function to get balance of the faucet
     public void faucetDistribution(DevFaucet loadedContract, String blockHash) {
-        faucetDistributedSub$ = FaucetEvents.distributionEvent(loadedContract, blockHash, blockHash)
+        faucetDistributedSub$ = FaucetEvents.distributionEvent(loadedContract, faucetAddress, blockHash)
                 .subscribe((event) -> {
-                    System.out.println("event >>>>> " + event.mintedToAddress);
-                    System.out.println("event >>>>> " + event.amount);
-
+                    logger.info("event: faucet mint, address minted to >> {}, amount minted >> {}",
+                            event.mintedToAddress, event.amount);
                 });
     }
 }

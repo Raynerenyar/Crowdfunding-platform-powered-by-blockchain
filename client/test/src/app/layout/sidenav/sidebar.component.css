@@ -23,3 +23,9 @@
         height: 1.5rem;
         background-image: url("https://img.icons8.com/material-outlined/24/null/water-tap-.png");
 }
+
+/* :host ::ng-deep .p-sidebar-left{
+    position: fixed;
+    left: 100px;
+    
+} */

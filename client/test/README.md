@@ -27,8 +27,6 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
 # Add ons and installations
-## Firebase
-`ng add @angular/fire`
 
 ## metamask
 <!-- `npm i @metamask/eth-sig-util` -->
@@ -46,9 +44,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ### Installations
 1. primeicons
 2. primeflex
-### components used
-1. overlay - sidebar
-2. menu - panelmenu
 
 ## google icons
 [Google icons](https://fonts.google.com/icons?selected=Material+Symbols+Outlined:dentistry:FILL@0;wght@400;GRAD@0;opsz@48&icon.platform=web)

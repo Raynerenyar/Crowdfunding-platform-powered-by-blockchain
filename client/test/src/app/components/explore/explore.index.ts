@@ -5,15 +5,15 @@ import { ProjectBodyComponent } from "./project/project-body/project-body.compon
 import { ProjectMainComponent } from "./project/project-main/project-main.component";
 import { ProjectHeaderComponent } from "./project/projectHeader/project-header.component";
 import { ViewAnnouncementComponent } from "./viewAnnouncements/view-announcement.component";
-import { ContributeRequestComponent } from "./viewRequest/contribute-request/contribute-request.component";
-import { RequestComponent } from "./viewRequest/request.component";
+import { RequestComponent } from "./viewRequest/request/request.component";
+import { RequestListComponent } from "./viewRequest/request.list.component";
 
 
 
 export const exploreComponents = [
     ExploreProjectsComponent,
+    RequestListComponent,
     RequestComponent,
-    ContributeRequestComponent,
     ProjectMainComponent,
     ProjectHeaderComponent,
     ProjectBodyComponent,

@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Crowdfunding is Ownable {
     address public admin;
     address public tokenAddress;
-    address public crowdfundingFactory;
 
     IERC20 public token;
     string public title;
@@ -18,7 +17,7 @@ contract Crowdfunding is Ownable {
     uint public deadline;
     uint public goal;
     uint public raisedAmount;
-    uint decimals = 10 ** 6;
+    uint public decimals = 10 ** 6;
 
     struct Request {
         string title;
@@ -70,17 +69,16 @@ contract Crowdfunding is Ownable {
     mapping(uint => Request) public requests;
     mapping(address => uint) public contributers;
 
-    // allows factory to call the functions here
-    modifier sharedOwner() {
-        require(
-            msg.sender == owner() || msg.sender == crowdfundingFactory,
-            "You are neither the owner nor the factory"
-        );
-        _;
-    }
+    // // allows factory to call the functions here
+    // modifier sharedOwner() {
+    //     require(
+    //         msg.sender == owner() || msg.sender == crowdfundingFactory,
+    //         "You are neither the owner nor the factory"
+    //     );
+    //     _;
+    // }
 
     constructor(
-        address _crowdfundingFactory,
         uint _goal,
         uint _deadline,
         address _acceptingThisToken,
@@ -92,8 +90,8 @@ contract Crowdfunding is Ownable {
             isContract(_acceptingThisToken),
             "Address provided is not a contract"
         );
+
         title = _title;
-        crowdfundingFactory = _crowdfundingFactory;
         goal = _goal;
         deadline = _deadline;
         minimumContribution = 100;
@@ -124,10 +122,6 @@ contract Crowdfunding is Ownable {
         }
 
         emit ContributeEvent(msg.sender, tokenAddress, _amount);
-    }
-
-    function getBalance() public view returns (uint) {
-        return token.balanceOf(address(this));
     }
 
     function getRefund() public returns (uint) {
@@ -166,7 +160,7 @@ contract Crowdfunding is Ownable {
         );
     }
 
-    function voteRequest(uint _requestNo) public returns (uint) {
+    function voteRequest(uint _requestNo) public {
         require(numRequests >= _requestNo, "Request does not exist.");
 
         // owner of crowdfunding project cannot vote for their own requests
@@ -191,15 +185,11 @@ contract Crowdfunding is Ownable {
             "Request has not been initiated"
         );
 
-        // Ratio of the value of contribution by one user to the goal.
-        // The higher the contribution the more the proportion in comparison to the goal.
-        // Solidity has no float or double, therefore valueOfVotes is represents the ratio.
-        uint _valueOfVote = (contributers[msg.sender] * decimals) / goal;
+        uint _valueOfVote = contributers[msg.sender];
         thisRequest.valueOfVotes += _valueOfVote;
         thisRequest.noOfVoters++;
         thisRequest.voters[msg.sender] = true;
         emit voteRequestEvent(msg.sender, _requestNo, _valueOfVote);
-        return _valueOfVote;
     }
 
     function receiveContribution(
@@ -216,11 +206,15 @@ contract Crowdfunding is Ownable {
             "The request has been completed."
         );
 
-        uint8 _numerator = 5;
-        uint8 _denominator = 10;
-        // value of votes more than 0.5 to pass
+        // uint8 _numerator = 5;
+        // uint8 _denominator = 10;
+        // // value of votes more than 0.5 to pass
+        // require(
+        //     thisRequest.valueOfVotes > (_numerator * decimals) / _denominator,
+        //     "value of votes fail to meet requirement"
+        // );
         require(
-            thisRequest.valueOfVotes > (_numerator * decimals) / _denominator,
+            ((goal / thisRequest.valueOfVotes) * decimals) < (2 * decimals),
             "value of votes fail to meet requirement"
         );
 
@@ -269,7 +263,8 @@ contract Crowdfunding is Ownable {
         return requests[_requestNo].valueOfVotes;
     }
 
-    function isContract(address _address) internal view returns (bool) {
+    // this function will run at constructor
+    function isContract(address _address) public view returns (bool) {
         uint size;
         assembly {
             size := extcodesize(_address)
@@ -278,13 +273,12 @@ contract Crowdfunding is Ownable {
     }
 
     // this function will run at constructor
-    function isToken(address _address) internal view returns (bool) {
+    function isToken(address _address) public view returns (bool) {
         ERC20 testAddress = ERC20(_address);
         require(testAddress.balanceOf(msg.sender) >= 0, "method doesn't exist");
         require(testAddress.totalSupply() > 0, "Supply is 0");
         bytes memory _testString = bytes(testAddress.name());
 
-        if (_testString.length > 0) return true;
-        return false;
+        return _testString.length > 0;
     }
 }

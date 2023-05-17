@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -26,10 +28,11 @@ public class MongoRepo {
 
     @Autowired
     private MongoTemplate mongo;
+    private static final Logger logger = LoggerFactory.getLogger(MongoRepo.class);
 
     public Document insertAnnouncement(Announcement announce) {
         Document doc = MongoUtil.announcementToDocument(announce);
-        System.out.println("insert document");
+        logger.info("inserting announcement");
         return mongo.insert(doc, "announcements");
     }
 
@@ -51,7 +54,7 @@ public class MongoRepo {
 
     public Document insertComment(Comment comment) {
         Document doc = MongoUtil.commentToDocument(comment);
-        System.out.println("inserting comment");
+        logger.info("inserting comment");
         return mongo.insert(doc, "comments");
     }
 

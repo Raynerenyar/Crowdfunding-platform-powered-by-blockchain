@@ -1,11 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
-import { ProjectDetails, RequestDetails } from 'src/app/model/model';
+import { Project, Request } from 'src/app/model/model';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
-import { RequestComponent } from '../../viewRequest/request.component';
+import { RequestListComponent } from '../../viewRequest/request.list.component';
 
 @Component({
   selector: 'app-project-main',
@@ -16,23 +16,23 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
 
   projectAddress!: string
   notifier$ = new Subject<boolean>()
-  project!: ProjectDetails
-  requests!: RequestDetails[]
+  project!: Project
+  requests!: Request[]
   selectedRequestIndex!: number | undefined
 
-  showProject = false
-  showAnnouncement = false
-  showComments = false
-  showSingleRequest = false
-  showNewComment = false
+  // showProject = false
+  // showAnnouncement = false
+  // showComments = false
+  // showSingleRequest = false
+  // showNewComment = false
 
   items!: MenuItem[]
   activeItem!: MenuItem;
 
-  @ViewChild(RequestComponent)
-  requestCompo?: RequestComponent
+  @ViewChild(RequestListComponent)
+  requestCompo?: RequestListComponent
 
-  constructor(private route: ActivatedRoute, private repoSvc: SqlRepositoryService) { }
+  constructor(private route: ActivatedRoute, private repoSvc: SqlRepositoryService, private router: Router) { }
 
   ngOnInit(): void {
     this.route.paramMap
@@ -44,13 +44,13 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.notifier$))
           .subscribe({
             next: (project) => {
-              this.project = project as ProjectDetails
+              this.project = project as Project
               this.repoSvc.projectDetailsEvent.next(project)
-              this.showProject = true
+              // this.showProject = true
               this.repoSvc.getRequests(this.projectAddress)
                 .pipe(takeUntil(this.notifier$))
                 .subscribe({
-                  next: (requests: RequestDetails[]) => {
+                  next: (requests: Request[]) => {
                     this.requests = requests
                     console.log(requests)
                   },
@@ -73,38 +73,59 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
     this.activeItem = this.items[0];
   }
 
-  onActiveItemChange($event: MenuItem) {
-    console.log($event.label)
-    this.selectView($event.label)
-    this.selectedRequestIndex = undefined
+  // onActiveItemChange($event: MenuItem) {
+  //   console.log($event.label)
+  //   this.selectView($event.label)
+  //   this.selectedRequestIndex = undefined
+  // }
+
+  // onMenuClicked(menu: string) {
+  //   console.log(menu)
+  //   this.selectView(menu)
+  // }
+
+  // onChosenRequest(index: number) {
+  //   console.log(index)
+  //   this.selectedRequestIndex = index
+  //   this.selectView("Requests")
+  // }
+
+  // onNewComment() {
+  //   this.selectView("New comments")
+  //   console.log('on new comment')
+  //   console.log(this.showNewComment)
+  //   this.activeItem = {}
+  // }
+
+  // onCommentSubmission() {
+  //   console.log("comment submission")
+  //   // return back to comments tab
+  //   this.onActiveItemChange({ label: 'Comments' })
+  //   this.activeItem = this.items[3];
+  // }
+
+  // selectView(view: string | undefined) {
+  //   this.showProject = (view === 'Project') ? true : false;
+  //   this.showAnnouncement = (view === 'Announcements') ? true : false;
+  //   this.showComments = (view === 'Comments') ? true : false;
+  //   this.showSingleRequest = (view === 'Requests') ? true : false;
+  //   this.showNewComment = (view === 'New comments') ? true : false;
+  // }
+
+  goBack() {
+    this.router.navigate(['explore'])
   }
 
-  onChosenRequest(index: number) {
-    console.log(index)
-    this.selectedRequestIndex = index
-    this.selectView("Requests")
+  goAnnouncement() {
+    this.router.navigate(['explore', this.projectAddress, 'announcements'])
   }
 
-  onNewComment() {
-    this.selectView("New comments")
-    console.log('on new comment')
-    console.log(this.showNewComment)
-    this.activeItem = {}
+  goComment() {
+    this.router.navigate(['explore', this.projectAddress, 'comments'])
   }
 
-  onCommentSubmission() {
-    console.log("comment submission")
-    // return back to comments tab
-    this.onActiveItemChange({ label: 'Comments' })
-    this.activeItem = this.items[3];
-  }
-
-  selectView(view: string | undefined) {
-    this.showProject = (view === 'Project') ? true : false;
-    this.showAnnouncement = (view === 'Announcements') ? true : false;
-    this.showComments = (view === 'Comments') ? true : false;
-    this.showSingleRequest = (view === 'Requests') ? true : false;
-    this.showNewComment = (view === 'New comments') ? true : false;
+  getRequest(requestId: number) {
+    this.router.navigate(['explore', this.projectAddress, 'request', requestId])
   }
 
   ngOnDestroy(): void {

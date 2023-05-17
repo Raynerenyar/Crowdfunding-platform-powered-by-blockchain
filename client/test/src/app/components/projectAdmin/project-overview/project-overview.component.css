@@ -1,0 +1,32 @@
+:host ::ng-deep .p-scrollpanel-bar{
+    /* background-color: blue; */
+    background-color: var(--primary-color);
+    opacity: 1;
+    height: 10px;
+}
+
+/* :host ::ng-deep .p-scrollpanel{ */
+    /* min-height: 200px; */
+    /* height: 200px; */
+    /* overflow-y: auto; */
+/* } */
+
+.button-card{
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: var(--background-colour1);
+    /* box-shadow: -1.5px 3px 3px rgba(0, 0, 0, 0.6); */
+    box-shadow: var(--shadow-elevation-medium);
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+.button-card:hover {
+    box-shadow: var(--shadow-elevation-high);
+    /* box-shadow: -3px 6px 6px rgba(0, 0, 0, 0.4); */
+    transform: scale(1.06);
+}
+
+.shadow{
+    box-shadow: var(--shadow-elevation-high);
+}

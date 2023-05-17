@@ -29,7 +29,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
-import { EditorModule } from 'primeng/editor';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 const PrimeNgModules = [
     ButtonModule,
@@ -60,7 +60,7 @@ const PrimeNgModules = [
     ToggleButtonModule,
     TagModule,
     TooltipModule,
-    EditorModule
+    ProgressBarModule
 ]
 
 @NgModule({

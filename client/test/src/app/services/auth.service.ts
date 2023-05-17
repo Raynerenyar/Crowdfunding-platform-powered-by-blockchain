@@ -1,9 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http'
 import detectEthereumProvider from '@metamask/detect-provider';
-import { Auth, signOut, signInWithCustomToken } from '@angular/fire/auth';
-import { Observable, async, from } from 'rxjs';
-import { catchError, switchMap, exhaustMap, filter } from 'rxjs/operators';
+import { Observable, Subject, async, from, timer } from 'rxjs';
+import { catchError, switchMap, exhaustMap, filter, takeUntil } from 'rxjs/operators';
 import { VerifyRequest, TokenResponse, NonceResponse } from '../model/model'
 import { constants } from '../../environments/environment'
 import Web3 from 'web3';
@@ -25,7 +24,7 @@ declare global {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
 
   // private auth: Auth = inject(Auth);
   private nonce!: string
@@ -34,6 +33,7 @@ export class AuthService {
   p: any
   private abi!: string
   private contractAddress!: string
+  notifier$ = new Subject()
 
   constructor(private http: HttpClient) { }
 
@@ -62,11 +62,6 @@ export class AuthService {
   logout(): Observable<any> {
     return this.http.post(AUTH_API + 'signout', {}, httpOptions);
   }
-
-  // // firebase stuff here
-  // public signOut() {
-  //   return signOut(this.auth);
-  // }
 
   public async getAccounts() {
     return await this.web3.eth.getAccounts()
@@ -167,7 +162,19 @@ export class AuthService {
     }).on(('sent'), (son) => {
       console.log(son)
     })
+  }
 
+  reloadPage(): void {
+    timer(3000)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe(t => {
+        window.location.reload()
+      })
+  }
+
+  ngOnDestroy(): void {
+    this.notifier$.next(true)
+    this.notifier$.unsubscribe()
   }
 
 }

@@ -13,6 +13,8 @@ import { MongoRepoService } from 'src/app/services/mongo.repo.service';
 export class AnnouncementComponent implements OnInit {
 
   announcements!: Announcement[]
+  announcement!: Announcement
+  selectedIndex!: number
   notifier$ = new Subject<boolean>()
   projectAddress!: string | null
   tooltip = "It has passed one hour."
@@ -29,8 +31,9 @@ export class AnnouncementComponent implements OnInit {
             .pipe(takeUntil(this.notifier$))
             .subscribe({
               next: (announcements: Announcement[]) => {
-                this.announcements = announcements
-                this.mongoSvc.announcements = announcements
+                console.log(announcements)
+                this.announcements = announcements.reverse()
+                this.mongoSvc.announcements = this.announcements
               },
               error: (error: HttpErrorResponse) => { }
             })
@@ -38,8 +41,23 @@ export class AnnouncementComponent implements OnInit {
       })
   }
 
-  onEdit(index: number) {
-    this.router.navigateByUrl(`/project-admin/${this.projectAddress}/edit-announcement/${index}`)
+  onEdit() {
+    console.log(this.selectedIndex)
+    if (this.selectedIndex != undefined)
+      this.router.navigateByUrl(`/project-admin/${this.projectAddress}/edit-announcement/${this.selectedIndex}`)
+  }
+
+  goBack() {
+    this.router.navigate(['project-admin', this.projectAddress], { replaceUrl: false });
+  }
+
+  newAnnouncement() {
+    this.router.navigate(['project-admin', this.projectAddress, 'new-announcement']);
+  }
+
+  onChosenAnnouncement(index: number) {
+    this.announcement = this.announcements[index]
+    this.selectedIndex = index
   }
 
   editable(announce: Announcement): boolean {

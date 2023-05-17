@@ -3,6 +3,8 @@ package ethereum.tutorials.java.ethereum.controllers;
 import java.math.BigInteger;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,8 @@ import jnr.constants.platform.IPProto;
 @RequestMapping("/api")
 public class EthController {
 
+    private static final Logger logger = LoggerFactory.getLogger(EthController.class);
+
     @Autowired
     private BlockchainService BcSvc;
     @Value("${crowdfunding.factory.contract.address}")
@@ -49,25 +53,20 @@ public class EthController {
             @RequestParam String functionName,
             @RequestParam(required = false) String contractAddress,
             @RequestBody(required = false) Object... params) {
-        // // if (params != null) {
-        for (Object object : params) {
-            System.out.println("params >>>>> " + object);
-            System.out.println(object.getClass().getSimpleName());
-            System.out.println(object);
-        }
-        // if (contractName.equalsIgnoreCase("CrowdfundingFactory"))
-        //     contractAddress = crowdfundingFactoryContractAddress;
-        System.out.println("getting function for >> " + contractAddress);
-        System.out.println("getting function for >> " + contractName);
-        System.out.println("getting function for >> " + functionName);
+        logger.info("getting function, contractAddress >> {}", contractAddress);
+        logger.info("getting function, contractName >> {}", contractName);
+        logger.info("getting function, functionName >> {}", functionName);
         Optional<String> opt;
         if (contractName.equalsIgnoreCase("CrowdfundingFactory") || contractName.equalsIgnoreCase("DevFaucet")) {
-            opt = BcSvc.getEncoded(contractName, functionName, params);
+            // opt = BcSvc.getEncoded(contractName, functionName, params);
+            opt = BcSvc.getEncodedForTransaction(contractName, functionName, params);
             Optional<String> optAddress = BcSvc.getContractAddress(contractName);
             contractAddress = (optAddress.isPresent()) ? optAddress.get() : contractAddress;
         } else {
-            opt = BcSvc.getEncoded(contractName, functionName, contractAddress, params);
+            // opt = BcSvc.getEncoded(contractName, functionName, contractAddress, params);
+            opt = BcSvc.getEncodedForTransaction(contractName, functionName, contractAddress, params);
         }
+        logger.info("got encoded function in opt >> {}", opt.isPresent());
         if (opt.isPresent()) {
             String encodedFunction = Json.createObjectBuilder()
                     .add("encodedFunction", opt.get())
@@ -79,12 +78,41 @@ public class EthController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
+    @PostMapping(path = "/get-view-functions")
+    @ResponseBody
+    public ResponseEntity<String> getViewFunctions(
+            @RequestParam String contractName,
+            @RequestParam String functionName,
+            @RequestParam(required = false) String contractAddress,
+            @RequestBody(required = false) Object... params) {
+
+        logger.info("getting view function, contractAddress >> {}", contractAddress);
+        logger.info("getting view function, contractName >> {}", contractName);
+        logger.info("getting view function, functionName >> {}", functionName);
+        Optional<String> opt;
+        if (contractAddress == null) {
+            opt = BcSvc.viewFunctions(contractName, functionName, params);
+        } else {
+            opt = BcSvc.viewFunctions(contractName, functionName, contractAddress, params);
+        }
+        logger.info("got encoded function in opt >> {}", opt.isPresent());
+        if (opt.isPresent()) {
+            String returnFromView = Json.createObjectBuilder()
+                    .add("returnFromView", opt.get())
+                    .build()
+                    .toString();
+            return ResponseEntity.status(HttpStatus.OK).body((returnFromView));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+
     @PostMapping(path = "/read-event")
     @ResponseBody
     public ResponseEntity<String> getEvent(@RequestBody String body) {
-        System.out.println("read event >>>> " + body);
+        logger.info("read event >> {}", body);
         JsonObject job = Util.readJson(body);
-        System.out.println("read event >>>> " + job.containsKey("description"));
+
+        logger.info("read event, contains description >> {}", job.containsKey("description"));
         String contractName = job.getString("contractName");
         String functionName = job.getString("functionName");
         String blockHash = job.getString("blockHash");
@@ -119,9 +147,9 @@ public class EthController {
     @PostMapping(path = "/read-error-event")
     @ResponseBody
     public ResponseEntity<String> getErrorEvent(@RequestBody String body) {
-        System.out.println("read event >>>> " + body);
+        logger.info("read error event >> {}", body);
         JsonObject job = Util.readJson(body);
-        System.out.println("read event >>>> " + job.containsKey("description"));
+        logger.info("read error event >> {}", job.containsKey("description"));
         String contractName = job.getString("contractName");
         String functionName = job.getString("functionName");
         String blockHash = job.getString("blockHash");
@@ -135,29 +163,5 @@ public class EthController {
         //     return ResponseEntity.status(HttpStatus.OK).body(null);
         // }
         return ResponseEntity.status(HttpStatus.OK).body(null);
-    }
-
-    @PostMapping(path = "/get-balance-function-encoded")
-    @ResponseBody
-    public ResponseEntity<String> getBalance(
-            @RequestParam String tokenAddress,
-            @RequestParam String functionName,
-            @RequestBody Object... params) {
-        try {
-            // Optional<String> opt = BcSvc.getTokenBalanceFuncEncoded(tokenAddress, params);
-            Optional<BigInteger> opt = BcSvc.getTokenBalance(tokenAddress, params);
-            System.out.println("getting balance" + functionName);
-            if (opt.isPresent()) {
-                String encodedFunction = Json.createObjectBuilder()
-                        .add("tokenBalance", opt.get())
-                        .build()
-                        .toString();
-                return ResponseEntity.status(HttpStatus.OK).body(encodedFunction);
-            }
-        } catch (Exception e) {
-            System.out.println("get balance function encoded >> " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 }

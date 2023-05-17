@@ -13,27 +13,7 @@ export class CrowdfundingFactoryFunctions {
         let param = [goal, deadline, tokenAddress, title]
         return { contractName: this.contractName, functionName: 'createNewProject', parameters: param } as ContractTxProperties
     }
-    // contributeToProject(projectAddress: string, amount: number) {
-    //     let param = [projectAddress, amount]
-    //     return { contractName: this.contractName, functionName: 'contributeToProject', parameters: param } as ContractTxProperties
-    // }
-    // getRefundFromProject(projectAddress: string) {
-    //     let param = [projectAddress]
-    //     return { contractName: this.contractName, functionName: 'getRefundFromProject', parameters: param } as ContractTxProperties
-    // }
-    // createRequestForProject(projectAddress: string, title: string, recipient: string, amount: number) {
-    //     let param = [projectAddress, title, recipient, amount]
-    //     console.log(param)
-    //     return { contractName: this.contractName, functionName: 'createRequestForProject', parameters: param } as ContractTxProperties
-    // }
-    // voteRequestForProject(projectAddress: string, requestNum: number) {
-    //     let param = [projectAddress, requestNum]
-    //     return { contractName: this.contractName, functionName: 'voteRequestForProject', parameters: param } as ContractTxProperties
-    // }
-    // receiveContributionFromProject(projectAddress: string, requestNum: number) {
-    //     let param = [projectAddress, requestNum]
-    //     return { contractName: this.contractName, functionName: 'receiveContributionFromProject', parameters: param } as ContractTxProperties
-    // }
+
     allowAddress(projectAddress: string) {
         let param = [projectAddress]
         return { contractName: this.contractName, functionName: 'allowAddress', parameters: param } as ContractTxProperties
@@ -42,29 +22,17 @@ export class CrowdfundingFactoryFunctions {
         let param = [projectAddress]
         return { contractName: this.contractName, functionName: 'disallowAddress', parameters: param } as ContractTxProperties
     }
-    // approveTokenForProject(projectAddress: string, amount: number) {
-    //     let param = [projectAddress, amount]
-    //     return { contractName: this.contractName, functionName: 'approveTokenForProject', parameters: param } as ContractTxProperties
-    // }
+
     toggleFreeForAll() { return { contractName: this.contractName, functionName: 'toggleFreeForAll' } as ContractTxProperties }
 
-    /*
-        view functions of the crowdfunding factory
-     */
-    // getRequestOfProject(projectAddress: string, requestNum: number) {
-    //     let param = [projectAddress, requestNum]
-    //     return { contractName: this.contractName, functionName: 'getRequestOfProject', parameters: param } as ContractTxProperties
-    // }
-    // getNumOfRequestOfProject(projectAddress: string) {
-    //     let param = [projectAddress]
-    //     return { contractName: this.contractName, functionName: 'getNumOfRequestOfProject', parameters: param } as ContractTxProperties
-    // }
-    // getTitleOfProject(projectAddress: string) {
-    //     let param = [projectAddress]
-    //     return { contractName: this.contractName, functionName: 'getTitleOfProject', parameters: param } as ContractTxProperties
-    // }
-    // getBalanceOfProject(projectAddress: string) {
-    //     let param = [projectAddress]
-    //     return { contractName: this.contractName, functionName: 'getBalanceOfProject', parameters: param } as ContractTxProperties
-    // }
+    isContract(address: string) {
+        let param = [address]
+        return { contractName: this.contractName, functionName: 'isContract', parameters: param } as ContractTxProperties
+    }
+
+    isToken(address: string) {
+        let param = [address]
+        return { contractName: this.contractName, functionName: 'isToken', parameters: param } as ContractTxProperties
+    }
+
 }

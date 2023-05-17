@@ -23,5 +23,7 @@ public class Project {
     private boolean expired;
     private Integer numOfRequests; // might need BigInteger
     private String acceptingToken;
+    private String tokenName;
+    private String tokenSymbol;
     private Timestamp createdDate;
 }

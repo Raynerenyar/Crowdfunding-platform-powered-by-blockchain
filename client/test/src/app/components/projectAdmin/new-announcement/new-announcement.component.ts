@@ -34,6 +34,8 @@ export class AnnouncementEditorComponent implements OnInit, OnDestroy {
   hasUpdated = false
   editing = false
   editedAnnouncement!: Announcement
+  charCount = 0
+  charLimit = 2000
 
   constructor(private fb: FormBuilder, private mongoSvc: MongoRepoService, private route: ActivatedRoute, private storageSvc: SessionStorageService, private router: Router, private msgSvc: PrimeMessageService) { }
 
@@ -69,41 +71,47 @@ export class AnnouncementEditorComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    let textBody = this.editorForm.get('editor')?.value
-    console.log(this.creatorAddress)
-    if (this.projectAddress) {
-      let datetime = new Date()
-      let announcement: Announcement = {
-        projectAddress: this.projectAddress,
-        creatorAddress: this.creatorAddress,
-        datetimePosted: datetime,
-        body: textBody
-      }
-      if (this.editing) {
+    if (this.editorForm.valid) {
+      let textBody = this.editorForm.get('editor')?.value
+      console.log(this.creatorAddress)
+      if (this.projectAddress) {
+        let datetime = new Date()
+        let announcement: Announcement = {
+          projectAddress: this.projectAddress,
+          creatorAddress: this.creatorAddress,
+          datetimePosted: datetime,
+          body: textBody
+        }
+        if (this.editing) {
 
-        this.editedAnnouncement.body = textBody
-        this.editedAnnouncement.datetimeEdited = datetime
+          this.editedAnnouncement.body = textBody
+          this.editedAnnouncement.datetimeEdited = datetime
 
-        this.mongoSvc.editAnnouncement(this.editedAnnouncement)
-          .pipe(takeUntil(this.notifier$))
-          .subscribe({
-            next: () => {
-              this.msgSvc.generalSuccessMethod("Announcement edit submitted!")
-              this.router.navigateByUrl(`/project-admin/${this.projectAddress}/announcements`)
-            },
-            error: () => this.msgSvc.generalErrorMethod("Announcement edit failed to submit!")
-          })
-      } else {
-        this.mongoSvc.insertAnnouncement(announcement)
-          .pipe(takeUntil(this.notifier$))
-          .subscribe({
-            next: (result: boolean) => {
-              this.msgSvc.generalSuccessMethod("Announcement posted!")
-              this.router.navigateByUrl(`/project-admin/${this.projectAddress}/announcements`)
-            },
-            error: (result: boolean) => this.msgSvc.generalErrorMethod("Announcement failed to post!")
-          })
+          this.mongoSvc.editAnnouncement(this.editedAnnouncement)
+            .pipe(takeUntil(this.notifier$))
+            .subscribe({
+              next: () => {
+                this.msgSvc.generalSuccessMethod("Announcement edit submitted!")
+                this.router.navigateByUrl(`/project-admin/${this.projectAddress}/announcements`)
+              },
+              error: () => this.msgSvc.generalErrorMethod("Announcement edit failed to submit!")
+            })
+        } else {
+          this.mongoSvc.insertAnnouncement(announcement)
+            .pipe(takeUntil(this.notifier$))
+            .subscribe({
+              next: (result: boolean) => {
+                this.msgSvc.generalSuccessMethod("Announcement posted!")
+                this.router.navigateByUrl(`/project-admin/${this.projectAddress}/announcements`)
+              },
+              error: (result: boolean) => this.msgSvc.generalErrorMethod("Announcement failed to post!")
+            })
+        }
       }
     }
+  }
+
+  goBack() {
+    this.router.navigate(['project-admin', this.projectAddress, 'announcements'])
   }
 }

@@ -4,7 +4,7 @@
 /* overflow-y: scroll; */
 :host ::ng-deep .ProseMirror{
     /* width: 30px; */
-    height: 60vh;
+    height: 68vh;
     overflow-y: scroll;
     /* background-color: var(--primary-color); */
 }

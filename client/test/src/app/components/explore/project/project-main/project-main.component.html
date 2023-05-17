@@ -1,24 +1,146 @@
-<div class="justify-content-center">
-    <app-project-header  [projectAddress]="projectAddress"></app-project-header>
-</div>
-<div class="m-2">
-    <p-card styleClass="shadow-5">
-        <div class="grid relative">
-            <div class="col-12 md:col-7 lg:col-7">
-              <p-tabMenu [model]="items" [activeItem]="activeItem" (activeItemChange)="onActiveItemChange($event)"></p-tabMenu>
+<div *ngIf="project" class="flex justify-content-center">
+    <div class="flex flex-column gap-3 px-2 pb-2 row-gap-3 max-width" style="width: 80%" >
+        
+        <!-- header -->
+        <div class="flex base-card flex-row justify-content-between align-items-center pl-4">
+            <div class="flex flex-column py-2 gap-2">
+                <div class="text-xl font-bold">
+                    {{project.title | titlecase}}
+                </div>
+                <a class="text-sm" href="https://sepolia.etherscan.io/address/{{project.projectAddress}}">
+                    {{project.projectAddress}}
+                </a>
+                <div>
+                    Status: 
+                    <span *ngIf="project.completed">Completed</span>
+                    <span *ngIf="project.expired">Expired</span>
+                    <span *ngIf="!project.expired && !project.completed">Ongoing</span>
+                </div>
             </div>
-            <div *ngIf="showComments" class="col-12 md:col-5 lg:col-5 flex flex-row-reverse">
-              <p-button (click)="onNewComment()">Compose New Comment</p-button>
+            <!-- back button -->
+            <div class="flex p-2 px-3 align-content-center">
+                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back To Explore" (click)="goBack()"></p-button>
             </div>
-        </div>          
-        <span>
-            <span>
-                <app-project-body *ngIf="showProject" [project]="project" [requests]="requests" [projectAddress]="projectAddress"></app-project-body>
-                <app-request *ngIf="showSingleRequest" [requests]="requests" [tokenAddress]="project.acceptingToken" [projectAddress]="projectAddress" [project]="project"></app-request>
-                <app-view-announcement *ngIf="showAnnouncement" [projectAddress]="projectAddress"></app-view-announcement>
-                <app-comments *ngIf="showComments" [projectAddress]="projectAddress"></app-comments>
-                <app-new-comment *ngIf="showNewComment" [projectAddress]="projectAddress" (onSubmission)="onCommentSubmission()"></app-new-comment>
-            </span>
-        </span>
-    </p-card>
+        </div>
+
+        <!-- ADD contribute and refund!!! -->
+
+        <!-- main body card -->
+        <div class="flex flex-row gap-3 flex-wrap lg:flex-nowrap">
+                    <div class="flex flex-column w-9 gap-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+            
+            
+                        <!-- project stats card -->
+                        <div class="flex flex-row justify-content-between gap-3 flex-wrap lg:flex-nowrap xl:flex-nowrap" >
+                            <div class="base-card w-auto p-3 px-4 sm:flex-grow-1">
+                                <div>
+                                    Accepts <span class="font-semibold">{{project.tokenSymbol}}</span> Token
+                                </div>
+                                <div>
+                                    <a class="text-sm" href="https://sepolia.etherscan.io/address/{{project.acceptingToken}}">
+                                        {{project.acceptingToken}}
+                                    </a>    
+                                </div>
+                            </div>
+                            <div class="base-card w-full p-3 px-4 sm:flex-grow-1 md:flex-grow-1">
+                                <div class="flex justify-content-between">
+                                    <span class="font-semibold">Request Count: </span>
+                                    <span>{{project.numOfRequests}}</span>
+                                </div>
+                                <div class="flex justify-content-between">
+                                    <span class="font-semibold">Created Date:</span>
+                                    <span>{{project.createdDate | date: 'dd MMM yyyy'}}</span>
+                                </div>
+                                <div class="flex justify-content-between">
+                                    <span class="font-semibold">Deadline:</span>
+                                    <span>{{project.deadline | date: 'dd MMM yyyy'}}</span>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- project details card -->
+                        <div class="flex flex-row gap-3">
+                            <div class="flex base-card">
+                                <div class="flex flex-column gap-3 w-full p-2 pb-3">
+                                    <div class="mx-2 flex flex-column border-0">
+                                        <div class="grid grid-nogutter p-2">
+                                            <div class="col-12 lg:col-6 text-sm">
+                                                Raised Amount: {{project.raisedAmount}} {{project.tokenSymbol}}
+                                            </div>
+                                            <div class="col-12 lg:col-6 text-sm px-2">
+                                                Goal: {{project.goal}} {{project.tokenSymbol}}
+                                            </div>
+                                        </div>
+                                        <div class="p-2">
+                                            <ng-container *ngIf="((project.raisedAmount/project.goal)*100) <= 100; else moreThan100">
+                                                <p-progressBar [value]="((project.raisedAmount/project.goal)*100)"></p-progressBar>
+                                                <!-- <p-progressBar [value]="50"></p-progressBar> -->
+                                            </ng-container>
+                                            <ng-template #moreThan100>
+                                                <p-progressBar [value]="100"></p-progressBar>
+                                            </ng-template>
+                                        </div>
+                                        <div class="p-2">
+                                            {{project.description}}
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- sidebar card -->
+                    <div class="flex flex-column gap-3 w-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+        
+                        <!-- announcement and comment navigation -->
+                        <div class="flex flex-row gap-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+                            <div class="button-card w-full flex justify-content-center p-2 custom-bg-accent" (click)="goAnnouncement()"
+                                pInputText pTooltip="Announcemets" tooltipPosition="top" [showDelay]="800">
+                                <div class="campaign-white-icon"></div>
+                            </div>
+                            <!-- <div class="button-card w-full flex-grow-1 lg:flex-grow-0 p-2 xl:flex-grow-0 flex justify-content-center align-items-center custom-bg-accent" (click)="goRequest()"
+                                pInputText pTooltip="New Request" tooltipPosition="top" [showDelay]="800">
+                                <div class="assignment-white-icon"></div>
+                            </div> -->
+                            <div class="button-card w-full flex-grow-1 lg:flex-grow-0 p-2 xl:flex-grow-0 flex justify-content-center align-items-center custom-bg-accent" (click)="goComment()"
+                                pInputText pTooltip="Comments" tooltipPosition="top" [showDelay]="800">
+                                <div class="comment-white-icon"></div>
+                            </div>                    
+                        </div>
+        
+                        <!-- request list card -->
+                        <div class="base-card w-full p-2">
+                            <ng-container *ngIf="requests; else noRequest">
+                                <!-- <p-scrollPanel [style]="{height: '100%'}"> -->
+                                    <div class="flex flex-column-reverse">
+                                        <span *ngFor="let request of requests">
+                                            <div class="card p-2 m-2" (click)="getRequest(request.requestId)">
+                                                <div class="font-semibold pb-2">
+                                                    {{request.title | titlecase}}
+                                                </div>
+                                                <div>
+                                                    {{request.description | truncate:[100,'...']}}
+                                                </div>
+                                            </div>
+                                        </span>
+                                    </div>
+                                <!-- </p-scrollPanel> -->
+                            </ng-container>
+                        </div>
+                    </div>
+    </div>
 </div>
+
+<ng-template #noRequest>
+    <div class="p-2 m-2 font-semibold">
+        {{'you have no request for this project' | titlecase}}
+    </div>
+</ng-template>
+

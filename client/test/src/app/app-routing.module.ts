@@ -15,7 +15,7 @@ import { BoardAdminComponent } from './components/auth/components/board-admin/bo
 import { NewProjectComponent } from './components/projectAdmin/new-project/new-project.component';
 import { ProjectOverviewComponent } from './components/projectAdmin/project-overview/project-overview.component';
 import { ExploreProjectsComponent } from './components/explore/explore-projects/explore-projects.component';
-import { RequestComponent } from './components/explore/viewRequest/request.component';
+import { RequestListComponent } from './components/explore/viewRequest/request.list.component';
 import { ProjectMainComponent } from './components/explore/project/project-main/project-main.component';
 import { ProjectBodyComponent } from './components/explore/project/project-body/project-body.component';
 import { RequestDetailsComponent } from './components/projectAdmin/request-details/request-details.component';
@@ -23,42 +23,61 @@ import { AnnouncementEditorComponent } from './components/projectAdmin/new-annou
 import { ProjectCommentsComponent } from './components/projectAdmin/project-comments/project-comments.component';
 import { authenticationGuard } from './services/auth-guard.service';
 import { AnnouncementComponent } from './components/projectAdmin/announcements/announcement.component';
+import { ViewAnnouncementComponent } from './components/explore/viewAnnouncements/view-announcement.component';
+import { RequestComponent } from './components/explore/viewRequest/request/request.component';
+import { CommentsComponent } from './components/explore/comments/view-comments/comments.component';
+import { NewCommentComponent } from './components/explore/comments/new-comment/new-comment.component';
 
 
 const routes: Routes = [
   {
     path: '', component: AppLayoutComponent,
     children: [
-      {
-        path: 'project-admin', component: ProjectDashboardComponent, canActivate: [authenticationGuard()],
-        children: [
-          { path: 'new-project', component: NewProjectComponent },
-          { path: ':address', component: ProjectOverviewComponent },
-          { path: ':address/new-request', component: NewRequestComponent },
-          { path: ':address/new-announcement', component: AnnouncementEditorComponent },
-          { path: ':address/comments', component: ProjectCommentsComponent },
-          { path: ':address/announcements', component: AnnouncementComponent },
-          { path: ':address/edit-announcement/:edit', component: AnnouncementEditorComponent },
-          { path: ':address/:requestId', component: RequestDetailsComponent },
+      { path: 'project-admin', component: ProjectDashboardComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/new-project', component: NewProjectComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/:address', component: ProjectOverviewComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/:address/new-request', component: NewRequestComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/:address/new-announcement', component: AnnouncementEditorComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/:address/comments', component: ProjectCommentsComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/:address/announcements', component: AnnouncementComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/:address/edit-announcement/:edit', component: AnnouncementEditorComponent, canActivate: [authenticationGuard()] },
+      { path: 'project-admin/:address/request/:requestId', component: RequestDetailsComponent, canActivate: [authenticationGuard()] },
 
-        ]
-      },
+      // {
+      //   path: 'project-admin', component: ProjectDashboardComponent, canActivate: [authenticationGuard()],
+      //   children: [
+      //     { path: ':address', component: ProjectOverviewComponent },
+      //     { path: 'new-project', component: NewProjectComponent },
+      //     { path: ':address/new-request', component: NewRequestComponent },
+      //     { path: ':address/new-announcement', component: AnnouncementEditorComponent },
+      //     { path: ':address/comments', component: ProjectCommentsComponent },
+      //     { path: ':address/announcements', component: AnnouncementComponent },
+      //     { path: ':address/edit-announcement/:edit', component: AnnouncementEditorComponent },
+      //     { path: ':address/:requestId', component: RequestDetailsComponent },
+
+      //   ]
+      // },
       { path: 'explore', component: ExploreProjectsComponent },
-      {
-        path: 'explore/:projectAddress', component: ProjectMainComponent,
-        children: [
-          { path: 'request/:requestNum', component: RequestComponent },
-        ]
-      },
+      { path: 'explore/:projectAddress', component: ProjectMainComponent },
+      { path: 'explore/:projectAddress/announcements', component: ViewAnnouncementComponent },
+      { path: 'explore/:projectAddress/request/:requestId', component: RequestComponent },
+      { path: 'explore/:projectAddress/comments', component: CommentsComponent },
+      { path: 'explore/:projectAddress/comments/new-comment', component: NewCommentComponent },
+      // {
+      //   path: 'explore/:projectAddress', component: ProjectMainComponent,
+      //   children: [
+      //     { path: 'request/:requestNum', component: RequestListComponent },
+      //   ]
+      // },
       { path: 'faucet', component: FaucetComponent },
       { path: 'home', component: HomeComponent, },
       { path: 'profile', component: ProfileComponent },
       { path: 'mod', component: BoardModeratorComponent },
       { path: 'admin', component: BoardAdminComponent },
-      { path: '**', redirectTo: '', pathMatch: 'full' },
+      // { path: '**', redirectTo: '', pathMatch: 'full' },
     ]
   },
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+  // { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 // { useHash: true }
 @NgModule({

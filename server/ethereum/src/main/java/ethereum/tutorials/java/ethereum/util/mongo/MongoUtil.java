@@ -3,11 +3,14 @@ package ethereum.tutorials.java.ethereum.util.mongo;
 import java.util.Date;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ethereum.tutorials.java.ethereum.models.Announcement;
 import ethereum.tutorials.java.ethereum.models.Comment;
 
 public class MongoUtil {
+    private static final Logger logger = LoggerFactory.getLogger(MongoUtil.class);
 
     public static Document announcementToDocument(Announcement announce) {
         return new Document()
@@ -35,7 +38,7 @@ public class MongoUtil {
     }
 
     public static Document commentToDocument(Comment comment) {
-        System.out.println(comment.getDatetimePosted());
+        logger.info("converting comment to document, posted date >> ", comment.getDatetimePosted());
         return new Document()
                 .append("projectAddress", comment.getProjectAddress())
                 .append("posterAddress", comment.getPosterAddress())

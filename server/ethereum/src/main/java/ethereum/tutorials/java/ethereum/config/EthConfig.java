@@ -1,5 +1,7 @@
 package ethereum.tutorials.java.ethereum.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,10 +21,12 @@ public class EthConfig {
     @Value("${chain.id}")
     private int chaintId;
 
+    private static final Logger logger = LoggerFactory.getLogger(EthConfig.class);
+
     @Bean
     Web3j initWeb3j() {
-        System.out.println("rpc connected to > " + rpcUrl);
-        System.out.println("and connected to chain id" + chaintId);
+        logger.info("rpc connected to >> {} ", rpcUrl);
+        logger.info("connected to chain id {}", chaintId);
         return Web3j.build(new HttpService(rpcUrl));
     }
 

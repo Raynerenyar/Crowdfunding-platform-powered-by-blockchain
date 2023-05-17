@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
-import { ProjectDetails, RequestDetails } from 'src/app/model/model';
+import { Project, Request } from 'src/app/model/model';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 import { SessionStorageService } from 'src/app/services/session.storage.service';
 

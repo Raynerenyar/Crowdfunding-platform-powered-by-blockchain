@@ -51,9 +51,8 @@ public class Queries {
                 description,
                 recipient_address,
                 amount,
-                num_of_votes,
                 completed)
-            VALUES (?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?)
             """;
 
     public static String UPDATE_REQUEST_COMPLETED = """
@@ -77,7 +76,7 @@ public class Queries {
             VALUES (?,?,?,?)
             """;
 
-    public static String UPDATE_CONTRIBUTION = """
+    public static String UPDATE_STATUS_CONTRIBUTION = """
             UPDATE Contributions
             SET refunded = ?
             WHERE contributor_address = ?
@@ -107,7 +106,7 @@ public class Queries {
     //                 WHERE project_address = ?
     //                 """;
 
-    public static String SELECT_REQUEST = """
+    public static String SELECT_REQUESTS = """
             SELECT *
             FROM ProjectRequests
             WHERE project_address = ?
@@ -166,5 +165,38 @@ public class Queries {
             SELECT COUNT(*)
             FROM projectrequests
             WHERE project_address = ?
+            """;
+
+    public static String CONTRIBUTOR_EXISTS = """
+            SELECT COUNT(*) AS count
+            FROM contributors
+            WHERE contributor_address = ?
+                """;
+
+    public static String SELECT_REQUEST_BY_PROJECTADDRESS_AND_REQUEST_NO = """
+            SELECT request_id
+            FROM projectrequests
+            WHERE project_address = ?
+            AND request_no = ?
+            """;
+    public static String SELECT_REQUEST_BY_ID = """
+            SELECT *
+            FROM projectRequests
+            WHERE request_id = ?
+            """;
+    public static String GET_VALUE_OF_VOTES_OF_REQUEST = """
+            SELECT SUM(value_of_vote) AS total_value
+            FROM Votes v
+            JOIN ProjectRequests pr ON v.request_id = pr.request_id
+            WHERE pr.project_address = ?
+            AND pr.request_no = ?;
+            """;
+
+    public static String GET_COUNT_OF_VOTES_OF_REQUEST = """
+            SELECT COUNT(*) AS total_count
+            FROM Votes v
+            JOIN ProjectRequests pr ON v.request_id = pr.request_id
+            WHERE pr.project_address = ?
+            AND pr.request_no = ?;
             """;
 }

@@ -19,8 +19,8 @@ import ethereum.tutorials.java.ethereum.javaethereum.wrapper.DevFaucet;
 @Service
 public class LoadContractService {
 
-    @Autowired
-    private Web3j web3;
+    // @Autowired
+    // private Web3j web3;
     @Value("${wallet.private.key}")
     private String privateKey;
     @Value("${chain.id}")
@@ -29,7 +29,7 @@ public class LoadContractService {
     private String rpcUrl;
 
     public Crowdfunding loadCrowdfundingContract(String contractAddress) {
-        System.out.println("loading crowdfunding contract");
+        Web3j web3 = getWeb3(rpcUrl);
         Credentials cred = Credentials.create(privateKey);
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
@@ -38,8 +38,7 @@ public class LoadContractService {
     }
 
     public CrowdfundingFactory loadCrowdfundingFactoryContract(String contractAddress) {
-        System.out.println("loading factory contract");
-        System.out.println(privateKey);
+        Web3j web3 = getWeb3(rpcUrl);
         Credentials cred = Credentials.create(privateKey);
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
@@ -48,10 +47,7 @@ public class LoadContractService {
     }
 
     public DevFaucet loadFaucetContract(String contractAddress) {
-        // Web3j web3j = Web3j.build(new HttpService(rpcUrl));
-        System.out.println("loading faucet contract" + contractAddress);
-        System.out.println("loading with private key: " + privateKey);
-        System.out.println("to chain id" + chainId);
+        Web3j web3 = getWeb3(rpcUrl);
         Credentials cred = Credentials.create(privateKey);
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
@@ -60,12 +56,16 @@ public class LoadContractService {
     }
 
     public Token loadTokenContract(String tokenAddress) {
-        System.out.println(tokenAddress);
+        Web3j web3 = getWeb3(rpcUrl);
         Credentials cred = Credentials.create(privateKey);
         ContractGasProvider contractGasProvider = new DefaultGasProvider();
         TransactionManager txManager = new RawTransactionManager(web3,
                 cred, chainId);
         return Token.load(tokenAddress, web3, txManager, contractGasProvider);
+    }
+
+    private Web3j getWeb3(String rpcUrl) {
+        return Web3j.build(new HttpService(rpcUrl));
     }
 
 }

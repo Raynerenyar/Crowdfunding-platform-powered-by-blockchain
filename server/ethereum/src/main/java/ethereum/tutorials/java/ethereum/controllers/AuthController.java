@@ -57,8 +57,6 @@ public class AuthController {
         @PostMapping("/signin")
         public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-                System.out.println("signing in " + loginRequest.getUsername());
-                System.out.println("signing in " + loginRequest.getPassword());
                 Authentication authentication = authenticationManager
                                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                                                 loginRequest.getPassword()));
@@ -84,8 +82,6 @@ public class AuthController {
                 if (userRepository.findProjectCreator(signUpRequest.getUsername()).isPresent()) {
                         return ResponseEntity.badRequest().body(new MessageResponse("Username is already taken!"));
                 }
-                System.out.println("signing up" + signUpRequest.getUsername());
-                System.out.println(signUpRequest.getPassword());
                 // Create new user with username and encoded password
                 User user = new User(signUpRequest.getUsername(),
                                 encoder.encode(signUpRequest.getPassword()));
@@ -94,7 +90,6 @@ public class AuthController {
                 Set<Role> roles = new HashSet<>();
 
                 /* commented out as these statements allow anyone to register as mod or admin */
-                System.out.println("assigning user role...");
                 // if (strRoles == null) {
                 //     Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                 //             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));

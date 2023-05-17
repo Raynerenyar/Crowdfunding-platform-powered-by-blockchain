@@ -30,7 +30,6 @@ public class MongoRepoService {
 
     public boolean updateAnnouncement(Announcement announcement) {
         long modifiedCount = mongoRepo.updateAnnouncement(announcement);
-        System.out.println("modified count >> " + modifiedCount);
         if (modifiedCount > 0)
             return true;
         return false;

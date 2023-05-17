@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AfterContentInit, AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { ProjectDetails, RequestDetails } from 'src/app/model/model';
+import { Project, Request } from 'src/app/model/model';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class ProjectHeaderComponent implements OnInit, AfterViewInit, AfterConte
   projectAddress!: string
   // notifier$ = new Subject<boolean>()
 
-  project!: ProjectDetails
+  project!: Project
 
   days!: number
 
@@ -29,7 +29,7 @@ export class ProjectHeaderComponent implements OnInit, AfterViewInit, AfterConte
   ngOnInit(): void {
     this.repoSvc.projectDetailsEvent
       .pipe(takeUntil(this.notifier$))
-      .subscribe((project: ProjectDetails) => {
+      .subscribe((project: Project) => {
         this.project = project
         console.log(this.project)
         let startDate = new Date()

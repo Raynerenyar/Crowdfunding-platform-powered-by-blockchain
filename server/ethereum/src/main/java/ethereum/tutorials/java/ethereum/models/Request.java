@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectRequest {
+public class Request {
     private int requestId;
+    private int requestNo;
     private String projectAddress;
     private String title;
     private String description;
@@ -18,5 +19,4 @@ public class ProjectRequest {
     private Integer amount; // might need BigInteger
     private Integer numOfVotes; // might need BigInteger
     private boolean completed;
-    private Integer valueOfVotes; // might need BigInteger
 }

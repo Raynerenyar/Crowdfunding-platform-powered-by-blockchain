@@ -72,23 +72,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onLogin(): void {
-    // const { username, password } = this.form;
 
-    // this.authService.login(username, password).subscribe({
-    //   next: data => {
-    //     this.storageService.saveUser(data);
-
-    //     this.isLoginFailed = false;
-    //     this.isLoggedIn = true;
-    //     this.roles = this.storageService.getUser().roles;
-    //     this.reloadPage();
-    //   },
-    //   error: err => {
-    //     this.errorMessage = err.error.message;
-    //     this.isLoginFailed = true;
-    //   }
-    // });
-
+    // i think ideally should send both the signed message and the passwords at the same time
     this.onSigningInWeb3$ = this.authSvc.signInWithWeb3()
       .subscribe({
         next: token => {
@@ -97,9 +82,9 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.isSignedMsgFailed = false
           this.msgSvc.successfulWalletConnection(this.walletAddress)
 
-          let pazzword = this.loginForm.get('password')?.value
-          let uzername = this.walletAddress
-          this.onLoginSub$ = this.authSvc.login(uzername, pazzword)
+          let password = this.loginForm.get('password')?.value
+          let username = this.walletAddress
+          this.onLoginSub$ = this.authSvc.login(username, password)
             .subscribe({
               next: data => {
                 this.storageService.saveUser(data);

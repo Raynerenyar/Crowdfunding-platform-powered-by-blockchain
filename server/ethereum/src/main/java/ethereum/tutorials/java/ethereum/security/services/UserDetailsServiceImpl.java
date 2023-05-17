@@ -28,8 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findProjectCreator(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-        System.out.println("userdetailsservice >>> " + user.getUsername());
-
         // get user's roles that are in db
         List<Role> userRoles = roleRepository.findUserRole(user);
         Set<Role> setRoles = new HashSet<>();

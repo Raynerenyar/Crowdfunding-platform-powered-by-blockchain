@@ -36,7 +36,6 @@ CREATE TABLE ProjectRequests (
     description TEXT NOT NULL,
     recipient_address VARCHAR(42) NOT NULL,
     amount INT NOT NULL,
-    num_of_votes INT,
     completed BOOLEAN NOT NULL,
     PRIMARY KEY (request_id),
     CONSTRAINT fk_requests_project_address FOREIGN KEY (project_address)

@@ -24,12 +24,12 @@ export interface ContractTxProperties {
 }
 
 
-export interface ProjectDetails {
+export interface Project {
     projectAddress: string
     creatorAddress: string
     title: string
     description: string
-    goal: string
+    goal: number
     deadline: Date
     raisedAmount: number
     completed: boolean
@@ -41,7 +41,7 @@ export interface ProjectDetails {
     createdDate: Date
 }
 
-export interface RequestDetails {
+export interface Request {
     requestId: number
     requestNo: number
     projectAddress: string
@@ -49,7 +49,6 @@ export interface RequestDetails {
     description: string
     recipientAddress: string
     amount: number
-    numOfVotes: number
     completed: boolean
 }
 

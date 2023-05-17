@@ -57,6 +57,12 @@ export class PrimeMessageService implements OnDestroy {
     })
   }
 
+  detailedErrorMethod(summary: string, detail: string) {
+    this.primeMsgSvc.add({
+      severity: 'error', summary: summary, detail: detail, ...this.commonProperty
+    })
+  }
+
   generalSuccessMethod(msg: string) {
     this.primeMsgSvc.add({
       severity: 'success', summary: 'Success!', detail: msg, ...this.commonProperty
@@ -74,6 +80,8 @@ export class PrimeMessageService implements OnDestroy {
       severity: 'warn', summary: summary, detail: msg, ...this.commonProperty
     })
   }
+
+
 
   signedOut() {
     this.primeMsgSvc.add({

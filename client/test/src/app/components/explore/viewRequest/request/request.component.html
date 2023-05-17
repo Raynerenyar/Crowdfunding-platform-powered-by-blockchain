@@ -1,19 +1,19 @@
 <div #contributeReq>
     <h3>{{request.title | titlecase}}</h3>
     <p class="text-justify">{{request.description}}</p>
-    <form [formGroup]="currentRequest">
+    <form>
         <div class="grid grid-nogutter">
             
-            <div class="col-8 grid grid-nogutter align-items-center">
+            <!-- <div class="col-8 grid grid-nogutter align-items-center">
                 <div class="col-6 field p-float-label flex align-items-center mb-2 mt-2">
                     <p-inputNumber formControlName="contributeAmount" styleClass="w-full" class="w-full"></p-inputNumber>
-                    <label htmlFor="number-input">Contribute (You have balance of {{tokenBalance}} {{project.tokenName}})</label>
+                    <label htmlFor="number-input">Contribute (You have balance of {{tokenBalance}} {{project.tokenSymbol}})</label>
                 </div>
                 <div class="col-4 ml-2">
                     <p-button styleClass="p-button-raised font-normal" (click)="contribute()">Contribute</p-button>
                 </div>        
             </div>
-            <div class="col-4 mb-2 mt-2"></div>
+            <div class="col-4 mb-2 mt-2"></div> -->
 
             <div class="col-8 grid grid-nogutter align-items-center mb-2 mt-2">
                 <div class="col-6">

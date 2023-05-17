@@ -3,10 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { environment } from '../environments/environment';
-import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { AuthService } from './services/auth.service';
 import { BlockchainService } from './services/blockchain.service';
 import { ProjectHeaderComponent } from './components/explore/project/projectHeader/project-header.component';
@@ -33,6 +29,8 @@ import { NgxEditorImportsModule } from './ngxEditor.imports.module';
 import { MongoRepoService } from './services/mongo.repo.service';
 import { exploreComponents } from './components/explore/explore.index';
 import { DatePipe } from '@angular/common';
+import { ValidatorService } from "../app/services/validator.service";
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -57,9 +55,7 @@ import { DatePipe } from '@angular/common';
     FormsModule,
     PrimeNgModule,
     NgxEditorImportsModule,
-    // provideFirebaseApp(() => initializeApp(environment.firebase)),
-    // provideAuth(() => getAuth()),
-    // provideFirestore(() => getFirestore())
+    MatIconModule,
   ],
   providers: [
     httpInterceptorProviders,
@@ -73,6 +69,7 @@ import { DatePipe } from '@angular/common';
     MongoRepoService,
     DexieDBService,
     DatePipe,
+    ValidatorService,
   ],
   bootstrap: [AppComponent]
 })

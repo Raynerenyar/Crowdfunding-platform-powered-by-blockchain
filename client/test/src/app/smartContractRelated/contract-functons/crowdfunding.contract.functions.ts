@@ -36,7 +36,10 @@ export class CrowdfundingFunctions {
     goal() { return { contractName: this.contractName, functionName: 'goal' } as ContractTxProperties }
     deadline() { return { contractName: this.contractName, functionName: 'deadline' } as ContractTxProperties }
     getBalance() { return { contractName: this.contractName, functionName: 'getBalance' } as ContractTxProperties }
-    requests() { return { contractName: this.contractName, functionName: 'requests' } as ContractTxProperties }
+    getRequestValueOfVotes(requestNum: number) {
+        let param = [requestNum]
+        return { contractName: this.contractName, functionName: 'getRequestValueOfVotes', parameters: param } as ContractTxProperties
+    }
     raisedAmount() { return { contractName: this.contractName, functionName: 'raisedAmount' } as ContractTxProperties }
     tokenAddress() { return { contractName: this.contractName, functionName: 'tokenAddress' } as ContractTxProperties }
     contributers() { return { contractName: this.contractName, functionName: 'contributers' } as ContractTxProperties }

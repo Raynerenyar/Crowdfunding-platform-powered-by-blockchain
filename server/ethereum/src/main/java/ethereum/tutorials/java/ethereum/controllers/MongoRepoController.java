@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,6 +35,7 @@ public class MongoRepoController {
     private MongoRepoService mongoSvc;
     @Autowired
     private MongoRepo mongoRepo;
+    private static final Logger logger = LoggerFactory.getLogger(MongoRepoController.class);
 
     @PostMapping(path = "/insert-announcement")
     @ResponseBody
@@ -48,7 +51,6 @@ public class MongoRepoController {
     @ResponseBody
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Boolean> editAnnouncement(@RequestBody Announcement announcement) {
-        System.out.println(announcement);
         boolean result = mongoSvc.updateAnnouncement(announcement);
         if (result)
             return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -59,6 +61,7 @@ public class MongoRepoController {
     @GetMapping(path = "/get-announcements")
     @ResponseBody
     public ResponseEntity<List<Announcement>> getAnnouncements(@RequestParam String projectAddress) {
+        logger.info("Get announcements, project address >> {}", projectAddress);
         List<Announcement> announcements = mongoSvc.getAnnouncements(projectAddress);
         if (announcements.size() >= 1)
             return ResponseEntity.status(HttpStatus.OK).body(announcements);
@@ -78,7 +81,7 @@ public class MongoRepoController {
     @PostMapping(path = "/insert-comment")
     @ResponseBody
     public ResponseEntity<Boolean> insertComments(@RequestBody Comment comment) {
-        System.out.println("reading comments" + comment);
+        logger.info("insert comments, comment >> {}", comment);
         boolean insertResult = mongoSvc.insertComment(comment);
         if (insertResult)
             return ResponseEntity.status(HttpStatus.OK).body(insertResult);

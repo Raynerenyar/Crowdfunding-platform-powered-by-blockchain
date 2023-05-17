@@ -1,17 +1,65 @@
-<h2 *ngIf="!comments">{{'there are no comments yet' | titlecase }}</h2>
-<div *ngIf="comments">
-    <div *ngFor="let comment of comments; let i = index">
-        <div class="px-2 py-0">
-            <p-divider *ngIf="i != 0"></p-divider>
-            <p [innerHTML]="comment.body"></p>
-            <div class="grid grid-nogutter">
-                <div class="col-12 lg:col-10"></div>
-                <div class="col-12 lg:col-2 text-xs text-right">
-                    <span>{{comment.posterAddress | slice:0:6}}...{{comment.posterAddress | slice:-4}} &nbsp;</span>
-                    <span>{{comment.datetimePosted | date:'dd/MM/yyyy HH:mm'}}</span>    
+<div class="flex justify-content-center">
+    <div class="flex flex-column gap-3 px-2 pb-2 row-gap-3 max-width" style="width: 80%;" >
+
+        <!-- header -->
+        <div class="flex base-card flex-row justify-content-between align-items-center pl-4">
+            <div class="flex flex-column py-2 gap-2">
+                <ng-container *ngIf="comments; else noComments">
+                    <div class="text-xl font-bold">
+                        Comments For {{projectAddress}}
+                    </div>
+                </ng-container>
+                <ng-template #noComments>
+                    <div class="text-xl font-bold">
+                        There Are No Comments
+                    </div>
+                </ng-template>
+            </div>
+            <!-- back button -->
+            <div class="flex p-2 px-3 align-content-center">
+                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back" (click)="goBack()"></p-button>
+            </div>
+        </div>
+
+        <!-- main body card -->
+        <div class="flex flex-column gap-3 pt-4 flex-wrap lg:flex-nowrap base-card">
+        <ng-container *ngIf="comments">
+                <div class="flex flex-column w-full gap-2">
+                    <ng-container *ngFor="let comment of comments">
+                        <div class="card flex flex-column mx-2 mb-2 pt-3">
+                            <div class="px-3 pt-0 font-normal">
+                                <span [innerHTML]="comment.body"></span>
+                            </div>
+                            <div class="col-12 lg:col-3 text-sm text-right align-self-end">
+                                <div>
+                                    <span>{{comment.posterAddress | slice:0:6}}...{{comment.posterAddress | slice:-4}} &nbsp;</span>
+                                    Posted:
+                                    <span>{{comment.datetimePosted | date:'dd/MM/yyyy HH:mm'}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+            <!-- new comment field -->
+            <div class="w-full p-3 pb-0 flex flex-column">
+                <form class="field p-float-label mb-0" [formGroup]="commentForm">
+                    <textarea id="comment" cols="30" rows="10" maxlength="5000" class="text-base text-color surface-overlay border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full" (input)="charCount = this.commentForm.get('comment')?.value.length" pInputTextarea [autoResize]="true" [maxlength]="charLimit" formControlName="comment" ></textarea>
+                    <label for="comment">Comment</label>
+                </form>
+                <div class="flex justify-content-end text-sm">
+                    {{charCount}} / {{charLimit}}
+                </div>
+                <div>
+                    <p-button label="Post Comment" (click)="postComment()"></p-button>
                 </div>
             </div>
-            <p-divider *ngIf="i == comments.length -1"></p-divider>
+            <div class="p-3 pt-0">
+            </div>
         </div>
+        
+
+
     </div>
 </div>

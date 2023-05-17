@@ -142,6 +142,7 @@ public class Token extends Contract {
 
     static {
         _addresses = new HashMap<String, String>();
+        _addresses.put("1683813513105", "0x7ebe54502fc6979CC81E11FD5BBbb4a7B2ca2905");
     }
 
     @Deprecated

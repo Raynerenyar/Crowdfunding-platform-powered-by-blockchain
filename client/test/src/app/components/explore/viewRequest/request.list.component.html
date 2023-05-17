@@ -2,16 +2,21 @@
     <h2>Project has no requests</h2>
 </div>
 <div class="grid grid-nogutter" *ngIf="requests">
+    
     <div class="col-12 lg:col-8 xl:col-9 pr-5">
-        <h2 *ngIf="!(selectedRequestIndex >= 0) && requests.length > 0">{{'select a request to view.'|titlecase}}</h2>
-        <h2 *ngIf="requests.length == 0">{{'There are no request for this project.'| titlecase}}</h2>
+        <div *ngIf="!(selectedRequestIndex >= 0) && requests.length > 0" class="text-2xl font-semibold">{{'select a request to view.'|titlecase}}</div>
+        <div *ngIf="requests.length == 0" class="text-2xl font-semibold">{{'There are no request for this project.'| titlecase}}</div>
+
+        <!-- on request tab show this and the request scroll panel -->
         <div *ngIf="selectedRequestIndex >= 0">
-            <app-contribute-request [request]="request" [tokenBalance]="tokenBalance" [projectAddress]="projectAddress" [tokenAddress]="tokenAddress" [project]="project" (contributeHeight)="onContributeRequestInit($event)"></app-contribute-request>
+            <app-request [request]="request" [projectAddress]="projectAddress" [tokenAddress]="tokenAddress" [project]="project" (contributeHeight)="onContributeRequestInit($event)"></app-request>
         </div>
     </div>
+
     <div class="col-12 lg:col-4 xl:col-3">
         <!-- [style]="{width: '100%',height: '500px', margin: 0 }" [ngStyle]="{ 'height': scrollHeight }" -->
         <p-scrollPanel #sp [style]="{width: '100%', margin: 0 }" >
+            
             <div class="flex flex-column-reverse">
                 <span *ngFor="let request of requests; let i = index">
                     <!-- routerLink="/explore/{{projectAddress}}/request/" [routerLink]="['/explore',projectAddress,'request',i]" -->
@@ -31,6 +36,7 @@
                     </a>
                 </span>
             </div>
+
         </p-scrollPanel>
     </div>
 </div>

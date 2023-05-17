@@ -3,18 +3,21 @@ package ethereum.tutorials.java.ethereum.services.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.models.Project;
-import ethereum.tutorials.java.ethereum.models.ProjectRequest;
+import ethereum.tutorials.java.ethereum.models.Request;
 import ethereum.tutorials.java.ethereum.repository.SqlCrowdfundingRepo;
 
 @Service
 public class SqlRepoService {
     @Autowired
     private SqlCrowdfundingRepo crowdRepo;
+    private static final Logger logger = LoggerFactory.getLogger(SqlRepoService.class);
 
     public Optional<List<Project>> getProjectsByCreatorAddress(String address) {
         List<Project> projects = crowdRepo.selectProjectByCreatorAddress(address);
@@ -31,8 +34,15 @@ public class SqlRepoService {
         return Optional.empty();
     }
 
-    public Optional<List<ProjectRequest>> getRequestsByProjectAddress(String address) {
-        List<ProjectRequest> requests = crowdRepo.selectRequests(address);
+    public Optional<Request> getRequestById(int requestNum) {
+        List<Request> requests = crowdRepo.selectRequestById(requestNum);
+        if (requests.size() == 1)
+            return Optional.of(requests.get(0));
+        return Optional.empty();
+    }
+
+    public Optional<List<Request>> getRequestsByProjectAddress(String address) {
+        List<Request> requests = crowdRepo.selectRequests(address);
         if (requests.size() == 0)
             return Optional.empty();
         return Optional.of(requests);
@@ -41,7 +51,7 @@ public class SqlRepoService {
     public Optional<List<String>> getListOfProjectAddress(String address) {
         List<String> addresses = crowdRepo.selectProjectAddressesByCreatorAddress(address);
         for (String _address : addresses) {
-            System.out.println(_address);
+            logger.info("getting list of addresses >> {}", _address);
         }
         if (addresses.size() == 0)
             return Optional.empty();
@@ -68,6 +78,23 @@ public class SqlRepoService {
         if (projects.size() == 1)
             return Optional.of(projects.get(0));
         return Optional.empty();
+    }
+
+    public Optional<Integer> getRequestId(String projectAddress, int requestNo) {
+        List<Request> req = crowdRepo.selectRequestId(projectAddress, requestNo);
+        if (req.size() == 1)
+            return Optional.of(req.get(0).getRequestId());
+        return Optional.empty();
+    }
+
+    public Integer getValueOfVotesOfRequest(String projectAddress, Integer requestNo) {
+        int value = crowdRepo.getValueOfVotesOfRequest(projectAddress, requestNo);
+        return value;
+    }
+
+    public Integer getCountOfVotes(String projectAddress, Integer requestNo) {
+        int value = crowdRepo.getNumOfVotesOfRequest(projectAddress, requestNo);
+        return value;
     }
 
 }

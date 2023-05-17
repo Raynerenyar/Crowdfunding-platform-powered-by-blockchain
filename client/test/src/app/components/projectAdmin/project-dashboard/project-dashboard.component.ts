@@ -1,11 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { signOut } from '@angular/fire/auth';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { MegaMenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
-import { Announcement, ProjectDetails, RequestDetails } from 'src/app/model/model';
+import { Announcement, Project, Request } from 'src/app/model/model';
 import { BlockchainService } from 'src/app/services/blockchain.service';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 import { SessionStorageService } from 'src/app/services/session.storage.service';
@@ -22,6 +21,7 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./project-dashboard.component.css']
 })
 export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+
   itemz: MegaMenuItem[] = [
     {
       label: 'Projects', icon: 'tooth-icon', styleClass: 'font-normal', items: [[
@@ -51,10 +51,14 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
 
   items!: MegaMenuItem[];
   creatorAddress!: string;
-  projects = new Map()
-  requests!: RequestDetails[]
+  projectsMap = new Map()
+  projects!: Project[]
+  requests!: Request[]
   announcements!: Announcement[]
   notifier$ = new Subject<boolean>();
+  completedCount = 0
+  expiredCount = 0
+  activeCount = 0
 
   constructor(
     private sqlRepoSvc: SqlRepositoryService,
@@ -69,9 +73,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
   ngOnInit() {
     // clear dexie
     this.dexie.delete()
-  }
 
-  ngAfterViewInit(): void {
     this.creatorAddress = this.storageSvc.getAddress()
 
     // when entering project dashboard
@@ -83,13 +85,19 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
           // this.projects = projects
           // console.log(this.projects)
           if (projects != null) {
-            projects.forEach((projectDetails: ProjectDetails) => {
-              this.projects.set(projectDetails.projectAddress, projectDetails)
+            this.projects = projects
+            this.sqlRepoSvc.projects = projects
+            projects.forEach((projectDetails: Project) => {
+              this.projectsMap.set(projectDetails.projectAddress, projectDetails)
               // push into megamenu
               this.itemz[this.indexProject].items![0][1].items?.push({
                 label: this.truncate(projectDetails.title),
                 routerLink: [projectDetails.projectAddress]
               })
+
+              if (projectDetails.completed) this.completedCount += 1
+              if (projectDetails.expired) this.expiredCount += 1
+              if (!projectDetails.completed && !projectDetails.expired) this.activeCount += 1
             });
           }
         },
@@ -102,7 +110,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
       .pipe(takeUntil(this.notifier$))
       .subscribe((projectAddress) => {
         // transferring data to display on project details component
-        this.sqlRepoSvc.emitProjectDetails(this.projects.get(projectAddress))
+        this.sqlRepoSvc.emitProjectDetails(this.projectsMap.get(projectAddress))
 
         // enable requests menu
         this.itemz[this.indexRequests].disabled = false
@@ -118,25 +126,25 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
         this.sqlRepoSvc.getRequests(projectAddress)
           .pipe(takeUntil(this.notifier$))
           .subscribe({
-            next: (requests: RequestDetails[]) => {
+            next: (requests: Request[]) => {
               console.log(requests)
               if (requests) {
                 this.itemz[this.indexRequests].items![0][1].items = []
-                requests.forEach((request: RequestDetails) => {
+                requests.forEach((request: Request) => {
 
                   // assigning router link to each requests
                   this.itemz[this.indexRequests].items![0][1].items?.push({
                     label: this.truncate(request.title),
                     routerLink: [projectAddress, request.requestId]
                   })
+                  console.log(request)
                   // deleting db causes it to close, therefore reopen it to add requests
                   this.dexie.open()
-                  let requestId
-                  this.dexie.requests.get(request.requestId).then((_requestId) => requestId = _requestId)
-                  console.log(requestId)
-                  if (!requestId) {
-                    this.dexie.requests.add(request)
-                  }
+                  this.dexie.requests.get(request.requestId).then((_requestId) => {
+                    if (!_requestId) {
+                      this.dexie.requests.add(request)
+                    }
+                  })
                 });
               }
             },
@@ -152,9 +160,39 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy, AfterViewIn
       })
   }
 
+  ngAfterViewInit(): void {
+
+
+
+
+
+  }
+
   private truncate(text: string) {
     if (text.length > 22) return text.substring(0, 19) + '...'
     return text
+  }
+
+  selectedCard: any
+  card1: any
+  card2: any
+  card3: any
+
+  onCardClick($event: Event, index: number): void {
+    let ele = $event.currentTarget as HTMLElement
+    ele.classList.add('click')
+    this.sqlRepoSvc.project = this.sqlRepoSvc.projects[index]
+  }
+
+  selectCard(card: any, ele: Event) {
+    console.log(card)
+    console.log(ele)
+    if (ele.currentTarget) {
+      let a = ele.currentTarget as HTMLDivElement
+      a.classList.remove('expand')
+    }
+    this.selectedCard = card
+
   }
 
   ngOnDestroy(): void {

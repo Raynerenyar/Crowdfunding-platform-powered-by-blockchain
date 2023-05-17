@@ -1,0 +1,3 @@
+:host ::ng-deep .p-input-number-button-icon	{
+    background-color: var(--custom-accent-colour);
+}

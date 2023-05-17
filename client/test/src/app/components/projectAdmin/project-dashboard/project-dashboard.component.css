@@ -24,6 +24,13 @@ body{
         background-size: contain;
 }
 
+/* :host ::ng-deep .megaphone{
+    width: 1.5rem;
+    height: 1.5rem;
+    background-image: url("../../../../assets/icons/megaphone.svg");
+    background-size: contain;
+} */
+
 :host ::ng-deep .p-megamenu-root-list{
     justify-content: center;
 }
@@ -35,4 +42,42 @@ body{
 
 :host ::ng-deep .p-megamenu-submenu-header{
     width: 100%;
+}
+
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+  }
+
+.full-view {
+    width: 80%;
+    height: 500px;
+}
+
+:host ::ng-deep .p-progressbar-value{
+    background-color: var(--custom-secondary-colour);
+    /* background-color: var(--secondary-color); */
+    /* background-color: var(--primary-color); */
+    /* color: var(--primary-color); */
+}
+
+:host ::ng-deep .p-progressbar-label{
+    color: var(--custom-background-colour2);
+}
+
+.click {
+    box-shadow: var(--shadow-elevation-medium);
+    /* box-shadow: -3px 6px 6px rgba(0, 0, 0, 0.4); */
+    transform: scale(0.5);
+}
+
+.transparent-button {
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
 }

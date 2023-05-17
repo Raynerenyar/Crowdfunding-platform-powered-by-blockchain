@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.web3j.abi.TypeReference;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECDSASignature;
 import org.web3j.crypto.ECKeyPair;
@@ -26,7 +27,10 @@ import org.web3j.crypto.Keys;
 import org.web3j.crypto.Sign;
 import org.web3j.crypto.Sign.SignatureData;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.RemoteFunctionCall;
+import org.web3j.protocol.core.methods.request.Transaction;
+import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.ClientTransactionManager;
@@ -44,6 +48,7 @@ import ethereum.tutorials.java.ethereum.eventHandler.BlockchainEventHandler;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.Token;
+import ethereum.tutorials.java.ethereum.models.BcRequest;
 import ethereum.tutorials.java.ethereum.javaethereum.wrapper.DevFaucet;
 import ethereum.tutorials.java.ethereum.util.contractEncodedFunctions.FactoryEncodedFunctions;
 import jakarta.json.Json;
@@ -63,6 +68,8 @@ public class BlockchainService {
     private String crowdfundingFactoryContractAddress;
     @Value("${faucet.contract.address}")
     private String FaucetContractAddress;
+    @Value("${wallet.public.key}")
+    private String walletAddress;
     @Value("${rpc.url}")
     private String rpcUrl;
     @Value("${chain.id}")
@@ -106,7 +113,7 @@ public class BlockchainService {
             if (publicKey != null) {
                 String recoveredAddress = "0x" + Keys.getAddress(publicKey);
                 Boolean result = recoveredAddress.equalsIgnoreCase(address);
-                System.out.println("recovered address >>>> " + recoveredAddress);
+                logger.info("recovered address from signature, address >> {}", recoveredAddress);
                 if (result == true)
                     return true;
             }
@@ -127,27 +134,111 @@ public class BlockchainService {
         return r;
     }
 
-    public Optional<String> getEncoded(String contractName, String functionName,
+    // public Optional<String> getEncoded(String contractName, String functionName,
+    //         Object... params) {
+    //     Optional<String> opt;
+    //     try {
+    //         switch (contractName) {
+    //             case "CrowdfundingFactory":
+    //                 System.out.println("loading factory contract " + crowdfundingFactoryContractAddress);
+    //                 CrowdfundingFactory crowdfundingFactory = lcSvc
+    //                         .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
+    //                 System.out
+    //                         .println("factory contract has been " + crowdfundingFactory.isValid() + "ly loaded");
+    //                 opt = getFunctionEncoded(crowdfundingFactory, functionName,
+    //                         CrowdfundingFactory.class,
+    //                         params);
+    //                 return opt;
+    //             case "DevFaucet":
+    //                 System.out.println("loading faucet contract " + FaucetContractAddress);
+    //                 DevFaucet devFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
+    //                 System.out.println("Faucet contract has been " + devFaucet.isValid() + "ly uploaded");
+    //                 opt = getFunctionEncoded(devFaucet, functionName, DevFaucet.class, params);
+    //                 return opt;
+    //         }
+    //         return Optional.empty();
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         return Optional.empty();
+    //     }
+    // }
+
+    // public Optional<String> getEncoded(String contractName, String functionName, String contractAddress,
+    //         Object... params) {
+    //     Optional<String> opt;
+    //     System.out.println("getting function encoded " + contractName);
+    //     System.out.println("getting function encoded " + contractAddress);
+    //     try {
+    //         switch (contractName) {
+    //             case "CrowdfundingFactory":
+    //                 System.out.println("loading crowdfunding contract " + crowdfundingFactoryContractAddress);
+    //                 CrowdfundingFactory crowdfundingFactory = lcSvc
+    //                         .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
+    //                 System.out
+    //                         .println("factory contract has been " + crowdfundingFactory.isValid() + "ly loaded");
+    //                 opt = getFunctionEncoded(crowdfundingFactory, functionName,
+    //                         CrowdfundingFactory.class,
+    //                         params);
+    //                 return opt;
+    //             case "Crowdfunding":
+    //                 Crowdfunding crowdfunding = lcSvc.loadCrowdfundingContract(contractAddress);
+    //                 crowdfunding.requests(BigInteger.valueOf(0));
+    //                 System.out
+    //                         .println("Crowdfunding contract has been " + crowdfunding.isValid() + "ly loaded");
+    //                 opt = getFunctionEncoded(crowdfunding, functionName,
+    //                         Crowdfunding.class,
+    //                         params);
+    //                 return opt;
+    //             case "DevFaucet":
+    //                 System.out.println("loading faucet contract " + FaucetContractAddress);
+    //                 DevFaucet devFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
+    //                 System.out.println("Faucet contract has been " + devFaucet.isValid() + "ly uploaded");
+    //                 opt = getFunctionEncoded(devFaucet, functionName, DevFaucet.class, params);
+    //                 return opt;
+    //             case "Token":
+    //                 System.out.println("loading token contract" + contractAddress);
+    //                 Token tokenContract = lcSvc.loadTokenContract(contractAddress);
+    //                 System.out.println("Faucet contract has been " + tokenContract.isValid() + "ly uploaded");
+    //                 opt = getFunctionEncoded(tokenContract, functionName, Token.class, params);
+    //                 return opt;
+    //         }
+    //         return Optional.empty();
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         return Optional.empty();
+    //     }
+    // }
+
+    /** 
+    * this is for contracts that has address derived from the creation of new Crowdfunding project
+    * @param contractName name of the smart contract with same case
+    * @param functionName name of the solidity function
+    * @param contractAddress contract address
+    * @param params params for the solidity functions in the exact order
+    * @return Optional of String or empty
+    */
+    public Optional<String> getEncodedForTransaction(String contractName, String functionName, String contractAddress,
             Object... params) {
-        Optional<String> opt;
+        Optional<RemoteFunctionCall<TransactionReceipt>> opt;
+        logger.info("get encoded for tx, contractName >> {} " + contractName);
+        logger.info("get encoded for tx, contractAddress >> {} " + contractAddress);
         try {
             switch (contractName) {
-                case "CrowdfundingFactory":
-                    System.out.println("loading crowdfunding contract " + crowdfundingFactoryContractAddress);
-                    CrowdfundingFactory crowdfundingFactory = lcSvc
-                            .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
-                    System.out
-                            .println("Crowdfunding contract has been " + crowdfundingFactory.isValid() + "ly loaded");
-                    opt = getFunctionEncoded(crowdfundingFactory, functionName,
-                            CrowdfundingFactory.class,
+                case "Crowdfunding":
+                    Crowdfunding crowdfunding = lcSvc.loadCrowdfundingContract(contractAddress);
+                    crowdfunding.requests(BigInteger.valueOf(0));
+                    logger.info("Crowdfunding contract has been {}ly loaded", crowdfunding.isValid());
+                    opt = getFunction(crowdfunding, functionName,
+                            Crowdfunding.class,
                             params);
-                    return opt;
-                case "DevFaucet":
-                    System.out.println("loading faucet contract " + FaucetContractAddress);
-                    DevFaucet devFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
-                    System.out.println("Faucet contract has been " + devFaucet.isValid() + "ly uploaded");
-                    opt = getFunctionEncoded(devFaucet, functionName, DevFaucet.class, params);
-                    return opt;
+                    logger.info("got encoded function >> function encoded {}", opt.isPresent());
+                    return encode(opt);
+
+                case "Token":
+                    logger.info("loading token contract, contract address >> {}", contractAddress);
+                    Token tokenContract = lcSvc.loadTokenContract(contractAddress);
+                    opt = getFunction(tokenContract, functionName, Token.class, params);
+                    return encode(opt);
             }
             return Optional.empty();
         } catch (Exception e) {
@@ -156,49 +247,51 @@ public class BlockchainService {
         }
     }
 
-    public Optional<String> getEncoded(String contractName, String functionName, String contractAddress,
+    /** 
+     * this is for contracts with address from env such as CrowdfundingFactory and DevFaucet
+     * @param contractName name of the smart contract with same case
+     * @param functionName name of the solidity function
+     * @param params params for the solidity functions in the exact order
+     * @return Optional of String or empty
+     */
+    public Optional<String> getEncodedForTransaction(String contractName, String functionName,
             Object... params) {
-        Optional<String> opt;
-        System.out.println("getting function encoded " + contractName);
-        System.out.println("getting function encoded " + contractAddress);
+        Optional<RemoteFunctionCall<TransactionReceipt>> opt;
+        logger.info("getting function encoded, contract name >> {}", contractName);
+        logger.info("getting function encoded, factory address >> {}", crowdfundingFactoryContractAddress);
         try {
             switch (contractName) {
                 case "CrowdfundingFactory":
-                    System.out.println("loading crowdfunding contract " + crowdfundingFactoryContractAddress);
+                    logger.info("load crowdfunding contract ", crowdfundingFactoryContractAddress);
                     CrowdfundingFactory crowdfundingFactory = lcSvc
                             .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
-                    System.out
-                            .println("factory contract has been " + crowdfundingFactory.isValid() + "ly loaded");
-                    opt = getFunctionEncoded(crowdfundingFactory, functionName,
+                    logger.info("factory contract has been {}ly loaded", crowdfundingFactory.isValid());
+                    opt = getFunction(crowdfundingFactory, functionName,
                             CrowdfundingFactory.class,
                             params);
-                    return opt;
-                case "Crowdfunding":
-                    Crowdfunding crowdfunding = lcSvc.loadCrowdfundingContract(contractAddress);
-                    System.out
-                            .println("Crowdfunding contract has been " + crowdfunding.isValid() + "ly loaded");
-                    opt = getFunctionEncoded(crowdfunding, functionName,
-                            Crowdfunding.class,
-                            params);
-                    return opt;
+                    return encode(opt);
+
                 case "DevFaucet":
-                    System.out.println("loading faucet contract " + FaucetContractAddress);
+                    logger.info("loading faucet contract >> {}", FaucetContractAddress);
                     DevFaucet devFaucet = lcSvc.loadFaucetContract(FaucetContractAddress);
-                    System.out.println("Faucet contract has been " + devFaucet.isValid() + "ly uploaded");
-                    opt = getFunctionEncoded(devFaucet, functionName, DevFaucet.class, params);
-                    return opt;
-                case "Token":
-                    System.out.println("loading token contract" + contractAddress);
-                    Token tokenContract = lcSvc.loadTokenContract(contractAddress);
-                    System.out.println("Faucet contract has been " + tokenContract.isValid() + "ly uploaded");
-                    opt = getFunctionEncoded(tokenContract, functionName, Token.class, params);
-                    return opt;
+                    logger.info("factory contract has been {}ly loaded", devFaucet.isValid());
+                    opt = getFunction(devFaucet, functionName, DevFaucet.class, params);
+                    return encode(opt);
             }
             return Optional.empty();
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    private Optional<String> encode(Optional<RemoteFunctionCall<TransactionReceipt>> function) {
+        if (function.isPresent()) {
+            RemoteFunctionCall<TransactionReceipt> functionCall = function.get();
+            String encodedFunction = functionCall.encodeFunctionCall();
+            return Optional.of(encodedFunction);
+        }
+        return Optional.empty();
     }
 
     private <T> Optional<String> getFunctionEncoded(
@@ -212,7 +305,6 @@ public class BlockchainService {
             RemoteFunctionCall<TransactionReceipt> function;
 
             if (params.length == 0) {
-                System.out.println("approve function? >> " + functionName);
                 Method contractFunction = contractClass.getMethod(functionName);
                 @SuppressWarnings("unchecked") // unchecked type conversion
                 RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
@@ -234,10 +326,6 @@ public class BlockchainService {
                         paramsArray[i] = paramClass.cast(params[i]);
                     }
                 }
-                for (Class<?> classtype : paramsTypeList) {
-                    System.out.println(classtype.getName());
-                }
-                System.out.println(functionName);
                 Method contractFunction = contractClass.getMethod(functionName, paramsTypeList);
                 @SuppressWarnings("unchecked") // unchecked type conversion
                 RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
@@ -248,182 +336,258 @@ public class BlockchainService {
         } else {
             throw new Exception("contract not found");
         }
-        System.out.println("got Function Encoded");
+        logger.info("got Function Encoded");
         return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
-
-        // if (((Contract) contractClass.cast(loadedContract)).isValid()) {
-        //     // can try contractClass.getMethod()
-
-        //     // return (method.getReturnType().getSimpleName().contains("RemoteFunctionCall")
-        //     //         && method.getName().equalsIgnoreCase(functionName));
-        //     // method names have to be exact and same case as defined in the contract
-        //     Iterator<Method> iter = Arrays.asList(contractClass.getDeclaredMethods()).stream()
-        //             .filter((method) -> method.getName().equalsIgnoreCase(functionName))
-        //             .iterator();
-        //     while (iter.hasNext()) {
-        //         System.out.println("iter next");
-        //         Method contractFunction = iter.next();
-        //         contractFunction.getParameterTypes();
-
-        //         // may be unnecessary to check name equality again
-        //         if (contractFunction.getName().equalsIgnoreCase(functionName)) {
-        //             RemoteFunctionCall<TransactionReceipt> function;
-        //             System.out.println("getting encoded function for >>> " + contractFunction.getName());
-        //             if (params.length == 0) {
-        //                 @SuppressWarnings("unchecked") // unchecked type conversion
-        //                 RemoteFunctionCall<TransactionReceipt> sfunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-        //                         .invoke(contractClass.cast(loadedContract));
-        //                 function = sfunction;
-
-        //             } else {
-        //                 List<Object> list = new LinkedList<Object>();
-        //                 Class<?>[] typeArr = contractFunction.getParameterTypes();
-        //                 for (int i = 0; i < params.length; i++) {
-        //                     if (typeArr[i].getSimpleName().equals("BigInteger")) {
-        //                         System.out.println(params[i].getClass().getSimpleName());
-        //                         if (params[i].getClass().getSimpleName().contains("Integer")) {
-        //                             list.add(BigInteger.valueOf(((Integer) params[i]).longValue()));
-        //                         } else {
-        //                             // list.add(BigInteger.valueOf(((Long) ((Integer) params[i]).longValue())));
-        //                             list.add(BigInteger.valueOf((long) params[i]));
-        //                         }
-        //                     } else
-        //                         list.add(typeArr[i].cast(params[i]));
-        //                 }
-
-        //                 Object[] paramsArr = list.toArray();
-        //                 @SuppressWarnings("unchecked") // unchecked type conversion
-        //                 RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-        //                         .invoke(contractClass.cast(loadedContract), paramsArr);
-        //                 function = afunction;
-        //             }
-        //             encodedFunction = function.encodeFunctionCall();
-        //             System.out.println("getFunctionEncoded breaking...");
-        //             break;
-        //         }
-        //     }
-        // } else
-        //     throw new Exception("contract not found");
-        // return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
     }
 
-    public Optional<String> getContractFunctionEncoded(
-            Object loadContract,
-            String contractName,
-            String contractAddress,
+    /**
+     * This methods uses the function name and params to find the corresponding remote function call method from the java wrapper of the smart contract
+     * @param <T>
+     * @param loadedContract
+     * @param functionName
+     * @param contractClass
+     * @param params
+     * @return Optional<RemoteFunctionCall<TransactionReceipt>>
+     * @throws Exception
+     */
+    private <T> Optional<RemoteFunctionCall<TransactionReceipt>> getFunction(
+            T loadedContract,
             String functionName,
+            Class<T> contractClass, // class of loadedContract
             Object... params)
             throws Exception {
-        String encodedFunction = "";
-        Crowdfunding contract = loadCrowdfundingContract(contractAddress);
-        System.out.println("loaded contract");
-        System.out.println("special test contract >>>> " + contract.isValid());
-        System.out.println("params >>>> " + params.length);
+        RemoteFunctionCall<TransactionReceipt> function;
+        if (((Contract) contractClass.cast(loadedContract)).isValid()) {
+            RemoteFunctionCall<TransactionReceipt> bfunction;
 
-        if (contract.isValid()) {
+            if (params.length == 0) {
+                Method contractFunction = contractClass.getMethod(functionName);
+                @SuppressWarnings("unchecked") // unchecked type conversion
+                RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+                        .invoke(contractClass.cast(loadedContract));
+                bfunction = afunction;
+            } else {
+                Class<?>[] paramsTypeList = new Class<?>[params.length];
+                Object[] paramsArray = new Object[params.length];
 
-            Iterator<Method> iter = Arrays.asList(Crowdfunding.class.getDeclaredMethods()).stream()
-                    .filter((method) -> (method.getReturnType().getSimpleName().contains("RemoteFunctionCall")
-                            && method.getName().equalsIgnoreCase(functionName)))
-                    .iterator();
-            while (iter.hasNext()) {
-
-                Method contractFunction = iter.next();
-                contractFunction.getParameterTypes();
-                System.out.println("method name after iter" + contractFunction.getName());
-                if (contractFunction.getName().equalsIgnoreCase(functionName)) {
-                    RemoteFunctionCall<TransactionReceipt> function;
-
-                    if (params.length == 0) {
-                        System.out.println("OK >>>> " + functionName);
-                        @SuppressWarnings("unchecked")
-                        RemoteFunctionCall<TransactionReceipt> sfunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-                                .invoke(contract);
-                        function = sfunction;
-                        // System.out.println("result of calling function" + function.send().toString());
-
+                // conversting the param types that matches the solidity function
+                for (int i = 0; i < params.length; i++) {
+                    Class<?> paramClass = params[i].getClass();
+                    if (paramClass.getSimpleName().contains("Integer")) {
+                        paramsTypeList[i] = BigInteger.class;
+                        paramsArray[i] = BigInteger.valueOf(((Integer) params[i]).longValue());
+                    } else if (paramClass.getSimpleName().contains("Long")) {
+                        paramsTypeList[i] = BigInteger.class;
+                        paramsArray[i] = BigInteger.valueOf((long) params[i]);
                     } else {
-                        System.out.println("have params >>>> " + functionName);
-                        List<Object> list = new LinkedList<Object>();
-                        Class<?>[] typeArr = contractFunction.getParameterTypes();
-                        for (int i = 0; i < params.length; i++) {
-                            if (typeArr[i].getSimpleName().equals("BigInteger")) {
-                                list.add(BigInteger.valueOf((int) params[i]));
-                            } else
-                                list.add(typeArr[i].cast(params[i]));
-                        }
-
-                        Object[] paramsArr = list.toArray();
-                        System.out.println("length of params >>>> " + params.length + " " + params[0].getClass());
-                        System.out.println(paramsArr[0].getClass());
-                        @SuppressWarnings("unchecked")
-                        RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-                                .invoke(contract, paramsArr);
-                        function = afunction;
+                        paramsTypeList[i] = paramClass;
+                        paramsArray[i] = paramClass.cast(params[i]);
                     }
-                    encodedFunction = function.encodeFunctionCall();
-                    System.out.println("encode function >>>> " + encodedFunction);
                 }
+                // for (Class<?> classtype : paramsTypeList) {
+                //     System.out.println(classtype.getName());
+                // }
+                logger.info("getting function from getFunction method >> {}", functionName);
+                // get the method by using function name and param types
+                Method contractFunction = contractClass.getMethod(functionName, paramsTypeList);
+                @SuppressWarnings("unchecked") // unchecked type conversion
+                RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+                        .invoke(contractClass.cast(loadedContract), paramsArray);
+                bfunction = afunction;
             }
+            function = bfunction;
+        } else {
+            throw new Exception("contract not found");
         }
-        return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
+        logger.info("got function");
+        return (function == null) ? Optional.empty() : Optional.of(function);
     }
 
-    public Optional<String> xxgetFunctionEncoded(String contractAddress, String functionName, Object... params)
-            throws Exception {
-        String encodedFunction = "";
-        Crowdfunding contract = loadCrowdfundingContract(contractAddress);
-        System.out.println("loaded contract");
-        System.out.println("special test contract >>>> " + contract.isValid());
-        System.out.println("params >>>> " + params.length);
+    // public Optional<String> getContractFunctionEncoded(
+    //         Object loadContract,
+    //         String contractName,
+    //         String contractAddress,
+    //         String functionName,
+    //         Object... params)
+    //         throws Exception {
+    //     String encodedFunction = "";
+    //     Crowdfunding contract = loadCrowdfundingContract(contractAddress);
+    //     System.out.println("loaded contract");
+    //     System.out.println("special test contract >>>> " + contract.isValid());
+    //     System.out.println("params >>>> " + params.length);
 
-        if (contract.isValid()) {
+    //     if (contract.isValid()) {
 
-            Iterator<Method> iter = Arrays.asList(Crowdfunding.class.getDeclaredMethods()).stream()
-                    .filter((method) -> (method.getReturnType().getSimpleName().contains("RemoteFunctionCall")
-                            && method.getName().equalsIgnoreCase(functionName)))
-                    .iterator();
-            while (iter.hasNext()) {
+    //         Iterator<Method> iter = Arrays.asList(Crowdfunding.class.getDeclaredMethods()).stream()
+    //                 .filter((method) -> (method.getReturnType().getSimpleName().contains("RemoteFunctionCall")
+    //                         && method.getName().equalsIgnoreCase(functionName)))
+    //                 .iterator();
+    //         while (iter.hasNext()) {
 
-                Method contractFunction = iter.next();
-                contractFunction.getParameterTypes();
-                System.out.println("method name after iter" + contractFunction.getName());
-                if (contractFunction.getName().equalsIgnoreCase(functionName)) {
-                    RemoteFunctionCall<TransactionReceipt> function;
+    //             Method contractFunction = iter.next();
+    //             contractFunction.getParameterTypes();
+    //             System.out.println("method name after iter" + contractFunction.getName());
+    //             if (contractFunction.getName().equalsIgnoreCase(functionName)) {
+    //                 RemoteFunctionCall<TransactionReceipt> function;
 
-                    if (params.length == 0) {
-                        System.out.println("OK >>>> " + functionName);
-                        @SuppressWarnings("unchecked")
-                        RemoteFunctionCall<TransactionReceipt> sfunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-                                .invoke(contract);
-                        function = sfunction;
-                        // System.out.println("result of calling function" + function.send().toString());
+    //                 if (params.length == 0) {
+    //                     System.out.println("OK >>>> " + functionName);
+    //                     @SuppressWarnings("unchecked")
+    //                     RemoteFunctionCall<TransactionReceipt> sfunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+    //                             .invoke(contract);
+    //                     function = sfunction;
+    //                     // System.out.println("result of calling function" + function.send().toString());
 
-                    } else {
-                        System.out.println("have params >>>> " + functionName);
-                        List<Object> list = new LinkedList<Object>();
-                        Class<?>[] typeArr = contractFunction.getParameterTypes();
-                        for (int i = 0; i < params.length; i++) {
-                            if (typeArr[i].getSimpleName().equals("BigInteger")) {
-                                list.add(BigInteger.valueOf((int) params[i]));
-                            } else
-                                list.add(typeArr[i].cast(params[i]));
-                        }
+    //                 } else {
+    //                     System.out.println("have params >>>> " + functionName);
+    //                     List<Object> list = new LinkedList<Object>();
+    //                     Class<?>[] typeArr = contractFunction.getParameterTypes();
+    //                     for (int i = 0; i < params.length; i++) {
+    //                         if (typeArr[i].getSimpleName().equals("BigInteger")) {
+    //                             list.add(BigInteger.valueOf((int) params[i]));
+    //                         } else
+    //                             list.add(typeArr[i].cast(params[i]));
+    //                     }
 
-                        Object[] paramsArr = list.toArray();
-                        System.out.println("length of params >>>> " + params.length + " " + params[0].getClass());
-                        System.out.println(paramsArr[0].getClass());
-                        @SuppressWarnings("unchecked")
-                        RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
-                                .invoke(contract, paramsArr);
-                        function = afunction;
-                    }
-                    encodedFunction = function.encodeFunctionCall();
-                    System.out.println("encode function >>>> " + encodedFunction);
-                }
-            }
+    //                     Object[] paramsArr = list.toArray();
+    //                     System.out.println("length of params >>>> " + params.length + " " + params[0].getClass());
+    //                     System.out.println(paramsArr[0].getClass());
+    //                     @SuppressWarnings("unchecked")
+    //                     RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+    //                             .invoke(contract, paramsArr);
+    //                     function = afunction;
+    //                 }
+    //                 encodedFunction = function.encodeFunctionCall();
+    //                 System.out.println("encode function >>>> " + encodedFunction);
+    //             }
+    //         }
+    //     }
+    //     return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
+    // }
+
+    // public Optional<String> xxgetFunctionEncoded(String contractAddress, String functionName, Object... params)
+    //         throws Exception {
+    //     String encodedFunction = "";
+    //     Crowdfunding contract = loadCrowdfundingContract(contractAddress);
+    //     System.out.println("loaded contract");
+    //     System.out.println("special test contract >>>> " + contract.isValid());
+    //     System.out.println("params >>>> " + params.length);
+
+    //     if (contract.isValid()) {
+
+    //         Iterator<Method> iter = Arrays.asList(Crowdfunding.class.getDeclaredMethods()).stream()
+    //                 .filter((method) -> (method.getReturnType().getSimpleName().contains("RemoteFunctionCall")
+    //                         && method.getName().equalsIgnoreCase(functionName)))
+    //                 .iterator();
+    //         while (iter.hasNext()) {
+
+    //             Method contractFunction = iter.next();
+    //             contractFunction.getParameterTypes();
+    //             System.out.println("method name after iter" + contractFunction.getName());
+    //             if (contractFunction.getName().equalsIgnoreCase(functionName)) {
+    //                 RemoteFunctionCall<TransactionReceipt> function;
+
+    //                 if (params.length == 0) {
+    //                     System.out.println("OK >>>> " + functionName);
+    //                     @SuppressWarnings("unchecked")
+    //                     RemoteFunctionCall<TransactionReceipt> sfunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+    //                             .invoke(contract);
+    //                     function = sfunction;
+    //                     // System.out.println("result of calling function" + function.send().toString());
+
+    //                 } else {
+    //                     System.out.println("have params >>>> " + functionName);
+    //                     List<Object> list = new LinkedList<Object>();
+    //                     Class<?>[] typeArr = contractFunction.getParameterTypes();
+    //                     for (int i = 0; i < params.length; i++) {
+    //                         if (typeArr[i].getSimpleName().equals("BigInteger")) {
+    //                             list.add(BigInteger.valueOf((int) params[i]));
+    //                         } else
+    //                             list.add(typeArr[i].cast(params[i]));
+    //                     }
+
+    //                     Object[] paramsArr = list.toArray();
+    //                     System.out.println("length of params >>>> " + params.length + " " + params[0].getClass());
+    //                     System.out.println(paramsArr[0].getClass());
+    //                     @SuppressWarnings("unchecked")
+    //                     RemoteFunctionCall<TransactionReceipt> afunction = (RemoteFunctionCall<TransactionReceipt>) contractFunction
+    //                             .invoke(contract, paramsArr);
+    //                     function = afunction;
+    //                 }
+    //                 encodedFunction = function.encodeFunctionCall();
+    //                 System.out.println("encode function >>>> " + encodedFunction);
+    //             }
+    //         }
+    //     }
+    //     return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
+    // }
+
+    public Optional<String> viewFunctions(String contractName, String functionName, Object... params) {
+        logger.info("view function(without contract address), contractName >> {}, functionName >> {}", contractName,
+                functionName);
+        for (Object object : params) {
+            logger.info("params for the view function(without contract address) >> {}", object.toString());
         }
-        return (encodedFunction.isEmpty()) ? Optional.empty() : Optional.of(encodedFunction);
+        try {
+            switch (contractName) {
+                case "CrowdfundingFactory":
+                    CrowdfundingFactory factory = lcSvc
+                            .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
+                    Optional<String> functionEncoded = getFunctionEncoded(factory, functionName,
+                            CrowdfundingFactory.class, params);
+                    if (functionEncoded.isPresent()) {
+                        Transaction transaction = Transaction.createEthCallTransaction(
+                                walletAddress,
+                                crowdfundingFactoryContractAddress,
+                                functionEncoded.get());
+                        EthCall response = web3.ethCall(transaction, DefaultBlockParameter.valueOf("latest"))
+                                .sendAsync()
+                                .get();
+                        String value = response.getValue();
+                        return Optional.of(value);
+                    }
+                default:
+                    return Optional.empty();
+            }
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<String> viewFunctions(String contractName, String functionName, String contractAddress,
+            Object... params) {
+        logger.info("view function(with contract address), contractName >> {}, functionName >> {}", contractName,
+                functionName);
+        for (Object object : params) {
+            logger.info("params for the view function(with contract address) >> {}", object.toString());
+        }
+        try {
+            switch (contractName) {
+                case "Crowdfunding":
+                    Crowdfunding crowdfunding = lcSvc.loadCrowdfundingContract(contractAddress);
+                    Optional<RemoteFunctionCall<TransactionReceipt>> function = getFunction(crowdfunding,
+                            functionName,
+                            Crowdfunding.class, params);
+                    Optional<String> functionEncoded = encode(function);
+                    logger.info("view function has been encoded >> {}", functionEncoded.isPresent());
+                    if (functionEncoded.isPresent()) {
+                        Transaction transaction = Transaction.createEthCallTransaction(
+                                walletAddress,
+                                contractAddress,
+                                functionEncoded.get());
+                        EthCall response = web3.ethCall(transaction, DefaultBlockParameter.valueOf("latest"))
+                                .sendAsync()
+                                .get();
+                        String value = response.getValue();
+                        logger.info("value returned from view function >> {}", value);
+                        return Optional.of(value);
+                    }
+                default:
+                    return Optional.empty();
+            }
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     public void getEvent(String contractName, String functionName, String blockHash, String projectAddress,
@@ -463,38 +627,6 @@ public class BlockchainService {
             }
         } finally {
             disposeDisposable();
-        }
-
-    }
-
-    // this is just calling the contract function which does not cost gas
-    // therefore can call the contract from the server side instead of the client side
-    public Optional<String> getTokenBalanceFuncEncoded(String tokenAddress, Object... params) throws Exception {
-        Token tokenContract = lcSvc.loadTokenContract(tokenAddress);
-        String accountAddress = (String) params[0];
-        BigInteger balance = tokenContract.balanceOf(accountAddress).send();
-        System.out.println("balance is > " + balance);
-        // String abiFunction;
-        try {
-            return getFunctionEncoded(tokenContract, "balanceOf", Token.class, params);
-            // abiFunction = tokenContract.balanceOf(address).encodeFunctionCall();
-            // return Optional.of(abiFunction);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<BigInteger> getTokenBalance(String tokenAddress, Object... params) {
-        Token tokenContract = lcSvc.loadTokenContract(tokenAddress);
-        String accountAddress = (String) params[0];
-        try {
-            BigInteger balance = tokenContract.balanceOf(accountAddress).send();
-            return Optional.of(balance);
-        } catch (ContractCallException e) {
-            // this exception is the result of 0 balance
-            return Optional.of(BigInteger.valueOf(0));
-        } catch (Exception e) {
-            return Optional.empty();
         }
     }
 

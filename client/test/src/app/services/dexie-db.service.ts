@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
-import { RequestDetails } from '../model/model';
+import { Request } from '../model/model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DexieDBService extends Dexie {
 
-  requests!: Dexie.Table<RequestDetails, number>
+  requests!: Dexie.Table<Request, number>
 
   constructor() {
     super('requests');
