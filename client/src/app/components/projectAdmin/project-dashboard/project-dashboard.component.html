@@ -1,0 +1,170 @@
+<div class="flex justify-content-center">
+    <div class="flex flex-column gap-3 px-2 row-gap-3 pb-2 max-width" style="width: 80%;">
+        
+        <!-- top card -->
+        <div class="flex base-card">
+            <div class="flex flex-column w-12 mx-4 my-4 overflow-hidden text-overflow-ellipsis">
+                
+                <div class="text-xl font-bold" style="overflow: hidden;text-overflow: ellipsis;">Hi, Welcome <span class="select-all">{{creatorAddress}}</span>.</div>
+            </div>
+        </div>
+
+        <!-- stats card -->
+        <div class="flex justify-content-between gap-3">
+            <div class="base-card p-2 pb-4 flex-grow-1">
+                <div class="text-lg font-semibold pl-3 flex flex-column">Active</div>
+                <div class="text-center pt-3">{{activeCount}}</div>
+            </div>
+            <div class="base-card p-2 pb-4 flex flex-column flex-grow-1">
+                <div class="text-lg font-semibold pl-3">Completed</div>
+                <div class="text-center pt-3">{{completedCount}}</div>
+            </div>
+            <div class="base-card p-2 pb-4 flex flex-column flex-grow-1">
+                <div class="text-lg font-semibold pl-3">Expired</div>
+                <div class="text-center pt-3">{{expiredCount}}</div>
+            </div>
+        </div>
+
+
+        <!-- active projects card *ngIf="activeCount > 0"-->
+        <div class="flex base-card">
+            <div class="flex flex-column gap-3 w-full p-2 pb-3">
+                <div class="flex flex-row title-card m-2 pt-1 justify-content-between align-items-center">
+                    <div class="p-2 text-lg font-semibold">
+                        <ng-container *ngIf="activeCount > 0; else noActiveProjects">
+                            <span>Active Projects</span>
+                        </ng-container>
+                        <ng-template #noActiveProjects>
+                            <span>No Active Projects</span>
+                        </ng-template>
+                    </div>
+                    <div class="flex w-2">
+                        <p-button icon="new-folder-white-icon" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none" pInputText pTooltip="New Project" tooltipPosition="top" [showDelay]="600" (click)="goNewProject()"></p-button>
+                    </div>
+                </div>
+                <!-- list of projects routerLink="{{project.projectAddress}}"-->
+                <ng-container *ngFor="let project of projects; let i = index">
+                    <ng-container *ngIf="!project.completed && !project.expired">
+                        <div class="card mx-2" (click)="onCardClick($event,i,project.projectAddress)">
+                            <div class="p-2 font-semibold">
+                                {{project.title | titlecase}}
+                            </div>
+                            <div class="p-2">
+                                <!-- onclick="openLink(project.projectAddress)" -->
+                                <a class="text-sm" href="https://sepolia.etherscan.io/address/{{project.projectAddress}}" target="_blank" >
+                                    {{project.projectAddress}}
+                                </a>
+                            </div>
+                            <div class="grid grid-nogutter">
+                                <div class="col-4 text-sm px-2">
+                                    Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}
+                                </div>
+                                <div class="col-4 text-sm px-2">
+                                    Goal: {{project.goal | commaSeparated}} {{project.tokenSymbol}}
+                                </div>
+                                <div class="col-4 text-sm px-2 text-right">
+                                    Deadline: {{project.deadline | date: 'dd MMM yyyy'}}
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                <ng-container *ngIf="((project.raisedAmount/project.goal)*100) <= 100; else moreThan100">
+                                    <p-progressBar [value]="((project.raisedAmount/project.goal)*100)"></p-progressBar>
+                                    <!-- <p-progresseBar [value]="50"></p-progressBar> -->
+                                </ng-container>
+                                <ng-template #moreThan100>
+                                    <p-progressBar [value]="100"></p-progressBar>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- completed projects card -->
+        <div *ngIf="completedCount > 0" class="flex base-card">
+            <div class="flex flex-column gap-3 w-full p-1 pb-3">
+                <div class="title-card m-2 -mb-2">
+                    <div class="p-2 text-lg font-semibold">
+                        <span>Completed Projects</span>
+                    </div>
+                </div>
+                <ng-container *ngFor="let project of projects">
+                    <ng-container *ngIf="project.completed">
+                        <div class="card mx-2 flex flex-column">
+                            <div class="p-2 font-semibold">
+                                {{project.title | titlecase}}
+                            </div>
+                            <div class="grid grid-nogutter">
+                                <div class="col-4 text-sm px-2">
+                                    Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}
+                                </div>
+                                <div class="col-4 text-sm px-2">
+                                    Goal: {{project.goal | commaSeparated }} {{project.tokenSymbol}}
+                                </div>
+                                <div class="col-4 text-sm px-2 text-right">
+                                    Deadline: {{project.deadline | date: 'dd MMM yyyy'}}
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                <p-progressBar [value]="50"></p-progressBar>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- expired projects card -->
+        <div *ngIf="expiredCount > 0" class="flex base-card">
+            <div class="flex flex-column gap-3 w-full p-1 pb-3">
+                <div class="title-card m-2 -mb-2">
+                    <div class="p-2 text-lg font-semibold">
+                        <span>Expired Projects</span>
+                    </div>
+                </div>
+                <ng-container *ngFor="let project of projects">
+                    <ng-container *ngIf="project.expired">
+                        <div class="card mx-2 flex flex-column">
+                            <div class="p-2 font-semibold">
+                                {{project.title | titlecase}}
+                            </div>
+                            <div class="grid grid-nogutter">
+                                <div class="col-4 text-sm px-2">
+                                    Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}
+                                </div>
+                                <div class="col-4 text-sm px-2">
+                                    Goal: {{project.goal | commaSeparated}} {{project.tokenSymbol}}
+                                </div>
+                                <div class="col-4 text-sm px-2 text-right">
+                                    Deadline: {{project.deadline | date: 'dd MMM yyyy' }}
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                <p-progressBar [value]="50"></p-progressBar>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- <div class="grid-container">
+    <div class="header bg-primary">
+        header
+    </div>
+    <div class="main bg-primary">
+        main
+    </div>
+    <div class="sidebar bg-primary">
+        sidebar
+    </div>
+    <div class="footer bg-primary">
+        footer
+    </div>
+</div> -->
+  

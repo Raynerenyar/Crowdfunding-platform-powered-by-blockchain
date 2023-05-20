@@ -13,11 +13,10 @@ contract Crowdfunding is Ownable {
     IERC20 public token;
     string public title;
     uint public noOfContributors;
-    uint public minimumContribution;
     uint public deadline;
     uint public goal;
     uint public raisedAmount;
-    uint public decimals = 10 ** 6;
+    uint public totalRequestAmount;
 
     struct Request {
         string title;
@@ -67,7 +66,7 @@ contract Crowdfunding is Ownable {
     // therefore use mapping
     uint public numRequests;
     mapping(uint => Request) public requests;
-    mapping(address => uint) public contributers;
+    mapping(address => uint) public contributors;
 
     // // allows factory to call the functions here
     // modifier sharedOwner() {
@@ -84,7 +83,7 @@ contract Crowdfunding is Ownable {
         address _acceptingThisToken,
         string memory _title
     ) {
-        require(_deadline > block.timestamp);
+        require(_deadline > block.timestamp, "Deadline must be in the future");
         require(isToken(_acceptingThisToken), "Address provided is not token");
         require(
             isContract(_acceptingThisToken),
@@ -94,7 +93,6 @@ contract Crowdfunding is Ownable {
         title = _title;
         goal = _goal;
         deadline = _deadline;
-        minimumContribution = 100;
         admin = msg.sender;
 
         token = IERC20(_acceptingThisToken);
@@ -102,22 +100,19 @@ contract Crowdfunding is Ownable {
     }
 
     function contribute(uint _amount) public {
-        // require(block.timestamp < deadline, "Deadline has passed");
-        require(_amount >= minimumContribution, "minimum contribution not met");
-
         require(
             token.allowance(msg.sender, address(this)) >= _amount,
             "token spend not approved"
         );
 
-        if (contributers[msg.sender] == 0) {
+        if (contributors[msg.sender] == 0) {
             unchecked {
                 noOfContributors++;
             }
         }
         token.transferFrom(msg.sender, address(this), _amount);
         unchecked {
-            contributers[msg.sender] += _amount;
+            contributors[msg.sender] += _amount;
             raisedAmount += _amount;
         }
 
@@ -127,10 +122,10 @@ contract Crowdfunding is Ownable {
     function getRefund() public returns (uint) {
         require(block.timestamp >= deadline, "Deadline has not passed");
         require(raisedAmount < goal, "Raised amount is more than goal");
-        require(contributers[msg.sender] > 0, "You need to be a contributer");
+        require(contributors[msg.sender] > 0, "You need to be a contributor");
 
-        uint _amount = contributers[msg.sender];
-        contributers[msg.sender] = 0;
+        uint _amount = contributors[msg.sender];
+        contributors[msg.sender] = 0;
         token.transfer(msg.sender, _amount);
         emit GetRefundEvent(msg.sender, address(token), _amount);
         return _amount;
@@ -141,6 +136,13 @@ contract Crowdfunding is Ownable {
         address _recipient,
         uint _amount
     ) public onlyOwner {
+        if (raisedAmount > 0) {
+            require(
+                (totalRequestAmount + _amount) <= raisedAmount,
+                "This transaction will cause totalRequestAmount to exceed raisedAmount"
+            );
+        }
+
         uint _requestNo = numRequests;
         Request storage newRequest = requests[numRequests];
         numRequests++;
@@ -150,6 +152,8 @@ contract Crowdfunding is Ownable {
         newRequest.amount = _amount;
         newRequest.completed = false;
         newRequest.noOfVoters = 0;
+
+        totalRequestAmount += _amount;
 
         emit CreateRequestEvent(
             _requestNo,
@@ -162,16 +166,14 @@ contract Crowdfunding is Ownable {
 
     function voteRequest(uint _requestNo) public {
         require(numRequests >= _requestNo, "Request does not exist.");
-
-        // owner of crowdfunding project cannot vote for their own requests
         require(
             msg.sender != owner(),
-            "You're not allowed to vote for this request"
+            "As the owner, not allowed to vote for this request"
         );
 
         // must have contributed before voting
         require(
-            contributers[msg.sender] > 0,
+            contributors[msg.sender] > 0,
             "You must be a contributor to vote!"
         );
 
@@ -185,7 +187,7 @@ contract Crowdfunding is Ownable {
             "Request has not been initiated"
         );
 
-        uint _valueOfVote = contributers[msg.sender];
+        uint _valueOfVote = contributors[msg.sender];
         thisRequest.valueOfVotes += _valueOfVote;
         thisRequest.noOfVoters++;
         thisRequest.voters[msg.sender] = true;
@@ -205,18 +207,8 @@ contract Crowdfunding is Ownable {
             thisRequest.completed == false,
             "The request has been completed."
         );
-
-        // uint8 _numerator = 5;
-        // uint8 _denominator = 10;
-        // // value of votes more than 0.5 to pass
-        // require(
-        //     thisRequest.valueOfVotes > (_numerator * decimals) / _denominator,
-        //     "value of votes fail to meet requirement"
-        // );
-        require(
-            ((goal / thisRequest.valueOfVotes) * decimals) < (2 * decimals),
-            "value of votes fail to meet requirement"
-        );
+        uint ratio = goal / thisRequest.valueOfVotes;
+        require(ratio < 2, "value of votes fail to meet requirement");
 
         address _recipient = thisRequest.recipient;
         uint _amount = thisRequest.amount;
@@ -261,6 +253,10 @@ contract Crowdfunding is Ownable {
         uint _requestNo
     ) external view returns (uint) {
         return requests[_requestNo].valueOfVotes;
+    }
+
+    function currBlockTimestamp() public view returns (uint) {
+        return block.timestamp;
     }
 
     // this function will run at constructor

@@ -1,0 +1,93 @@
+<!-- testing
+<div class="ml-2 mr-2">
+    <span *ngIf="request">
+        <h1>Request Overview</h1>
+        <p-panel header="Title">
+            <p>
+                {{request.title}}
+            </p>
+        </p-panel>
+        <p-panel header="Descpition">
+            <p>
+                {{request.description}}
+            </p>
+        </p-panel>
+        <p-panel header="Request Amount">
+            <p>
+                {{request.amount}}
+            </p>
+        </p-panel>
+        <p-panel header="Project Address">
+            <p>
+                {{request.projectAddress}}
+            </p>
+        </p-panel>
+    </span>
+</div> -->
+
+
+<div *ngIf="request; else notFound" class="flex justify-content-center">
+    <div class="flex flex-column gap-3 p-3 row-gap-3 max-width" style="width: 80%">
+
+        <!-- header card -->
+        <div class="flex base-card flex-row justify-content-between align-items-center">
+            <div class="flex flex-column p-2 px-4">
+                <div class="text-xl font-bold">
+                    {{request.title | titlecase}}
+                </div>
+                <div>
+                    Request Number: {{request.requestNo}} 
+                </div>
+            </div>
+
+            <div class="flex p-2 px-4  align-content-center">
+                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back" (click)="goBack()"></p-button>
+            </div>
+
+        </div>
+
+        <!-- body card -->
+        <div class="flex base-card flex-column p-3">
+            <div class="flex flex-row justify-content-between">
+                <div class="flex flex-column col-12 md:col-6 lg:col-6">
+                    <div>
+                        <span class="text-lg font-semibold">Amount:</span> {{request.amount}}
+                    </div>
+                    <div>
+                        <span class="text-lg font-semibold">Number Of Votes:</span> {{countOfVotes}}
+                    </div>
+                </div>
+                <div class="flex flex-column col-12 md:col-6 lg:col-6">
+                    <div>
+                        <span class="text-lg font-semibold">Value Of Votes:</span> {{valueOfVotes}}
+                    </div>
+                    <div>
+                        <span class="text-lg font-semibold">Value in % Of Amount:</span> {{valueOfVotes/request.amount | percent:'1.2-2'}}
+                        <p-tag icon="pi pi-info-circle" pTooltip="Minimum quorem = 50% of the Value Of Votes over the Amount" styleClass="bg-white text-primary" class="text-xs"></p-tag>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <ng-container *ngIf="valueOfVotes/(request.amount/2)*100 <= 100; else moreThan100">
+                    <p-progressBar [value]="valueOfVotes/(request.amount/2)*100"></p-progressBar>
+                </ng-container>
+                <ng-template #moreThan100>
+                    <p-progressBar [value]="100"></p-progressBar>
+                </ng-template>
+            </div>
+        </div>
+
+        <!-- footer card  -->
+        <div class="flex base-card flex-column">
+            <div class="p-2 px-4">
+                <div class="text-justify">
+                    {{request.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #notFound>
+    <h1>Request not found</h1>
+</ng-template>

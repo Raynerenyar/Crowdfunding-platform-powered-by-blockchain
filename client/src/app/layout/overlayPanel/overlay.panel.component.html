@@ -1,0 +1,25 @@
+<p-tabView *ngIf="!isLoggedIn && isWalletConnected">
+    <p-tabPanel>
+        <ng-template pTemplate="header">
+            <i class="pi pi-user mr-2"></i>
+            <span>Login</span>
+        </ng-template>
+        <app-login (onLoginEvent)="emitLoginEvent()"></app-login>
+    </p-tabPanel>
+    <p-tabPanel>
+        <ng-template pTemplate="header">
+            <i class="pi pi-user-plus mr-2"></i>
+            <span>Register as a Project Creator</span>
+        </ng-template>
+        <app-register ></app-register>
+    </p-tabPanel>
+</p-tabView>
+<app-board-user *ngIf="isLoggedIn"></app-board-user>
+
+<ng-container *ngIf="!isWalletConnected">
+
+    <div>
+        <p-button label="Connect Wallet" (click)="connectWallet()"></p-button>
+    </div>
+
+</ng-container>

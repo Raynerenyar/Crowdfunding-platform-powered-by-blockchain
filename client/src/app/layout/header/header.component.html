@@ -1,0 +1,29 @@
+<div class="flex header justify-content-center m-0 p-0">
+    <div class="flex flex-column gap-2 px-2 pb-2 max-width" style="width: 80%" >
+        <div class="flex flex-row header-card justify-content-between p-2 px-3 py-3">
+            <nav class="flex">
+                <app-sidebar></app-sidebar>
+            </nav>
+            <div class="flex">
+                <p-toast position="top-center"></p-toast>
+                <p-confirmPopup #cpop></p-confirmPopup>
+                <p-overlayPanel #op>
+                    <app-overlayPanel (onLoginEvent)="hideOverlay()"></app-overlayPanel>
+                </p-overlayPanel>
+            </div>
+            <nav class="p-toolbar-group-end flex">
+                <div class="flex flex-row">
+                    
+                    <app-connect-wallet class="flex"></app-connect-wallet>
+                    
+                    <p-button *ngIf="isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-sign-out" styleClass="p-button-rounded p-button-outlined p-button-raised" (click)="signOut($event)"></p-button>
+                    
+                    <p-button *ngIf="!isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-sign-in" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
+                    <div>
+                        <p-button *ngIf="isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-user" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>

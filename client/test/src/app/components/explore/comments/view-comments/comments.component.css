@@ -1,9 +1,0 @@
-.card:hover{
-    box-shadow: var(--shadow-elevation-medium);
-    /* box-shadow: -3px 6px 6px rgba(0, 0, 0, 0.4); */
-    transform: scale(1.0);  
-}
-
-.card{
-    cursor: auto;
-}

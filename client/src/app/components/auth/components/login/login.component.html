@@ -1,0 +1,42 @@
+<div class="flex flex-column">
+  
+  <div class="mt-2 mb-1">
+    
+    <strong class="flex text-md mb-2">
+      Already a Project Creator? Login to start using.
+    </strong>
+    <span class="flex text-md w-full" *ngIf="walletAddress">
+      You are connected with&nbsp;<u>{{shortenedAddress}}</u>
+      &nbsp;to&nbsp;<span class="underline">{{chainName}}.</span>
+    </span>
+    <em class="flex text-md">
+      By logging in, you will first need to sign a message
+      from your wallet.
+    </em>
+    
+  </div>
+  
+  <form *ngIf="!isLoggedIn" [formGroup]="loginForm" (keydown.enter)="onLogin()">
+    
+    <div>
+      <span class="p-float-label mt-4">
+        <input type="password" id="password" pInputText
+        class="border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full h-1rem"
+        formControlName="password"
+        aria-describedby="password-error"
+        (input)="reset()">
+        <label htmlFor="password" >Password</label>
+      </span>
+      <!-- && loginForm.get('password')?.errors?.['minlength']; -->
+      <small class="text-red-500 text-sm" *ngIf="isLoginFailed; else small" id="password-error">Incorrect password, wallet address, or signed message</small>
+      <!-- && loginForm.get('username')?.errors?.['maxlength'] -->
+    </div>
+    
+  </form>
+
+  <p-button *ngIf="!isLoggedIn" class="ml-0 mr-0 mt-1" label="Login" styleClass="p-button-raised p-button-sm" [disabled]="isLoggingIn" (click)="onLogin()"></p-button>
+  
+</div>
+<ng-template #small>
+  <small>&nbsp;</small>
+</ng-template>

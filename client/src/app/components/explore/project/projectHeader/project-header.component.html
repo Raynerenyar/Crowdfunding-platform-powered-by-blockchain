@@ -1,0 +1,22 @@
+<div *ngIf="project">
+    <div class="col-12 grid grid-nogutter">
+        <div class="col-12 lg:col-6">
+            <p-card header="Image" styleClass="shadow-5 h-full m-2">
+                <p class="m-0" id="image">
+                    Image
+                </p>
+            </p-card>
+        </div>
+        <div class="col-12 lg:col-6" >
+            <p-card header="{{project.title}}" styleClass="shadow-5 h-full m-2">
+                <div>{{project.projectAddress}}</div>
+                <h4 class="m-0 mt-1 p-0">Goal</h4>
+                <div class="text-sm">{{project.raisedAmount | commaSeparated}} / {{project.goal | commaSeparated}}</div>
+                <h4 class="m-0 p-0">Days Left</h4>
+                <div class="text-sm">{{days}}</div>
+                <h4 class="m-0 p-0">Number of Requests</h4>
+                <div>{{project.numOfRequests}}</div>
+            </p-card>
+        </div>
+    </div>
+</div>

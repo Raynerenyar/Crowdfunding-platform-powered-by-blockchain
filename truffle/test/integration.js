@@ -1,3 +1,9 @@
+/*
+ * this test may not work. there are changes made to the contracts
+ * but the test file is not updated. this was only used in the beginning stage
+ * of creating the smart contracts.
+ */
+
 const Crowdfunding = artifacts.require("Crowdfunding");
 const TWLV = artifacts.require("TWLV");
 const Faucet = artifacts.require("twlvFaucet");

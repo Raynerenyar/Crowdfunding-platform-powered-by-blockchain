@@ -49,7 +49,7 @@ contract CrowdfundingFactory is Ownable {
             _title
         );
 
-        require(address(crowdfunding) != address(0));
+        require(address(crowdfunding) != address(0), "address cannot be 0x0");
         crowdfunding.transferOwnership(msg.sender);
 
         ProjectDetails storage newProject = projects[address(crowdfunding)];

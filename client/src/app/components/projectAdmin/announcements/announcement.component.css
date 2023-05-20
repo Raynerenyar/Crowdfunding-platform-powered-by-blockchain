@@ -1,0 +1,12 @@
+ .border-class{
+    border: 1px solid #ddd;
+ }
+
+ .card:hover{
+   box-shadow: var(--shadow-elevation-medium);
+   transform: scale(1.0);  
+}
+
+.card{
+   cursor: pointer;
+}

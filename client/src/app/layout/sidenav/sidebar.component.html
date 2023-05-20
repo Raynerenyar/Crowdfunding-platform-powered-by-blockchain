@@ -1,0 +1,50 @@
+<p-sidebar #sb styleClass="w-15rem text-primary surface-200 shadow-2" [(visible)]="sidebarVisible" >
+    <ng-template pTemplate="content" styleClass="text-primary">
+        <!-- <p-menu [model]="items" styleClass="text-primary w-auto shadow-2 surface-200" (click)="sidebarVisible = false"></p-menu> -->
+        <!-- <p-tieredMenu [model]="items" styleClass="text-primary w-auto shadow-2 base-card custom-bg-bgColour1" (click)="sidebarVisible = false"></p-tieredMenu> -->
+        <div class=" text-black-alpha-90 flex flex-column justify-content-center gap-2 p-2">
+            <ng-container *ngIf="isLoggedIn; else notLoggedIn">
+                <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goExplore()">
+                    <div class="globe-explore-icon"></div>
+                    <div>Explore</div>
+                </div>
+                <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goDashboard()">
+                    <div class="dashboard-icon"></div>
+                    <div>Dashboard</div>
+                </div>
+                <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goNewProject()">
+                    <div class="new-folder-icon"></div>
+                    <div>New Project</div>
+                </div>
+                <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goFaucet()">
+                    <div class="faucet-icon"></div>
+                    <div>Token Faucet</div>
+                </div>
+                <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goAbout()">
+                    <div class="info-icon"></div>
+                    <div>About</div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-template>
+</p-sidebar>
+<p-button (click)="sidebarVisible = true" id="side-bar-button" icon="pi pi-bars" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
+
+<ng-template #notLoggedIn>
+    <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goExplore()">
+        <div class="globe-explore-icon"></div>
+        <div>Explore</div>
+    </div>
+    <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goLogin()">
+        <div class="person-black-icon"></div>
+        <div>Login</div>
+    </div>
+    <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goFaucet()">
+        <div class="faucet-icon"></div>
+        <div>Token Faucet</div>
+    </div>
+    <div class="flex flex-row card p-2 gap-2 text-xl" (click)="goAbout()">
+        <div class="info-icon"></div>
+        <div>About</div>
+    </div>
+</ng-template>

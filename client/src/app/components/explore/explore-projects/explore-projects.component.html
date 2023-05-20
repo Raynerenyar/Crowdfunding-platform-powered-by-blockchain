@@ -1,0 +1,79 @@
+<div class="flex justify-content-center">
+    <div class="flex flex-column gap-3 px-2 pb-2 row-gap-3 justify-content-center max-width" style="width: 80%; height: 100%;">
+        
+        <!-- top paginator  -->
+        <div class="base-card">
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+        </div>
+
+        
+
+        <div class="flex flex-column gap-3 justify-content-center w-full">
+
+                <!-- top row -->
+                <ng-container *ngIf="topRowProjects">
+                    <div class="flex flex-wrap md:flex-wrap lg:flex-nowrap justify-content-center gap-3">
+                        
+                        <ng-container *ngFor="let project of topRowProjects">
+                            <div class="flex flex-row justify-content-center w-full" [ngClass]="{'fadeinleft': fadingLeft,'fadeinright': !fadingLeft}" (click)="goToProject(project.projectAddress)">
+                                <div class="card flex flex-column no-underline text-color">
+                                    <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" style="width: 100%"/>
+                                    <div class="flex flex-column">
+                                        <div class="text-2xl p-3">{{project.title | titlecase}}</div>
+                                        <div class="p-3">Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}</div>
+                                        <div class="p-3 text-sm">{{project.projectAddress}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                    </div>
+                </ng-container>
+
+                <!-- btm row -->
+                <ng-container *ngIf="btmRowProjects">
+                    <div class="flex flex-wrap md:flex-wrap lg:flex-nowrap justify-content-center gap-3">
+                        <ng-container *ngFor="let project of btmRowProjects">
+                            <div class="flex flex-row justify-content-center w-full" [ngClass]="{'fadeinleft': fadingLeft,'fadeinright': !fadingLeft}" (click)="goToProject(project.projectAddress)">
+                                <div class="card flex flex-column no-underline text-color">
+                                    <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" style="width: 100%"/>
+                                    <div class="flex flex-column">
+                                        <div class="text-2xl p-3">{{project.title | titlecase}}</div>
+                                        <div class="p-3">Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}</div>
+                                        <div class="p-3 text-sm">{{project.projectAddress}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+
+        </div>
+
+        <div class="base-card">
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+        </div>
+        
+    </div>
+</div>
+
+<!-- <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+    <div>
+        <div class="grid justify-content-center">
+            <div *ngFor="let project of projects">
+                <div class="col-4 w-full" [ngClass]="{'fadeinleft': fadingLeft,'fadeinright': !fadingLeft}">
+                    <a routerLink="/explore/{{project.projectAddress}}" class="no-underline">
+                        <p-card class="m-3" styleClass="shadow-4 animation-duration-200" header={{project.title}} subheader="Raised Amount: {{project.raisedAmount}}">
+                            <ng-template pTemplate="header">
+                                <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" />
+                            </ng-template>
+                            <p>
+                                {{project.projectAddress}}
+                            </p>
+                        </p-card>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+<p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator> -->

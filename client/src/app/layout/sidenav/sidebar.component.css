@@ -1,0 +1,47 @@
+/* :host ::ng-deep .p-panelmenu .p-panelmenu-header>a{
+    color: #6366F1;
+} */
+
+:host ::ng-deep .p-menu .p-menuitem-text {
+    color: #6366F1;
+    /* color: white; */
+    /* color: #adf163; */
+    text-align: center;
+}
+
+/* :host ::ng-deep .p-menu {
+    background-color: #a763f1;
+} */
+
+
+/* :host ::ng-deep .p-sidebar{
+    color: #f1a763;
+} */
+
+/* :host ::ng-deep .p-sidebar-left{
+    position: fixed;
+    left: 100px;
+    
+} */
+
+:host ::ng-deep .p-menuitem{
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: var(--custom-background-colour1);
+    /* box-shadow: -1.5px 3px 3px rgba(0, 0, 0, 0.6); */
+    box-shadow: var(--shadow-elevation-medium);
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    margin-top: 0.5rem;
+    margin-inline: 0.8rem;
+}
+
+:host ::ng-deep .p-menuitem:hover{
+    box-shadow: var(--shadow-elevation-high);
+    /* box-shadow: -3px 6px 6px rgba(0, 0, 0, 0.4); */
+    transform: scale(1.08);
+}
+
+:host ::ng-deep .p-menuitem:focus{
+        background-color: var(--custom-background-colour1);
+}

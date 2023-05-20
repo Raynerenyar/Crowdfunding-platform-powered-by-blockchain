@@ -1,0 +1,132 @@
+<div class="flex justify-content-center">
+    <div class="flex flex-column gap-3 px-2 pb-2 row-gap-3 max-width" style="width: 80%">
+
+        <!-- header card -->
+        <div class="flex base-card flex-row justify-content-between align-items-center pl-4">
+            <div class="flex flex-column py-2 gap-2">
+                <div class="text-xl font-bold">
+                    Create New Request
+                </div>
+            </div>
+            <!-- back button -->
+            <div class="flex p-2 px-3 align-content-center">
+                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back" (click)="goBack()"></p-button>
+            </div>
+        </div>
+
+        <!-- body card -->
+        <div class="base-card flex flex-column p-3">
+
+            <!-- navigation -->
+            <div class="flex justify-content-end align-content-center align-items-center gap-3 mb-3 py-2 pb-2 " >
+                <div class="flex flex-row w-2 justify-content-between gap-3">
+                    
+                    <p-button icon="assignment-white-icon" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none" pInputText pTooltip="Create New Request" tooltipPosition="top" [showDelay]="600" (click)="createRequest()"></p-button>
+
+                </div>
+            </div>
+
+            
+            <form [formGroup]="newRequestForm">
+
+                <!-- title field -->
+                <div class="field p-float-label">
+                    <input type="text" id="title" pInputText class="text-base text-color border-2 border-solid border-round appearance-none outline-none  focus:border-primary w-full h-3rem" formControlName="title">
+                    <label for="title">Title</label>
+                </div>
+                <div class="text-right relative" style="bottom: 13px">
+                    <span class="text-xs text-red-500 vertical-align-top" *ngIf="submitted && newRequestForm.get('title')?.errors?.['required']; else blank">Field is mandatory</span>
+                </div>
+        
+                <!-- recipient field -->
+                <div class="field p-float-label ">
+                    <input type="text" id="recipient" pInputText class="text-base text-color border-2 border-solid border-round appearance-none outline-none  focus:border-primary w-full h-3rem" formControlName="recipient">
+                    <label for="recipient">Recipient Address</label>
+                </div>
+                <div class="text-right relative" style="bottom: 13px;">
+                    <span class="text-xs text-red-500 vertical-align-top" *ngIf="submitted && newRequestForm.get('recipient')?.errors?.['required']; else blank">Field is mandatory</span>
+                    &nbsp;
+                    <span class="text-xs text-red-500 vertical-align-top" *ngIf="submitted && newRequestForm.get('recipient')?.errors?.['address']; else blank">Address is not a valid address.</span>            
+                </div>
+        
+        
+                <!-- amount field -->
+                <div class="field p-float-label ">
+                    <p-inputNumber id="amount" [showButtons]="true" formControlName="amount" mode="decimal" [maxFractionDigits]="6"
+                    class="w-full text-base text-color"
+                    styleClass="w-full"
+                    inputStyleClass="border-2 focus:border-primary"
+                    ></p-inputNumber>
+                    <label for="amount">Amount</label>
+                </div>
+                <div class="text-right" style="position: relative; bottom: 13px">
+                    <span class="text-xs text-red-500 vertical-align-top" *ngIf="submitted && newRequestForm.get('amount')?.errors?.['required']; else blank">Field is mandatory</span>
+                </div>
+        
+        
+                <!-- description field -->
+                <div class="field p-float-label ">
+                    <textarea id="description" cols="30" rows="10" maxlength="2000" class="text-base text-color surface-overlay border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full" (input)="charCount = this.newRequestForm.get('description')?.value.length" pInputTextarea [autoResize]="true" formControlName="description"></textarea>
+                    <label for="description">Description</label>
+                </div>
+                <div class="relative flex justify-content-between" style="bottom: 15px">
+                    <span class="text-xs vertical-align-top">{{charCount}} / {{charLimit}}</span>
+                    <span class="text-xs text-red-500 vertical-align-top" *ngIf="submitted && newRequestForm.get('description')?.errors?.['required']; else blank">Field is mandatory</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="card">
+    <h2 class=" mb-5">Request Details</h2>
+    <form [formGroup]="newRequestForm">
+
+        title field
+        <div class="field p-float-label">
+            <input type="text" id="title" pInputText class="text-base text-color border-2 border-solid border-round appearance-none outline-none  focus:border-primary w-full h-3rem" formControlName="title">
+            <label for="title">Title</label>
+        </div>
+        <div class="text-right relative" style="bottom: 13px">
+            <span class="text-xs text-red-500" *ngIf="submitted && newRequestForm.get('title')?.errors?.['required']; else blank">This field is mandatory</span>
+        </div>
+
+        recipient field
+        <div class="field p-float-label ">
+            <input type="text" id="recipient" pInputText class="text-base text-color border-2 border-solid border-round appearance-none outline-none  focus:border-primary w-full h-3rem" formControlName="recipient">
+            <label for="recipient">Recipient Address</label>
+        </div>
+        <div class="text-right relative" style="bottom: 13px;">
+            <span class="text-xs text-red-500" *ngIf="submitted && newRequestForm.get('recipient')?.errors?.['required']; else blank">This field is mandatory</span>
+            &nbsp;
+            <span class="text-xs text-red-500" *ngIf="submitted && newRequestForm.get('recipient')?.errors?.['address']; else blank">Address is not a valid address.</span>            
+        </div>
+
+
+        amount field
+        <div class="field p-float-label ">
+            <p-inputNumber id="amount" [showButtons]="true" formControlName="amount" mode="decimal" [maxFractionDigits]="6"
+            class="w-full text-base text-color"
+            styleClass="w-full"
+            inputStyleClass="border-2 focus:border-primary"
+            ></p-inputNumber>
+            <label for="amount">Amount</label>
+        </div>
+        <div class="text-right" style="position: relative; bottom: 13px">
+            <span class="text-xs text-red-500" *ngIf="submitted && newRequestForm.get('amount')?.errors?.['required']; else blank">This field is mandatory</span>
+        </div>
+
+
+        description field
+        <div class="field p-float-label ">
+            <textarea id="description" cols="30" rows="10" maxlength="2000" class="text-base text-color surface-overlay border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full" (input)="charCount = this.newRequestForm.get('description')?.value.length" pInputTextarea [autoResize]="true" formControlName="description"></textarea>
+            <label for="description">Description</label>
+        </div>
+        <div class="relative flex justify-content-between" style="bottom: 15px">
+            <span class="text-xs">{{charCount}} / {{charLimit}}</span>
+            <span class="text-xs text-red-500" *ngIf="submitted && newRequestForm.get('description')?.errors?.['required']; else blank">This field is mandatory</span>
+        </div>
+    </form>
+    <p-button styleClass="p-button-raised" (click)="createRequest()">Create New Request</p-button>
+</div> -->
+<ng-template #blank><span class="text-xs">&nbsp;</span></ng-template>
