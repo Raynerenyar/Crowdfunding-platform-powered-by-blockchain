@@ -7,6 +7,8 @@ import "./Crowdfunding.sol";
 contract CrowdfundingFactory is Ownable {
     mapping(address => ProjectDetails) public projects;
     mapping(address => bool) public allowedAddresses;
+    mapping(uint => address) public projectAddresses;
+    uint public projectAddressesCount;
     bool public isFreeForAll;
 
     struct ProjectDetails {
@@ -54,6 +56,8 @@ contract CrowdfundingFactory is Ownable {
 
         ProjectDetails storage newProject = projects[address(crowdfunding)];
 
+        projectAddressesCount++;
+        projectAddresses[projectAddressesCount] = address(crowdfunding);
         newProject.title = _title;
         newProject.project = crowdfunding;
         IERC20Metadata token = IERC20Metadata(_acceptingThisToken);

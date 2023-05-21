@@ -213,27 +213,26 @@ body {
 /* html, body { height: 100%; } */
 /* body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
-:root .input-white-icon{
+:root .input-black-icon{
   width: 1.5rem;
   height: 1.5rem;
-  background-image: url("./assets/icons/input_white_48dp.svg");
+  background-image: url("./assets/icons/input_FILL0_wght400_GRAD200_opsz48.svg");
   background-size: contain;  
 }
 
-:root .output-white-icon{
+:root .output-black-icon{
   width: 1.5rem;
   height: 1.5rem;
-  background-image: url("./assets/icons/output_white_48dp.svg");
+  background-image: url("./assets/icons/output_FILL0_wght400_GRAD200_opsz48.svg");
   background-size: contain;  
-  transform: scaleX(1.24) scaleY(1.08);
 }
 
-:root .token-white-icon{
+:root .token-black-flip-icon{
   width: 1.5rem;
   height: 1.5rem;
-  background-image: url("./assets/icons/generating_tokens_white_48dp.svg");
+  background-image: url("./assets/icons/generating_tokens_black_48dp.svg");
   background-size: contain;
-  transform: scale(1.1);
+  transform: scaleX(-1.0);
 }
 
 :root .faucet-icon{
@@ -287,7 +286,7 @@ body {
 
 :root .info-icon{
   width: 1.5rem;
-  height: 1.4rem;
+  height: 1.5rem;
   background-image: url("./assets/icons/info_FILL0_wght100_GRAD200_opsz48.svg");
   background-size: contain;  
 }
@@ -298,35 +297,35 @@ body {
 
 :root .person-black-icon{
   width: 1.5rem;
-  height: 1.4rem;
+  height: 1.5rem;
   background-image: url("./assets/icons/person_FILL0_wght100_GRAD200_opszNaN.svg");
   background-size: contain;  
 }
 
 :root .vote-icon{
   width: 1.5rem;
-  height: 1.4rem;
+  height: 1.5rem;
   background-image: url("./assets/icons/how_to_vote_FILL0_wght100_GRAD200_opszNaN.svg");
   background-size: contain;  
 }
 
 :root .vote-white-icon{
   width: 1.5rem;
-  height: 1.4rem;
+  height: 1.5rem;
   background-image: url("./assets/icons/how_to_vote_white_48dp.svg");
   background-size: contain;  
 }
 
 :root .pan-white-icon{
   width: 1.5rem;
-  height: 1.4rem;
+  height: 1.5rem;
   background-image: url("./assets/icons/pan_tool_white_48dp.svg");
   background-size: contain;  
 }
 
 :root .paid-white-icon{
   width: 1.5rem;
-  height: 1.4rem;
+  height: 1.5rem;
   background-image: url("./assets/icons/paid_white_48dp.svg");
   background-size: contain;  
 }

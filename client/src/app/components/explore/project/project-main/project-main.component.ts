@@ -26,6 +26,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
   requests!: Request[]
   userAddress!: string
   tokenBalance!: number
+  currBlockTimestamp!: number
 
   selectedRequestIndex!: number | undefined
 
@@ -33,12 +34,14 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
 
   showContribute = true
   showRefund = false
-
+  contributedAmount!: number
+  deadlineTimestamp!: number
   items!: MenuItem[]
   activeItem!: MenuItem;
-
-  @ViewChild(RequestListComponent)
-  requestCompo?: RequestListComponent
+  notRefundable = true
+  raisedAmountCondition = false
+  contributedCondition = false
+  blockTimestampCondition = false
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +52,8 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private msgSvc: PrimeMessageService,
     private authSvc: AuthService,
-    private walletSvc: WalletService) { }
+    private walletSvc: WalletService,
+  ) { }
 
   ngOnInit(): void {
     this.userAddress = this.storageSvc.getAddress()
@@ -62,12 +66,11 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
         this.repoSvc.getSingleProject(this.projectAddress)
           .pipe(takeUntil(this.notifier$))
           .subscribe({
-            next: (project) => {
+            next: async (project) => {
               this.project = project as Project
 
               /* assign to repo service project property so that
-               * request page can retrieve it 
-               */
+               * request page can retrieve it */
               this.repoSvc.project = project
 
               this.contributeForm = this.fb.group({
@@ -97,68 +100,82 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
                   .catch()
               }
 
-              // assign raisedAmount to project
-              this.bcSvc.getRaisedAmount(this.project.projectAddress)
-                .pipe(takeUntil(this.notifier$))
-                .subscribe({
-                  next: (value) => {
-                    this.project.raisedAmount = value
-                  },
-                  error: (err) => { }
-                })
+              this.raisedAmountCondition = await this.getRaisedAmount()
+              this.contributedCondition = await this.getContributedAmount()
+              this.blockTimestampCondition = await this.getBlockTimestamp()
+
+
+              // same condition as in smart contract
+              // if all true then enable the refund button
+              let conditionsForRefund = [
+                this.raisedAmountCondition,
+                this.contributedCondition,
+                this.blockTimestampCondition
+              ]
+
+              const result = await Promise.all(conditionsForRefund)
+              console.log(result)
+              if (!result.includes(false))
+                this.notRefundable = false
             },
             error: (error: HttpErrorResponse) => {
               console.log(error.status)
             }
           })
       })
-    // this.items = [
-    //   { label: 'Project', icon: 'pi pi-user' },
-    //   { label: 'Requests', icon: 'pi pi-wallet' },
-    //   { label: 'Announcements', icon: 'pi pi-user', },
-    //   { label: 'Comments', icon: 'pi pi-user' }
-    // ]
-    // this.activeItem = this.items[0];
   }
 
-  // onActiveItemChange($event: MenuItem) {
-  //   console.log($event.label)
-  //   this.selectView($event.label)
-  //   this.selectedRequestIndex = undefined
-  // }
+  // returns timestamp condition for refund
+  getBlockTimestamp(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.bcSvc.getBlockTimestamp()
+        .pipe(takeUntil(this.notifier$))
+        .subscribe({
+          next: (blockTimestamp: number) => {
+            let date = new Date(this.project.deadline)
+            this.deadlineTimestamp = date.getTime()
+            this.currBlockTimestamp = blockTimestamp
+            resolve(this.currBlockTimestamp >= this.deadlineTimestamp)
+          },
+          error: () => reject(false)
+        })
+    })
+  }
 
-  // onMenuClicked(menu: string) {
-  //   console.log(menu)
-  //   this.selectView(menu)
-  // }
+  // returns contributed amount condition for refund
+  getContributedAmount(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.bcSvc.getContributionAmount(this.projectAddress, this.userAddress)
+        .pipe(takeUntil(this.notifier$))
+        .subscribe({
+          next: (value) => {
+            this.contributedAmount = value
+            console.log("contributed amount", this.contributedAmount)
+            resolve(this.contributedAmount > 0)
+          },
+          error: (err) => reject(false)
+        })
+    })
+  }
 
-  // onChosenRequest(index: number) {
-  //   console.log(index)
-  //   this.selectedRequestIndex = index
-  //   this.selectView("Requests")
-  // }
+  // returns raised amount condition for refund
+  getRaisedAmount(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.bcSvc.getRaisedAmount(this.project.projectAddress)
+        .pipe(takeUntil(this.notifier$))
+        .subscribe({
+          next: (value) => {
+            this.project.raisedAmount = value
+            console.log("raised amount", this.project.raisedAmount)
+            resolve(this.project.raisedAmount >= this.project.goal)
+          },
+          error: (err) => reject(false)
+        })
+    })
+  }
 
-  // onNewComment() {
-  //   this.selectView("New comments")
-  //   console.log('on new comment')
-  //   console.log(this.showNewComment)
-  //   this.activeItem = {}
-  // }
 
-  // onCommentSubmission() {
-  //   console.log("comment submission")
-  //   // return back to comments tab
-  //   this.onActiveItemChange({ label: 'Comments' })
-  //   this.activeItem = this.items[3];
-  // }
 
-  // selectView(view: string | undefined) {
-  //   this.showProject = (view === 'Project') ? true : false;
-  //   this.showAnnouncement = (view === 'Announcements') ? true : false;
-  //   this.showComments = (view === 'Comments') ? true : false;
-  //   this.showSingleRequest = (view === 'Requests') ? true : false;
-  //   this.showNewComment = (view === 'New comments') ? true : false;
-  // }
 
   contributeTab() {
     this.showContribute = true
@@ -220,13 +237,19 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
 
   }
 
-  // TODO:
   onRefund() {
     if (this.walletSvc.isOnRightChain()) {
-
+      console.log("not refundable?", this.notRefundable)
+      let refundable = !this.notRefundable
+      if (refundable) {
+        this.bcSvc.getRefund(this.projectAddress)
+          .pipe(takeUntil(this.notifier$))
+          .subscribe({
+            next: () => this.msgSvc.generalSuccessMethod("You have successfully gotten your refund"),
+            error: () => this.msgSvc.generalErrorMethod("Failed to get refund")
+          })
+      }
     } else this.msgSvc.tellToConnectToChain()
-
-
   }
 
   ngOnDestroy(): void {

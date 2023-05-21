@@ -31,7 +31,7 @@ import jakarta.json.JsonObject;
 // @CrossOrigin(origins = "*")
 // @CrossOrigin(origins = "#{'${client.url}'}")
 @CrossOrigin(origins = "#{'${client.url}'}", maxAge = 3600, allowCredentials = "true")
-@RequestMapping("/api")
+@RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class EthController {
 
     private static final Logger logger = LoggerFactory.getLogger(EthController.class);
@@ -93,8 +93,9 @@ public class EthController {
         } else {
             opt = BcSvc.viewFunctions(contractName, functionName, contractAddress, params);
         }
-        logger.info("got encoded function in opt >> {}", opt.isPresent());
+        logger.info("got return value for {} in opt >> {}", functionName, opt.isPresent());
         if (opt.isPresent()) {
+            logger.info("return value is {}", opt.get());
             String returnFromView = Json.createObjectBuilder()
                     .add("returnFromView", opt.get())
                     .build()

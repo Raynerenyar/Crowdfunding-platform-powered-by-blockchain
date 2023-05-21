@@ -1,5 +1,5 @@
 <div *ngIf="project" class="flex justify-content-center">
-    <div class="flex flex-column gap-3 px-2 pb-2 row-gap-3 max-width" style="width: 80%" >
+    <div class="flex flex-column gap-3 pb-2 row-gap-3 max-width" style="width: 80%" >
         
         <!-- header -->
         <div class="flex base-card flex-row justify-content-between align-items-center pl-4">
@@ -116,43 +116,62 @@
                         </div>
 
                         <!-- contribute and refund panel -->
-                        <div class="flex flex-column gap-3 base-card p-2">
-                            <div class="flex flex-row flex-grow-1 lg:flex-grow-0 xl:flex-grow-0 gap-3">
-                                <div class="button-card custom-bg-accent w-full p-2 gap-1 flex flex-row justify-content-center align-items-center" pTooltip="Contribute" tooltipPosition="bottom" [showDelay]="600" (click)="contributeTab()" >
-                                    <div class="flex token-white-icon"></div>
-                                    <div class="flex input-white-icon"></div>
+                        <div class="flex flex-column gap-2 base-card p-2">
+                        
+                            <!-- tabs -->
+                            <div class="flex flex-row flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+                                <div class="w-full p-2 flex justify-content-center align-items-center cursor-pointer" [ngClass]="{'border-bottom':showContribute, 'border-grey':!showContribute}" pTooltip="Contribute" tooltipPosition="bottom" [showDelay]="600" (click)="contributeTab()" >
+                                    <div class="flex token-black-flip-icon"></div>
+                                    <div class="flex input-black-icon"></div>
                                 </div>
-                                <div class="button-card custom-bg-accent w-full p-2 gap-1 flex justify-content-center align-items-center" pTooltip="Refund" tooltipPosition="bottom" [showDelay]="600" (click)="refundTab()">
-                                    <div class="flex output-white-icon"></div>
-                                    <div class="flex token-white-icon"></div>
+                                <div class="w-full p-2 flex justify-content-center align-items-center cursor-pointer" [ngClass]="{'border-bottom':showRefund, 'border-grey':!showRefund}" pTooltip="Refund" tooltipPosition="bottom" [showDelay]="600" (click)="refundTab()">
+                                    <div class="flex output-black-icon"></div>
+                                    <div class="flex token-black-flip-icon"></div>
                                 </div>
                             </div>
-                            <ng-container *ngIf="showContribute">
-                                <div class="title-card flex flex-column w-full justify-content-center align-items-center mt-3 gap-2">
-                                    <small class="text-xs align-self-end m-0 p-0">
-                                        Available: {{this.tokenBalance}} {{project.tokenSymbol}}
-                                    </small>
-                                    <form class="w-full" [formGroup]="contributeForm" (keydown.enter)="onContribute()">
-                                    <div class="flex w-full p-float-label pt-0 mt-0">
-                                            <p-inputNumber class="w-full" styleClass="w-full" formControlName="amount"></p-inputNumber>
-                                            <label htmlFor="number-input">Contribute</label>
+
+                            <!-- content container -->
+                            <div class="flex">
+                                <ng-container *ngIf="showContribute">
+                                    <div class="title-card flex flex-column w-full justify-content-center align-items-center p-2 gap-2">
+                                        <small class="text-xs align-self-end m-0 p-0">
+                                            Available: {{this.tokenBalance}} {{project.tokenSymbol}}
+                                        </small>
+                                        <form class="w-full" [formGroup]="contributeForm" (keydown.enter)="onContribute()">
+                                        <div class="flex w-full p-float-label pt-0 mt-0">
+                                                <p-inputNumber class="w-full" styleClass="w-full" formControlName="amount"></p-inputNumber>
+                                                <label htmlFor="number-input">Contribute</label>
+                                            </div>
+                                        </form>
+                                        <div class="flex w-full">
+                                            <p-button class="w-full" styleClass="w-full" label="Contribute" (click)="onContribute()"></p-button>
                                         </div>
-                                    </form>
-                                    <div class="flex w-full">
-                                        <p-button class="w-full" styleClass="w-full" label="Contribute" (click)="onContribute()"></p-button>
                                     </div>
-                                </div>
-                            </ng-container>
-                            <ng-container *ngIf="showRefund">
-                                <div class="title-card w-full flex flex-column gap-3">
-                                    <div class="flex w-full">
-                                        Your Contribution:
+                                </ng-container>
+                                <ng-container *ngIf="showRefund">
+                                    <div class="title-card w-full flex flex-column p-2 gap-3">
+                                        <div class="flex flex-column w-full">
+                                            <div>
+                                                <span class="pi" [ngClass]="{'pi-check text-green-600': raisedAmountCondition,'pi-times text-red-500':!raisedAmountCondition}"></span>
+                                                <span [ngClass]="{'text-green-600': raisedAmountCondition,'text-red-500':!raisedAmountCondition}">&nbsp; Raised Amount > Goal</span>
+                                            </div>
+                                            <div>
+                                                <span class="pi" [ngClass]="{'pi-check text-green-600': contributedCondition,'pi-times text-red-500':!contributedCondition}"></span>
+                                                <span [ngClass]="{'text-green-600': contributedCondition,'text-red-500':!contributedCondition}">&nbsp; Contributed {{contributedAmount}} {{project.tokenSymbol}}</span>
+                                            </div>
+                                            <div>
+                                                <span class="pi" [ngClass]="{'pi-check text-green-600': blockTimestampCondition,'pi-times text-red-500':!blockTimestampCondition}"></span>
+                                                <span [ngClass]="{'text-green-600': blockTimestampCondition,'text-red-500':!blockTimestampCondition}">&nbsp; Deadline</span>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="flex w-full">
+                                            <p-button class="w-full" styleClass="w-full" label="Refund" [disabled]="notRefundable" (click)="onRefund()"></p-button>
+                                        </div>
                                     </div>
-                                    <div class="flex w-full">
-                                        <p-button class="w-full" styleClass="w-full" label="Refund" (click)="onRefund()"></p-button>
-                                    </div>
-                                </div>
-                            </ng-container>
+                                </ng-container>
+                            </div>
+
                         </div>
         
                         <!-- request list card -->

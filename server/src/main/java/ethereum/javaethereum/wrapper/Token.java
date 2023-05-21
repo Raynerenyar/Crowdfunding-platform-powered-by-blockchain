@@ -142,7 +142,9 @@ public class Token extends Contract {
 
     static {
         _addresses = new HashMap<String, String>();
-        _addresses.put("1684552462238", "0x66BfD5eE01288d322aCd4805bC63F4E320d358f4");
+        _addresses.put("1684630313128", "0x66BfD5eE01288d322aCd4805bC63F4E320d358f4");
+        _addresses.put("1684552462238", "0xd9Ddc4024ae65ace6a478EfA737C4806Da1ccC01");
+        _addresses.put("1684634015752", "0xd287079a4306AA908812a37C548F9b5F190Cd712");
         _addresses.put("1683813513105", "0x7ebe54502fc6979CC81E11FD5BBbb4a7B2ca2905");
     }
 

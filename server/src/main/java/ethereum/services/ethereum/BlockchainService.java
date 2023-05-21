@@ -570,28 +570,11 @@ public class BlockchainService {
         try {
             switch (contractName) {
                 case "Crowdfunding":
-                    // Crowdfunding crowdfunding = lcSvc.loadCrowdfundingContract(contractAddress);
-                    // Optional<RemoteFunctionCall<TransactionReceipt>> function = getFunction(crowdfunding,
-                    //         functionName,
-                    //         Crowdfunding.class, params);
-
-                    // Optional<String> functionEncoded = encode(function);
-                    // logger.info("view function has been encoded >> {}", functionEncoded.isPresent());
-                    // if (functionEncoded.isPresent()) {
-                    //     Transaction transaction = Transaction.createEthCallTransaction(
-                    //             walletAddress,
-                    //             contractAddress,
-                    //             functionEncoded.get());
-                    //     EthCall response = web3.ethCall(transaction, DefaultBlockParameter.valueOf("latest"))
-                    //             .sendAsync()
-                    //             .get();
-                    //     String value = response.getValue();
-                    //     logger.info("value returned from view function >> {}", value);
-                    //     return Optional.of(value);
-                    // }
                     switch (functionName) {
                         case "raisedAmount":
                             return Optional.of(getRaisedAmount(contractAddress));
+                        case "contributors":
+                            return Optional.of(getContributorsContribution(contractAddress, params));
                     }
                 default:
                     return Optional.empty();
@@ -603,6 +586,12 @@ public class BlockchainService {
 
     public String getRaisedAmount(String projectAddress) throws InterruptedException, ExecutionException {
         return CrowdfundingViewFunctions.getRaisedAmount(walletAddress, projectAddress, web3);
+    }
+
+    public String getContributorsContribution(String projectAddress, Object... contributorAddress)
+            throws InterruptedException, ExecutionException {
+        return CrowdfundingViewFunctions.getContributorsContribution(walletAddress, projectAddress, web3,
+                contributorAddress);
     }
 
     public void getEvent(String contractName, String functionName, String blockHash, String projectAddress,

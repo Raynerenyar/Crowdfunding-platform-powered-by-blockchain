@@ -42,6 +42,9 @@ export class CrowdfundingFunctions {
     }
     raisedAmount() { return { contractName: this.contractName, functionName: 'raisedAmount' } as ContractTxProperties }
     tokenAddress() { return { contractName: this.contractName, functionName: 'tokenAddress' } as ContractTxProperties }
-    contributors() { return { contractName: this.contractName, functionName: 'contributors' } as ContractTxProperties }
+    contributors(address: string) {
+        let param = [address]
+        return { contractName: this.contractName, functionName: 'contributors', parameters: param } as ContractTxProperties
+    }
 
 }

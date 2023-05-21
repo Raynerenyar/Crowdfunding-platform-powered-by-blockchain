@@ -271,7 +271,7 @@ export class BlockchainService implements OnDestroy, OnInit {
     })
   }
 
-  refund(projectAddress: string) {
+  getRefund(projectAddress: string) {
     return new Observable(observer => {
 
       let properties = SmartContract.crowdfunding().getRefund()
@@ -306,6 +306,23 @@ export class BlockchainService implements OnDestroy, OnInit {
               console.log(error.cause)
               observer.error()
             })
+        })
+    })
+  }
+
+  getContributionAmount(projectAddress: string, address: string): Observable<any> {
+    return new Observable(observer => {
+      let properties = SmartContract.crowdfunding().contributors(address)
+      this.getViewFunctionsReturn(properties, projectAddress)
+        .pipe(takeUntil(this.notifier$))
+        .subscribe({
+          next: (resp) => {
+            let value = resp as { returnFromView: string }
+            observer.next(value.returnFromView)
+          },
+          error: (err) => {
+            observer.error(err)
+          },
         })
     })
   }
@@ -423,7 +440,7 @@ export class BlockchainService implements OnDestroy, OnInit {
     return this.http.post(url, requestBody, { params: httpParams })
   }
 
-  public getBlockTimestamp() {
+  public getBlockTimestamp(): Observable<any> {
     return new Observable(observer => {
       this.web3.eth.getBlockNumber()
         .then((blockNum) => {
@@ -431,8 +448,9 @@ export class BlockchainService implements OnDestroy, OnInit {
           this.web3.eth.getBlock(blockNum)
             .then(
               (blockTimestamp) => {
-                console.log(blockTimestamp)
-                observer.next(blockTimestamp.timestamp)
+                let blockTimestampSeconds = blockTimestamp.timestamp as number
+                let blockTimestampMiliSeconds = blockTimestampSeconds * 1000
+                observer.next(blockTimestampMiliSeconds)
               }
             )
         })

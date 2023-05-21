@@ -74,7 +74,9 @@ public class DevFaucet extends Contract {
 
     static {
         _addresses = new HashMap<String, String>();
-        _addresses.put("1684552462238", "0xB51CDE7163f8198eA95873c9FaE061479aD0e970");
+        _addresses.put("1684630313128", "0xB51CDE7163f8198eA95873c9FaE061479aD0e970");
+        _addresses.put("1684552462238", "0xA90ceE8570f1035Abd399B23243e3392C03b8e79");
+        _addresses.put("1684634015752", "0x195A0D615542c2CD22852fe3996730A64617094C");
         _addresses.put("1683813513105", "0xcAB38331652a3B3281FF3aCaAcB3aAd83AF4D1FE");
     }
 

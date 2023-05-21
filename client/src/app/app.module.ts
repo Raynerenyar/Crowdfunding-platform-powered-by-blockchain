@@ -14,7 +14,6 @@ import { HeaderComponent } from './layout/header/header.component';
 import { SidebarComponent } from './layout/sidenav/sidebar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRequestComponent } from './components/projectAdmin/newRequest/new-request.component';
-import { ReceivenContributionComponent } from './components/projectAdmin/receiveContribution/receiven-contribution.component';
 import { AuthComponents } from "./components/auth/auth.index"
 import { httpInterceptorProviders } from './components/auth/auth.interceptor';
 import { PrimeMessageService } from './services/prime.message.service';
@@ -38,8 +37,6 @@ import { CommaSeparatedPipe } from './util/commaPipe';
     FaucetComponent,
     HeaderComponent,
     SidebarComponent,
-    // NewRequestComponent,
-    // ReceivenContributionComponent,
     ...layoutComponents,
     ...AuthComponents,
     ...projectAdminComponents,
