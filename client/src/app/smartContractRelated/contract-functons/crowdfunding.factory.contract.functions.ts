@@ -1,4 +1,5 @@
 import { ContractTxProperties } from "src/app/model/model"
+import BN from 'bn.js';
 
 export class CrowdfundingFactoryFunctions {
 

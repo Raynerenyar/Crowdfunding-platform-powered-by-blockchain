@@ -21,179 +21,179 @@
 
         <!-- main body card -->
         <div class="flex flex-row gap-3 flex-wrap lg:flex-nowrap">
-                    <div class="flex flex-column w-9 gap-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
-            
-            
-                        <!-- project stats card -->
-                        <div class="flex flex-row justify-content-between gap-3 flex-wrap lg:flex-nowrap xl:flex-nowrap" >
-                            <div class="base-card w-auto p-3 px-4 sm:flex-grow-1">
-                                <div>
-                                    Accepts <span class="font-semibold">{{project.tokenSymbol}}</span> Token
-                                </div>
-                                <div>
-                                    <a class="text-sm" href="https://sepolia.etherscan.io/address/{{project.acceptingToken}}" target="_blank">
-                                        {{project.acceptingToken}}
-                                    </a>    
-                                </div>
-                                <div>
-                                    Status: 
-                                    <span *ngIf="project.completed">Completed</span>
-                                    <span *ngIf="project.expired">Expired</span>
-                                    <span *ngIf="!project.expired && !project.completed">Ongoing</span>
-                                </div>
-                            </div>
-                            <div class="base-card w-full p-3 px-4 sm:flex-grow-1 md:flex-grow-1">
-                                <div class="flex justify-content-between">
-                                    <span class="font-semibold">Request Count: </span>
-                                    <span>{{project.numOfRequests}}</span>
-                                </div>
-                                <div class="flex justify-content-between">
-                                    <span class="font-semibold">Created Date:</span>
-                                    <span>{{project.createdDate | date: 'dd MMM yyyy'}}</span>
-                                </div>
-                                <div class="flex justify-content-between">
-                                    <span class="font-semibold">Deadline:</span>
-                                    <span>{{project.deadline | date: 'dd MMM yyyy'}}</span>
-                                </div>
-                            </div>
+            <div class="flex flex-column w-9 gap-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+    
+    
+                <!-- project stats card -->
+                <div class="flex flex-row justify-content-between gap-3 flex-wrap lg:flex-nowrap xl:flex-nowrap" >
+                    <div class="base-card w-auto p-3 px-4 sm:flex-grow-1">
+                        <div>
+                            Accepts <span class="font-semibold">{{project.tokenSymbol}}</span> Token
                         </div>
-                
-                        <!-- project details card -->
-                        <div class="flex flex-row gap-3">
-                            <div class="flex base-card">
-                                <div class="flex flex-column gap-3 w-full p-2 pb-3">
-                                    <div class="mx-2 flex flex-column border-0">
-                                        <div class="grid grid-nogutter p-2">
-                                            <div class="col-12 lg:col-6 text-sm">
-                                                Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}
-                                            </div>
-                                            <div class="col-12 lg:col-6 text-sm px-2">
-                                                Goal: {{project.goal | commaSeparated}} {{project.tokenSymbol}}
-                                            </div>
-                                        </div>
-                                        <div class="p-2">
-                                            <ng-container *ngIf="((project.raisedAmount/project.goal)*100) <= 100; else moreThan100">
-                                                <p-progressBar [value]="((project.raisedAmount/project.goal)*100)"></p-progressBar>
-                                                <!-- <p-progressBar [value]="50"></p-progressBar> -->
-                                            </ng-container>
-                                            <ng-template #moreThan100>
-                                                <p-progressBar [value]="100"></p-progressBar>
-                                            </ng-template>
-                                        </div>
-                                    <div class="p-2 text-justify">
-                                            {{project.description}}
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
-                                        </div>
+                        <div>
+                            <a class="text-sm" href="https://sepolia.etherscan.io/address/{{project.acceptingToken}}" target="_blank">
+                                {{project.acceptingToken}}
+                            </a>    
+                        </div>
+                        <div>
+                            Status: 
+                            <span *ngIf="project.completed">Completed</span>
+                            <span *ngIf="project.expired">Expired</span>
+                            <span *ngIf="!project.expired && !project.completed">Ongoing</span>
+                        </div>
+                    </div>
+                    <div class="base-card w-full p-3 px-4 sm:flex-grow-1 md:flex-grow-1">
+                        <div class="flex justify-content-between">
+                            <span class="font-semibold">Request Count: </span>
+                            <span>{{project.numOfRequests}}</span>
+                        </div>
+                        <div class="flex justify-content-between">
+                            <span class="font-semibold">Created Date:</span>
+                            <span>{{project.createdDate | date: 'dd MMM yyyy'}}</span>
+                        </div>
+                        <div class="flex justify-content-between">
+                            <span class="font-semibold">Deadline:</span>
+                            <span>{{project.deadline | date: 'dd MMM yyyy'}}</span>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- project details card -->
+                <div class="flex flex-row gap-3">
+                    <div class="flex base-card">
+                        <div class="flex flex-column gap-3 w-full p-2 pb-3">
+                            <div class="mx-2 flex flex-column border-0">
+                                <div class="grid grid-nogutter p-2">
+                                    <div class="col-12 lg:col-6 text-sm">
+                                        Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}
                                     </div>
+                                    <div class="col-12 lg:col-6 text-sm px-2">
+                                        Goal: {{project.goal | commaSeparated}} {{project.tokenSymbol}}
+                                    </div>
+                                </div>
+                                <div class="p-2">
+                                    <ng-container *ngIf="((project.raisedAmount/project.goal)*100) <= 100; else moreThan100">
+                                        <p-progressBar [value]="((project.raisedAmount/project.goal)*100)"></p-progressBar>
+                                        <!-- <p-progressBar [value]="50"></p-progressBar> -->
+                                    </ng-container>
+                                    <ng-template #moreThan100>
+                                        <p-progressBar [value]="100"></p-progressBar>
+                                    </ng-template>
+                                </div>
+                            <div class="p-2 text-justify">
+                                    {{project.description}}
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis accusantium, cum fuga nemo aspernatur fugiat, odio 
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        
+            <!-- sidebar card -->
+            <div class="flex flex-column gap-3 w-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+
+                <!-- announcement and comment navigation -->
+                <div class="flex flex-row gap-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+                    <div class="button-card w-full flex justify-content-center p-2 custom-bg-accent" (click)="goAnnouncement()"
+                        pInputText pTooltip="Announcemets" tooltipPosition="top" [showDelay]="600">
+                        <div class="campaign-white-icon"></div>
+                    </div>
+                    <!-- <div class="button-card w-full flex-grow-1 lg:flex-grow-0 p-2 xl:flex-grow-0 flex justify-content-center align-items-center custom-bg-accent" (click)="goRequest()"
+                        pInputText pTooltip="New Request" tooltipPosition="top" [showDelay]="800">
+                        <div class="assignment-white-icon"></div>
+                    </div> -->
+                    <div class="button-card w-full flex-grow-1 lg:flex-grow-0 p-2 xl:flex-grow-0 flex justify-content-center align-items-center custom-bg-accent" (click)="goComment()"
+                        pInputText pTooltip="Comments" tooltipPosition="top" [showDelay]="600">
+                        <div class="comment-white-icon"></div>
+                    </div>                    
+                </div>
+
+                <!-- contribute and refund panel -->
+                <div class="flex flex-column gap-2 base-card p-2">
                 
-                    <!-- sidebar card -->
-                    <div class="flex flex-column gap-3 w-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
-        
-                        <!-- announcement and comment navigation -->
-                        <div class="flex flex-row gap-3 flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
-                            <div class="button-card w-full flex justify-content-center p-2 custom-bg-accent" (click)="goAnnouncement()"
-                                pInputText pTooltip="Announcemets" tooltipPosition="top" [showDelay]="600">
-                                <div class="campaign-white-icon"></div>
-                            </div>
-                            <!-- <div class="button-card w-full flex-grow-1 lg:flex-grow-0 p-2 xl:flex-grow-0 flex justify-content-center align-items-center custom-bg-accent" (click)="goRequest()"
-                                pInputText pTooltip="New Request" tooltipPosition="top" [showDelay]="800">
-                                <div class="assignment-white-icon"></div>
-                            </div> -->
-                            <div class="button-card w-full flex-grow-1 lg:flex-grow-0 p-2 xl:flex-grow-0 flex justify-content-center align-items-center custom-bg-accent" (click)="goComment()"
-                                pInputText pTooltip="Comments" tooltipPosition="top" [showDelay]="600">
-                                <div class="comment-white-icon"></div>
-                            </div>                    
+                    <!-- tabs -->
+                    <div class="flex flex-row flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
+                        <div class="w-full p-2 flex justify-content-center align-items-center cursor-pointer" [ngClass]="{'border-bottom':showContribute, 'border-grey':!showContribute}" pTooltip="Contribute" tooltipPosition="bottom" [showDelay]="600" (click)="contributeTab()" >
+                            <div class="flex token-black-flip-icon"></div>
+                            <div class="flex input-black-icon"></div>
                         </div>
-
-                        <!-- contribute and refund panel -->
-                        <div class="flex flex-column gap-2 base-card p-2">
-                        
-                            <!-- tabs -->
-                            <div class="flex flex-row flex-grow-1 lg:flex-grow-0 xl:flex-grow-0">
-                                <div class="w-full p-2 flex justify-content-center align-items-center cursor-pointer" [ngClass]="{'border-bottom':showContribute, 'border-grey':!showContribute}" pTooltip="Contribute" tooltipPosition="bottom" [showDelay]="600" (click)="contributeTab()" >
-                                    <div class="flex token-black-flip-icon"></div>
-                                    <div class="flex input-black-icon"></div>
-                                </div>
-                                <div class="w-full p-2 flex justify-content-center align-items-center cursor-pointer" [ngClass]="{'border-bottom':showRefund, 'border-grey':!showRefund}" pTooltip="Refund" tooltipPosition="bottom" [showDelay]="600" (click)="refundTab()">
-                                    <div class="flex output-black-icon"></div>
-                                    <div class="flex token-black-flip-icon"></div>
-                                </div>
-                            </div>
-
-                            <!-- content container -->
-                            <div class="flex">
-                                <ng-container *ngIf="showContribute">
-                                    <div class="title-card flex flex-column w-full justify-content-center align-items-center p-2 gap-2">
-                                        <small class="text-xs align-self-end m-0 p-0">
-                                            Available: {{this.tokenBalance}} {{project.tokenSymbol}}
-                                        </small>
-                                        <form class="w-full" [formGroup]="contributeForm" (keydown.enter)="onContribute()">
-                                        <div class="flex w-full p-float-label pt-0 mt-0">
-                                                <p-inputNumber class="w-full" styleClass="w-full" formControlName="amount"></p-inputNumber>
-                                                <label htmlFor="number-input">Contribute</label>
-                                            </div>
-                                        </form>
-                                        <div class="flex w-full">
-                                            <p-button class="w-full" styleClass="w-full" label="Contribute" (click)="onContribute()"></p-button>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                                <ng-container *ngIf="showRefund">
-                                    <div class="title-card w-full flex flex-column p-2 gap-3">
-                                        <div class="flex flex-column w-full">
-                                            <div>
-                                                <span class="pi" [ngClass]="{'pi-check text-green-600': raisedAmountCondition,'pi-times text-red-500':!raisedAmountCondition}"></span>
-                                                <span [ngClass]="{'text-green-600': raisedAmountCondition,'text-red-500':!raisedAmountCondition}">&nbsp; Raised Amount > Goal</span>
-                                            </div>
-                                            <div>
-                                                <span class="pi" [ngClass]="{'pi-check text-green-600': contributedCondition,'pi-times text-red-500':!contributedCondition}"></span>
-                                                <span [ngClass]="{'text-green-600': contributedCondition,'text-red-500':!contributedCondition}">&nbsp; Contributed {{contributedAmount}} {{project.tokenSymbol}}</span>
-                                            </div>
-                                            <div>
-                                                <span class="pi" [ngClass]="{'pi-check text-green-600': blockTimestampCondition,'pi-times text-red-500':!blockTimestampCondition}"></span>
-                                                <span [ngClass]="{'text-green-600': blockTimestampCondition,'text-red-500':!blockTimestampCondition}">&nbsp; Deadline</span>
-                                            </div>
-                                            
-                                        </div>
-                                        <div class="flex w-full">
-                                            <p-button class="w-full" styleClass="w-full" label="Refund" [disabled]="notRefundable" (click)="onRefund()"></p-button>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-
-                        </div>
-        
-                        <!-- request list card -->
-                        <div class="base-card w-full p-2">
-                            <ng-container *ngIf="requests; else noRequest">
-                                <!-- <p-scrollPanel [style]="{height: '100%'}"> -->
-                                    <div class="flex flex-column-reverse">
-                                        <span *ngFor="let request of requests">
-                                            <div class="card p-3 m-2" (click)="getRequest(request.requestId)">
-                                                <div class="font-semibold pb-2">
-                                                    {{request.title | titlecase}}
-                                                </div>
-                                                <div>
-                                                    {{request.description | truncate:[100,'...']}}
-                                                </div>
-                                            </div>
-                                        </span>
-                                    </div>
-                                <!-- </p-scrollPanel> -->
-                            </ng-container>
+                        <div class="w-full p-2 flex justify-content-center align-items-center cursor-pointer" [ngClass]="{'border-bottom':showRefund, 'border-grey':!showRefund}" pTooltip="Refund" tooltipPosition="bottom" [showDelay]="600" (click)="refundTab()">
+                            <div class="flex output-black-icon"></div>
+                            <div class="flex token-black-flip-icon"></div>
                         </div>
                     </div>
+
+                    <!-- content container -->
+                    <div class="flex">
+                        <ng-container *ngIf="showContribute">
+                            <div class="title-card flex flex-column w-full justify-content-center align-items-center p-2 gap-2">
+                                <small class="text-xs align-self-end m-0 p-0">
+                                    Available: {{this.tokenBalance}} {{project.tokenSymbol}}
+                                </small>
+                                <form class="w-full" [formGroup]="contributeForm" (keydown.enter)="onContribute()">
+                                <div class="flex w-full p-float-label pt-0 mt-0">
+                                        <p-inputNumber class="w-full" styleClass="w-full" formControlName="amount"></p-inputNumber>
+                                        <label htmlFor="number-input">Contribute</label>
+                                    </div>
+                                </form>
+                                <div class="flex w-full">
+                                    <p-button class="w-full" styleClass="w-full" label="Contribute" (click)="onContribute()"></p-button>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="showRefund">
+                            <div class="title-card w-full flex flex-column p-2 gap-3">
+                                <div class="flex flex-column w-full">
+                                    <div>
+                                        <span class="pi" [ngClass]="{'pi-check text-green-600': raisedAmountCondition,'pi-times text-red-500':!raisedAmountCondition}"></span>
+                                        <span [ngClass]="{'text-green-600': raisedAmountCondition,'text-red-500':!raisedAmountCondition}">&nbsp; Raised Amount > Goal</span>
+                                    </div>
+                                    <div>
+                                        <span class="pi" [ngClass]="{'pi-check text-green-600': contributedCondition,'pi-times text-red-500':!contributedCondition}"></span>
+                                        <span [ngClass]="{'text-green-600': contributedCondition,'text-red-500':!contributedCondition}">&nbsp; Contributed {{contributedAmount}} {{project.tokenSymbol}}</span>
+                                    </div>
+                                    <div>
+                                        <span class="pi" [ngClass]="{'pi-check text-green-600': blockTimestampCondition,'pi-times text-red-500':!blockTimestampCondition}"></span>
+                                        <span [ngClass]="{'text-green-600': blockTimestampCondition,'text-red-500':!blockTimestampCondition}">&nbsp; Deadline</span>
+                                    </div>
+                                    
+                                </div>
+                                <div class="flex w-full">
+                                    <p-button class="w-full" styleClass="w-full" label="Refund" [disabled]="notRefundable" (click)="onRefund()"></p-button>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                </div>
+
+                <!-- request list card -->
+                <div class="base-card w-full p-2">
+                    <ng-container *ngIf="requests; else noRequest">
+                        <!-- <p-scrollPanel [style]="{height: '100%'}"> -->
+                            <div class="flex flex-column-reverse">
+                                <span *ngFor="let request of requests">
+                                    <div class="card p-3 m-2" (click)="getRequest(request.requestId)">
+                                        <div class="font-semibold pb-2">
+                                            {{request.title | titlecase}}
+                                        </div>
+                                        <div>
+                                            {{request.description | truncate:[100,'...']}}
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                        <!-- </p-scrollPanel> -->
+                    </ng-container>
+                </div>
+            </div>
     </div>
 </div>
 

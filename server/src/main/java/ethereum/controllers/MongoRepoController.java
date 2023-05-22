@@ -71,6 +71,28 @@ public class MongoRepoController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
+    @GetMapping(path = "/get-announcements-by-page")
+    @ResponseBody
+    public ResponseEntity<List<Announcement>> getAnnouncements(
+            @RequestParam String projectAddress,
+            @RequestParam int offset,
+            @RequestParam int limit) {
+        logger.info("Get announcements, project address >> {}", projectAddress);
+
+        List<Announcement> announcements = mongoSvc.getAnnouncements(projectAddress, offset, limit);
+        if (announcements.size() >= 1)
+            return ResponseEntity.status(HttpStatus.OK).body(announcements);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping(path = "/count-announcements")
+    @ResponseBody
+    public ResponseEntity<Long> countAnnouncements(@RequestParam String projectAddress) {
+        logger.info("count announcements for project >> {}", projectAddress);
+        Long count = mongoRepo.countAnnouncements(projectAddress);
+        return ResponseEntity.ok().body(count);
+    }
+
     @GetMapping(path = "/get-comments")
     @ResponseBody
     public ResponseEntity<List<Comment>> getComments(@RequestParam String projectAddress) {
@@ -78,6 +100,26 @@ public class MongoRepoController {
         if (comments.size() >= 1)
             return ResponseEntity.status(HttpStatus.OK).body(comments);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping(path = "/get-comments-by-page")
+    @ResponseBody
+    public ResponseEntity<List<Comment>> getComments(
+            @RequestParam String projectAddress,
+            @RequestParam int offset,
+            @RequestParam int limit) {
+        List<Comment> comments = mongoSvc.getComments(projectAddress, offset, limit);
+        if (comments.size() >= 1)
+            return ResponseEntity.status(HttpStatus.OK).body(comments);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping(path = "/count-comments")
+    @ResponseBody
+    public ResponseEntity<Long> countComments(@RequestParam String projectAddress) {
+        logger.info("count comments for project >> {}", projectAddress);
+        Long count = mongoRepo.countComments(projectAddress);
+        return ResponseEntity.ok().body(count);
     }
 
     // consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE

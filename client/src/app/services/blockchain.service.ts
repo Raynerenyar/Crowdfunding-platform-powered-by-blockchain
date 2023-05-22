@@ -13,6 +13,8 @@ import { Router } from '@angular/router';
 import { PrimeMessageService } from './prime.message.service';
 import { UrlBuilderService } from './url-builder.service';
 import { tokenFunctionsAbi, getTransactionObject } from "../../app/smartContractRelated/contract-functons/abi.functions";
+import BN from 'bn.js';
+
 // import * as contract from "../../assets/tokenInterface/token.json";
 
 
@@ -33,6 +35,11 @@ export class BlockchainService implements OnDestroy, OnInit {
   // project owner functions they can interact with
   createProject(goal: number, deadline: number, tokenAddress: string, title: string, description: string) {
     console.log("create project")
+    // let numb = this.web3.utils.toBN(goal)
+    // let decimals = this.web3.utils.toBN(18)
+    // let d: BN = this.web3.utils.toBN(10).pow(decimals)
+    // console.log(d)
+    // console.log(numb.mul(d).toString())
     return new Observable(observer => {
       let properties = SmartContract.crowdfundingFactory().createNewProject(goal, deadline, tokenAddress, title)
       this.getEncodedFunctionVariableObservable(properties)
@@ -41,7 +48,6 @@ export class BlockchainService implements OnDestroy, OnInit {
           let abiFunction = response as { encodedFunction: string, contractAddress: string }
           console.log(abiFunction.encodedFunction)
           console.log(abiFunction.contractAddress)
-          // if error from field is undefined, can send error msg to tell user to login
           this.sendTransaction(abiFunction.encodedFunction, abiFunction.contractAddress)
             .on('transactionHash', async (hash) => {
               let result = await this.web3.eth.getTransactionReceipt(hash)
@@ -124,7 +130,7 @@ export class BlockchainService implements OnDestroy, OnInit {
     return new Observable(observer => {
 
       let properties = SmartContract.crowdfunding().receiveContribution(requestNum)
-      this.getEncodedFunctionVariableObservable(properties)
+      this.getEncodedFunctionVariableObservable(properties, projectAddress)
         .pipe(takeUntil(this.notifier$))
         .subscribe((response) => {
           let abiFunction = response as { encodedFunction: string }

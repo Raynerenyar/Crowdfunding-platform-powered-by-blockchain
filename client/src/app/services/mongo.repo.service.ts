@@ -31,9 +31,33 @@ export class MongoRepoService {
     return this.http.get(url, { params })
   }
 
+  public getAnnouncementsByPage(projectAddress: string, offset: number, limit: number): Observable<any> {
+    let url = this.urlBuilder.setPath('api/get-announcements-by-page').build()
+    let params = new HttpParams()
+      .append('projectAddress', projectAddress)
+      .append('offset', offset)
+      .append('limit', limit)
+    return this.http.get(url, { params })
+  }
+
+  public countAnnouncements(projectAddress: string): Observable<any> {
+    let url = this.urlBuilder.setPath('api/count-announcements').build()
+    let params = new HttpParams().append('projectAddress', projectAddress)
+    return this.http.get(url, { params })
+  }
+
   public getComments(projectAddress: string): Observable<any> {
     let url = this.urlBuilder.setPath('api/get-comments').build()
     let params = new HttpParams().append('projectAddress', projectAddress)
+    return this.http.get(url, { params })
+  }
+
+  public getCommentsByPage(projectAddress: string, offset: number, limit: number): Observable<any> {
+    let url = this.urlBuilder.setPath('api/get-comments-by-page').build()
+    let params = new HttpParams()
+      .append('projectAddress', projectAddress)
+      .append('offset', offset)
+      .append('limit', limit)
     return this.http.get(url, { params })
   }
 
@@ -42,5 +66,10 @@ export class MongoRepoService {
     return this.http.post(url, comment)
   }
 
+  public countComments(projectAddress: string): Observable<any> {
+    let url = this.urlBuilder.setPath('api/count-comments').build()
+    let params = new HttpParams().append('projectAddress', projectAddress)
+    return this.http.get(url, { params })
+  }
 
 }

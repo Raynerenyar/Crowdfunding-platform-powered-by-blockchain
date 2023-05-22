@@ -5,6 +5,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +30,7 @@ public class EtherscanService {
     private String etherscanUrl;
     @Value("${etherscan.api.key}")
     private String etherscanApiKey;
+    private static final Logger logger = LoggerFactory.getLogger(EtherscanService.class);
 
     public Map<String, String> getCrowdfundingSourceCode(String contractAddress) {
         String url = UriComponentsBuilder.fromUriString("https://api-sepolia.etherscan.io/api")
@@ -51,8 +54,8 @@ public class EtherscanService {
 
         System.out.println(contractAddress);
         System.out.println(contractName);
-        // System.out.println(mapping.get("sourceCode"));
-        System.out.println(mapping.get("compilerversion"));
+        logger.info("verifying contract for {} {}", contractName, contractAddress);
+
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("sourceCode", mapping.get("sourceCode"));
         requestBody.add("apikey", etherscanApiKey);
@@ -66,7 +69,7 @@ public class EtherscanService {
         requestBody.add("runs", mapping.get("runs"));
 
         if (encodedParams.length > 1) {
-            System.out.println("there are constructor arguments");
+            logger.info("adding constuctor arguments");
             requestBody.add("ConstructorArguments", encodedParams[0]);
         } else {
             requestBody.add("constructorArguements", "");
@@ -84,7 +87,7 @@ public class EtherscanService {
         Reader reader = new StringReader(response.getBody());
         JsonReader jsonReader = Json.createReader(reader);
         JsonObject jsonObjRespBody = jsonReader.readObject();
-        System.out.println("results of verifying >>> " + jsonObjRespBody);
+        logger.info("results of verifying contract {}", jsonObjRespBody);
         int result = Integer.parseInt(jsonObjRespBody.getString("status"));
         if (result == 1)
             return true;
@@ -92,6 +95,7 @@ public class EtherscanService {
     }
 
     private Map<String, String> parseEtherscanResponse(String responseBody) {
+
         Reader reader = new StringReader(responseBody);
         JsonReader jsonReader = Json.createReader(reader);
         JsonObject jsonObjRespBody = jsonReader.readObject();
@@ -100,13 +104,11 @@ public class EtherscanService {
                 .get(onlyOneResult)
                 .asJsonObject();
         String sourceCode = jsonObj.getString("SourceCode");
-        System.out.println(sourceCode);
-        // .getString("SourceCode");
-        // System.out.println("testing > " + jsonObj);
+
         String runs = jsonObj.getString("Runs");
         String optimisationUsed = jsonObj.getString("OptimizationUsed");
         String compilerVersion = jsonObj.getString("CompilerVersion");
-        System.out.println("optimisation  >>>  " + optimisationUsed);
+
         Map<String, String> mapz = new HashMap<>();
         mapz.put("sourceCode", sourceCode);
         mapz.put("compilerversion", compilerVersion);

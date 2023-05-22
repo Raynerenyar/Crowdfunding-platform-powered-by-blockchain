@@ -1,35 +1,79 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { Request } from 'src/app/model/model';
+import { Project, Request } from 'src/app/model/model';
+import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { BlockchainService } from 'src/app/services/blockchain.service';
+import { SessionStorageService } from 'src/app/services/session.storage.service';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
+import { WalletService } from 'src/app/services/wallet.service';
 
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
   styleUrls: ['./request.component.css']
 })
-export class RequestComponent {
+export class RequestComponent implements OnDestroy, AfterViewInit {
 
-  request!: Request | undefined
-  notifier$ = new Subject<boolean>()
+  request!: Request
   projectAddress!: string
+  tokenAddress!: string
+  project!: Project
+
+  walletAddress!: string
+  notifier$ = new Subject<true>()
   valueOfVotes!: number
   countOfVotes!: number
+  notRefundable = true
+  requestId!: number
 
-  constructor(private bcSvc: BlockchainService, private route: ActivatedRoute, private sqlRepoSvc: SqlRepositoryService, private router: Router) { }
+  deadlineTimestamp!: number
+
+  @ViewChild('contributeReq')
+  contributeBody!: ElementRef
+  @Output()
+  contributeHeight = new Subject<number>()
+
+
+  constructor(
+    private fb: FormBuilder,
+    private bcSvc: BlockchainService,
+    private storageSvc: SessionStorageService,
+    private msgSvc: PrimeMessageService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private sqlRepoSvc: SqlRepositoryService,
+    private walletSvc: WalletService) { }
 
   ngOnInit(): void {
+    this.walletAddress = this.storageSvc.getAddress()
+
     this.route.paramMap
       .pipe(takeUntil(this.notifier$))
-      .subscribe({
-        next: (param: ParamMap) => {
-          let requestId = Number(param.get('requestId'))
-          this.projectAddress = param.get('projectAddress')!
-          console.log(requestId)
-          this.sqlRepoSvc.getSingleRequest(requestId)
+      .subscribe((param: ParamMap) => {
+        this.projectAddress = param.get('projectAddress')!
+        if (!this.sqlRepoSvc.project) {
+          this.router.navigate(['/explore', this.projectAddress])
+        } else {
+          this.project = this.sqlRepoSvc.project
+          this.projectAddress = this.project.projectAddress
+
+          this.bcSvc.getBlockTimestamp()
+            .pipe(takeUntil(this.notifier$))
+            .subscribe((blockTimestamp) => {
+              let bts = blockTimestamp as number
+              let date = new Date(this.project.deadline)
+              this.deadlineTimestamp = date.getTime()
+              console.log(bts, this.deadlineTimestamp)
+              if (bts >= this.deadlineTimestamp) {
+                this.notRefundable = false
+              }
+            })
+
+          this.requestId = parseInt(param.get('requestId')!)
+          // get request from db
+          this.sqlRepoSvc.getSingleRequest(this.requestId)
             .pipe(takeUntil(this.notifier$))
             .subscribe({
               next: (request: Request) => {
@@ -50,21 +94,46 @@ export class RequestComponent {
                       this.countOfVotes = value
                     }
                   })
-              }
+              },
+              error: (err) => {
+                this.router.navigate(['explore', this.projectAddress])
+              },
             })
-
-
-        },
-        error: (error: HttpErrorResponse) => console.log(error.message)
+        }
       })
+
+    console.log(this.projectAddress)
+  }
+
+  ngAfterViewInit(): void {
+    // contributeReq
+
+  }
+
+  voteRequest() {
+    if (this.walletSvc.isOnRightChain()) {
+      console.log(this.request.requestNo)
+      console.log(this.request.requestId)
+      this.bcSvc.voteRequest(this.projectAddress, this.request.requestNo)
+        .pipe(takeUntil(this.notifier$))
+        .subscribe({
+          next: () => {
+            this.msgSvc.generalSuccessMethod("You have successfully voted")
+            window.location.reload()
+          },
+          error: () => this.msgSvc.generalErrorMethod("There was an error, failed to vote")
+        })
+    } else this.msgSvc.tellToConnectToChain()
   }
 
   goBack() {
-    this.router.navigate(['explore', this.projectAddress], { replaceUrl: false });
+    console.log("bo gakc")
+    this.router.navigate(['explore', this.projectAddress])
   }
 
   ngOnDestroy(): void {
     this.notifier$.next(true)
     this.notifier$.unsubscribe()
   }
+
 }

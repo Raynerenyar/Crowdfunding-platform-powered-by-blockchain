@@ -36,6 +36,8 @@ export class ProjectOverviewComponent implements OnInit {
         .pipe(takeUntil(this.notifier$))
         .subscribe((requests) => {
           this.requests = requests
+          // assign to repoSvc requests so that new-request compo can retrieve it 
+          this.repoSvc.requests = requests
 
           this.bcSvc.getRaisedAmount(this.projectAddress)
             .pipe(takeUntil(this.notifier$))

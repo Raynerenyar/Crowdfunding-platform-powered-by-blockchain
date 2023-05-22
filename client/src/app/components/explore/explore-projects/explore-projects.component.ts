@@ -10,19 +10,7 @@ import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
 @Component({
   selector: 'app-explore-projects',
   templateUrl: './explore-projects.component.html',
-  styleUrls: ['./explore-projects.component.css'],
-  // animations: [
-  //   trigger('fade', [
-  //     state('void', style({ opacity: 0 })),
-  //     transition('void => *', [
-  //       animate(1000)
-  //     ]),
-  //     transition('* => void', [
-  //       animate(1000)
-  //     ])
-
-  //   ])
-  // ]
+  styleUrls: ['./explore-projects.component.css']
 })
 export class ExploreProjectsComponent implements OnInit {
   projects!: Project[]
@@ -79,6 +67,7 @@ export class ExploreProjectsComponent implements OnInit {
 
 
   }
+
   onPageNumChange(event: { first: number; rows: number; }) {
     console.log(event.first, event.rows)
     this.repoSvc.getProjectsWithPage(event.first, event.rows)

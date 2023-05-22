@@ -1,33 +1,3 @@
-<!-- <h2 *ngIf="!announcements" class="px-3">{{'there are no announcements yet' | titlecase }}</h2>
-<div *ngIf="announcements">
-    <div class="flex flex-column-reverse px-3 py-0">
-        <div *ngFor="let announcement of announcements; let i = index">
-            <div>
-                <p [innerHTML]="announcement.body"></p>
-                <div class="grid grid-nogutter">
-                    <div class="col-12 lg:col-9">
-                        <p-button *ngIf="editable(announcement)" [disabled]="editable(announcement)" pTooltip={{tooltip}} styleClass="p-button-raised p-button-sm align-self-center" (click)="onEdit(i)">Edit</p-button>
-                        <p-button *ngIf="!editable(announcement)" [disabled]="editable(announcement)" styleClass="p-button-raised p-button-sm align-content-center align-items-center" (click)="onEdit(i)">Edit</p-button>
-                    </div>
-                    <div class="col-12 lg:col-3 text-xs text-right align-self-end">
-                        <div *ngIf="announcement.datetimeEdited">
-                            Edited:&nbsp;<span>{{announcement.datetimePosted | date:'dd/MM/yyyy HH:mm'}}</span>
-                        </div>
-                        <div>
-                            <span>{{announcement.creatorAddress | slice:0:6}}...{{announcement.creatorAddress | slice:-4}} &nbsp;</span>
-                            Posted:
-                            <span>{{announcement.datetimePosted | date:'dd/MM/yyyy HH:mm'}}</span>
-                        </div>
-                    </div>
-                </div>
-                <p-divider></p-divider>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-
-
 <div class="flex justify-content-center">
     <div class="flex flex-column gap-3 row-gap-3 pb-2 max-width" style="width: 80%;">
     
@@ -45,7 +15,7 @@
 
             <!-- back button -->
             <div class="flex p-2 px-3 align-content-center">
-                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back" (click)="goBack()"></p-button>
+                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back To Project" (click)="goBack()"></p-button>
             </div>
         </div>
 
@@ -55,10 +25,8 @@
                 
                 <!-- navigation -->
                 <div class="flex justify-content-between align-content-center align-items-center gap-3 p-2">
-                    <ng-container *ngIf="!announcements; else ThereAreAnnouncements">
-                        <div class="text-xl">
-                            {{'You have no announcements yet' | titlecase }}  
-                        </div>
+                    <ng-container *ngIf="announcements; else ThereAreNoAnnouncements">
+                        &nbsp;
                     </ng-container>
                     <div class="flex flex-row w-3 justify-content-between gap-3">
                         <p-button icon="add-white-icon" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none" pInputText pTooltip="New Announcement" tooltipPosition="top" [showDelay]="600" (click)="newAnnouncement()"></p-button>
@@ -86,7 +54,11 @@
                 </div>
 
                 <ng-container *ngIf="announcements">
-                        <div class="flex flex-column gap-3">
+
+                    <!-- top paginator  -->
+                    <p-paginator styleClass="bg-colour" [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+                    <!-- announcements -->
+                    <div class="flex flex-column gap-3">
                         <ng-container *ngFor="let announcement of announcements; let i = index">
                             <div class="card flex flex-column mx-2 mb-2"  [ngClass]="(i == selectedIndex) ? 'border-primary' : 'boader-class'" (click)="onChosenAnnouncement(i)">
                                 <div class="px-3 pt-0 font-normal overflow-wrap-anywhere">
@@ -103,27 +75,14 @@
                                     </div>
                                 </div>
                             </div>
-                                <!-- <p-divider *ngIf="i != 0"></p-divider>
-                                <p [innerHTML]="announcement.body"></p>
-                                <div class="grid grid-nogutter">
-                                    <div class="col-12 lg:col-9">
-                                        <p-button *ngIf="editable(announcement)" [disabled]="editable(announcement)" pTooltip={{tooltip}} styleClass="p-button-raised p-button-sm align-self-center" (click)="onEdit(i)" class="edit-white-icon" label="Edit" ></p-button>
-                                        <p-button *ngIf="!editable(announcement)" [disabled]="editable(announcement)" styleClass="p-button-raised p-button-sm align-content-center align-items-center" (click)="onEdit(i)" icon="edit-white-icon" label="Edit"></p-button>
-                                    </div>
-                                    <div class="col-12 lg:col-3 text-xs text-right align-self-end">
-                                        <div *ngIf="announcement.datetimeEdited">
-                                            Edited:&nbsp;<span>{{announcement.datetimePosted | date:'dd/MM/yyyy HH:mm'}}</span>
-                                        </div>
-                                        <div>
-                                            <span>{{announcement.creatorAddress | slice:0:6}}...{{announcement.creatorAddress | slice:-4}} &nbsp;</span>
-                                            Posted:
-                                            <span>{{announcement.datetimePosted | date:'dd/MM/yyyy HH:mm'}}</span>
-                                        </div>
-                                    </div>
-                                </div> -->
-                                <!-- <p-divider></p-divider> -->
                         </ng-container>
                     </div>
+
+                    <!-- bottom paginator  -->
+                    <div class="base-card">
+                        <p-paginator [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+                     </div>
+                        
                 </ng-container>
             </div>
 
@@ -133,6 +92,8 @@
     </div>
 </div>
 
-<ng-template #ThereAreAnnouncements>
-    &nbsp;
+<ng-template #ThereAreNoAnnouncements>
+    <div class="text-xl">
+        {{'You have no announcements yet' | titlecase }}  
+    </div>
 </ng-template>

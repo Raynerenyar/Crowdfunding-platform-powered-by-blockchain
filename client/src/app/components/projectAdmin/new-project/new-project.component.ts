@@ -32,7 +32,6 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   notifier$ = new Subject<boolean>()
   tokens: Token[] = []
   cities!: City[]
-  list!: number[]
   displayTokenAddress!: string
 
   constructor(
@@ -51,18 +50,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.notifier$))
       .subscribe({
         next: (tokens: Token[]) => {
-          // tokens.forEach(token => {
-          //   this.tokens.push(token)
-          // });
           this.tokens = tokens
-          // this.cities = [
-          //   { name: 'lala', code: 'ok' },
-          //   { name: 'lala', code: 'ok' },
-          //   { name: 'lala', code: 'ok' },
-          //   { name: 'lala', code: 'ok' }
-          // ]
-          this.list = [1, 2, 3, 4]
-          console.log(this.tokens)
           this.cdr.detectChanges()
         },
         error: (error) => {

@@ -18,10 +18,8 @@ public class Project {
     private String description;
     private Integer goal; // might need BigInteger
     private Timestamp deadline;
-    private Integer raisedAmount; // might need BigInteger
     private boolean completed;
     private boolean expired;
-    private Integer numOfRequests; // might need BigInteger
     private String acceptingToken;
     private String tokenName;
     private String tokenSymbol;

@@ -12,49 +12,56 @@
                 </div>
             </div>
 
-            <div class="flex p-2 px-4  align-content-center">
+            <div class="flex p-2 px-3  align-content-center">
                 <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back To Project" (click)="goBack()"></p-button>
             </div>
 
         </div>
 
         <!-- body card -->
-        <div class="flex base-card flex-column p-3">
-            <div class="flex flex-row justify-content-between">
-                <div class="flex flex-column col-12 md:col-6 lg:col-6">
-                    <div>
-                        <span class="text-lg font-semibold">Amount:</span> {{request.amount}}
+        <div class="flex flex-row gap-3 flex-wrap md:flex-wrap lg:flex-nowrap">
+            <!-- left -->
+            <div class="flex base-card flex-column p-4 w-full lg:w-9">
+                <div class="flex flex-row justify-content-between">
+                    <div class="flex flex-column col-12 md:col-6 lg:col-6 p-0">
+                        <div>
+                            <span class="text-lg font-semibold">Amount:</span> {{request.amount | commaSeparated}} {{project.tokenSymbol}}
+                        </div>
+                        <div>
+                            <span class="text-lg font-semibold">Number Of Votes:</span> {{countOfVotes | commaSeparated}}
+                        </div>
                     </div>
-                    <div>
-                        <span class="text-lg font-semibold">Number Of Votes:</span> {{countOfVotes}}
+                    <div class="flex flex-column col-12 md:col-6 lg:col-6 p-0">
+                        <div>
+                            <span class="text-lg font-semibold">Value Of Votes:</span> {{valueOfVotes | commaSeparated}}
+                        </div>
+                        <div>
+                            <span class="text-lg font-semibold">Value in % Of Amount:</span> {{valueOfVotes/request.amount | percent:'1.2-2'}}
+                            <p-tag icon="pi pi-info-circle" pTooltip="Minimum quorem = 50% of the Value Of Votes over the Amount" styleClass="bg-white text-primary" class="text-xs"></p-tag>
+                        </div>
                     </div>
                 </div>
-                <div class="flex flex-column col-12 md:col-6 lg:col-6">
-                    <div>
-                        <span class="text-lg font-semibold">Value Of Votes:</span> {{valueOfVotes}}
-                    </div>
-                    <div>
-                        <span class="text-lg font-semibold">Value in % Of Amount:</span> {{valueOfVotes/request.amount | percent:'1.2-2'}}
-                        <p-tag icon="pi pi-info-circle" pTooltip="Minimum quorem = 50% of the Value Of Votes over the Amount" styleClass="bg-white text-primary" class="text-xs"></p-tag>
-                    </div>
+                <div>
+                    <ng-container *ngIf="valueOfVotes/(request.amount/2)*100 <= 100; else moreThan100">
+                        <p-progressBar [value]="valueOfVotes/(request.amount/2)*100"></p-progressBar>
+                    </ng-container>
+                    <ng-template #moreThan100>
+                        <p-progressBar [value]="100"></p-progressBar>
+                    </ng-template>
                 </div>
             </div>
-            <div>
-                <ng-container *ngIf="valueOfVotes/(request.amount/2)*100 <= 100; else moreThan100">
-                    <p-progressBar [value]="valueOfVotes/(request.amount/2)*100"></p-progressBar>
-                </ng-container>
-                <ng-template #moreThan100>
-                    <p-progressBar [value]="100"></p-progressBar>
-                </ng-template>
+            <!-- right -->
+            <div class="base-card flex flex-column w-full lg:w-3 justify-content-center">
+                <div class="flex p-2 px-4  align-content-center justify-content-center">
+                    <p-button icon="vote-white-icon" styleClass="p-button-raised p-button-rounded custom-bg-accent" label="Collect Contributions" (click)="collectContributions()"></p-button>
+                </div>
             </div>
         </div>
 
         <!-- footer card  -->
-        <div class="flex base-card flex-column">
-            <div class="p-2 px-4">
-                <div class="text-justify">
-                    {{request.description}}
-                </div>
+        <div class="flex base-card flex-column p-4">
+            <div class="text-justify">
+                {{request.description}}
             </div>
         </div>
     </div>

@@ -54,8 +54,8 @@ public class EthereumApplication implements CommandLineRunner {
 
 	@Autowired
 	Web3j web3;
-	@Autowired
-	SqlCrowdfundingRepo sqlRepo;
+	// @Autowired
+	// SqlCrowdfundingRepo sqlRepo;
 	@Autowired
 	SqlRepoService repoSvc;
 	@Autowired

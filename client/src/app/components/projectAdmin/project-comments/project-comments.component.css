@@ -13,3 +13,7 @@
     /* box-shadow: -3px 6px 6px rgba(0, 0, 0, 0.4); */
     transform: none;  
 }
+
+:host ::ng-deep .p-paginator{
+    background-color: var(--custom-background-colour1);
+}

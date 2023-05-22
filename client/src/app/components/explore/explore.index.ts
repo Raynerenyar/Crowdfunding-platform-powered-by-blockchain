@@ -5,13 +5,9 @@ import { ProjectMainComponent } from "./project/project-main/project-main.compon
 import { ProjectHeaderComponent } from "./project/projectHeader/project-header.component";
 import { ViewAnnouncementComponent } from "./viewAnnouncements/view-announcement.component";
 import { RequestComponent } from "./viewRequest/request/request.component";
-import { RequestListComponent } from "./viewRequest/request.list.component";
-
-
 
 export const exploreComponents = [
     ExploreProjectsComponent,
-    RequestListComponent,
     RequestComponent,
     ProjectMainComponent,
     ProjectHeaderComponent,

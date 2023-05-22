@@ -5,7 +5,6 @@ import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { Project, Request } from 'src/app/model/model';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
-import { RequestListComponent } from '../../viewRequest/request.list.component';
 import { BlockchainService } from 'src/app/services/blockchain.service';
 import { SessionStorageService } from 'src/app/services/session.storage.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -245,7 +244,10 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
         this.bcSvc.getRefund(this.projectAddress)
           .pipe(takeUntil(this.notifier$))
           .subscribe({
-            next: () => this.msgSvc.generalSuccessMethod("You have successfully gotten your refund"),
+            next: () => {
+              this.msgSvc.generalSuccessMethod("You have successfully gotten your refund")
+              window.location.reload()
+            },
             error: () => this.msgSvc.generalErrorMethod("Failed to get refund")
           })
       }

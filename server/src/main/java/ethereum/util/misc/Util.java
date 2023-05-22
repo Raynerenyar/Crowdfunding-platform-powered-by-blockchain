@@ -16,10 +16,4 @@ public class Util {
         JsonReader jsonReader = Json.createReader(reader);
         return jsonReader.readObject();
     }
-
-    public static BigDecimal bigIntegerToInt(BigInteger value) {
-        BigDecimal quotient = BigDecimal.valueOf(Math.pow(10, 18));
-        BigDecimal scaledBal = new BigDecimal(value);
-        return scaledBal.divide(quotient);
-    }
 }

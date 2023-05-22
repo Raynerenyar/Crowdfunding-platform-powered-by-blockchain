@@ -17,13 +17,14 @@
             </div>
             <!-- back button -->
             <div class="flex p-2 px-3 align-content-center">
-                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back" (click)="goBack()"></p-button>
+                <p-button icon="pi pi-arrow-left" styleClass="p-button-raised p-button-rounded" label="Back To Project" (click)="goBack()"></p-button>
             </div>
         </div>
 
         <!-- main body card -->
         <ng-container *ngIf="comments">
-        <div class="flex flex-column gap-3 pt-4 flex-wrap lg:flex-nowrap base-card">
+            <div class="flex flex-column gap-3 pt-4 flex-wrap lg:flex-nowrap base-card p-3">
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="false" (onPageChange)="onPageNumChange($event)"></p-paginator>
                 <div class="flex flex-column w-full gap-2">
                     <ng-container *ngFor="let comment of comments">
                         <div class="card flex flex-column mx-2 mb-2 pt-3">
@@ -40,6 +41,7 @@
                         </div>
                     </ng-container>
                 </div>
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="false" (onPageChange)="onPageNumChange($event)"></p-paginator>
             </div>
         </ng-container>        
 

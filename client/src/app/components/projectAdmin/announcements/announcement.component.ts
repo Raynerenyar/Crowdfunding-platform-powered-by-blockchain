@@ -18,7 +18,9 @@ export class AnnouncementComponent implements OnInit {
   selectedIndex!: number
   notifier$ = new Subject<boolean>()
   projectAddress!: string | null
-  tooltip = "It has passed one hour."
+  first = 0 // first index
+  rows = 10 // number of results to show
+  length = 0 // total length of results.
 
   constructor(private mongoSvc: MongoRepoService, private route: ActivatedRoute, private router: Router, private msgSvc: PrimeMessageService) { }
 
@@ -28,17 +30,8 @@ export class AnnouncementComponent implements OnInit {
       .subscribe((params: ParamMap) => {
         this.projectAddress = params.get('address')
         if (this.projectAddress) {
-          this.mongoSvc.getAnnouncements(this.projectAddress)
-            .pipe(takeUntil(this.notifier$))
-            .subscribe({
-              next: (announcements: Announcement[]) => {
-                if (announcements) {
-                  this.announcements = announcements.reverse()
-                  this.mongoSvc.announcements = this.announcements
-                }
-              },
-              error: (error: HttpErrorResponse) => { }
-            })
+          this.getAnnouncements(this.projectAddress, this.first, this.rows)
+          this.getCountAnnouncements()
         }
       })
   }
@@ -79,6 +72,33 @@ export class AnnouncementComponent implements OnInit {
       return true
     }
     return false
+  }
+
+  getAnnouncements(projectAddress: string, offset: number, limit: number) {
+    this.mongoSvc.getAnnouncementsByPage(projectAddress, offset, limit)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe({
+        next: (announcements: Announcement[]) => {
+          this.announcements = announcements
+
+          // assign new first and rows value
+          this.first = offset
+          this.rows = limit
+        }
+      });
+  }
+
+  getCountAnnouncements() {
+    this.mongoSvc.countAnnouncements(this.projectAddress!)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe((count) => {
+        this.length = count
+      })
+  }
+
+  onPageNumChange(event: { first: number; rows: number; }) {
+    console.log(event.first, event.rows)
+    this.getAnnouncements(this.projectAddress!, event.first, event.rows)
   }
 
   ngOnDestroy(): void {

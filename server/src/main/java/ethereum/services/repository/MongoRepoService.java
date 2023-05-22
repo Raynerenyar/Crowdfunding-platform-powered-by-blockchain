@@ -45,6 +45,16 @@ public class MongoRepoService {
         return Collections.emptyList();
     }
 
+    public List<Announcement> getAnnouncements(String projectAddress, int offset, int limit) {
+        List<Document> docs = mongoRepo.getAnnouncements(projectAddress, offset, limit);
+        if (docs.size() >= 1) {
+            return docs.stream()
+                    .map(doc -> documentToAnnouncement(doc))
+                    .toList();
+        }
+        return Collections.emptyList();
+    }
+
     public boolean insertComment(Comment comment) {
         Document doc = mongoRepo.insertComment(comment);
         if (doc != null)
@@ -58,4 +68,12 @@ public class MongoRepoService {
             return docs.stream().map(doc -> documentToComment(doc)).toList();
         return Collections.emptyList();
     }
+
+    public List<Comment> getComments(String projectAddress, int offset, int limit) {
+        List<Document> docs = mongoRepo.getComments(projectAddress, offset, limit);
+        if (docs.size() >= 1)
+            return docs.stream().map(doc -> documentToComment(doc)).toList();
+        return Collections.emptyList();
+    }
+
 }

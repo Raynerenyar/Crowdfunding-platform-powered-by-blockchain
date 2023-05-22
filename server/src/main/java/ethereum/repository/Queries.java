@@ -64,10 +64,10 @@ public class Queries {
 
     public static String INSERT_CONTRIBUTION = """
             INSERT INTO Contributions (
-                contributor_address,
-                contribution_amount,
-                project_address,
-                refunded)
+            contributor_address,
+            contribution_amount,
+            project_address,
+            refunded)
             VALUES (?,?,?,?)
             """;
 
@@ -93,15 +93,16 @@ public class Queries {
             WHERE project_address = ?
             """;
     /* 
-        SELECT *
-        FROM projects
-        WHERE creator_address = ?
+    SELECT *
+    FROM projects
+    WHERE creator_address = ?
     */
     public static String SELECT_PROJECT_BY_CREATOR_ADDRESS = """
             SELECT p.*, t.token_symbol, t.token_name
             FROM Projects p
             JOIN tokens t ON p.token_id = t.token_id
             WHERE creator_address = ?
+            ORDER BY created_date DESC
             """;
 
     public static String SELECT_PROJECT_BY_CREATOR_ADDRESS_FOR_PROJ_ADDRESS = """
@@ -116,9 +117,9 @@ public class Queries {
              WHERE username = ?
             """;
     /*
-        SELECT *
-        FROM projects
-        WHERE project_address = ?
+    SELECT *
+    FROM projects
+    WHERE project_address = ?
     */
     public static String SELECT_PROJECT_BY_PROJECT_ADDRESS = """
             SELECT p.*, t.token_symbol, t.token_name
@@ -128,10 +129,10 @@ public class Queries {
             """;
 
     /*        
-        SELECT *
-        FROM projects
-        ORDER BY created_date DESC
-        LIMIT ?, ?
+    SELECT *
+    FROM projects
+    ORDER BY created_date DESC
+    LIMIT ?, ?
     */
     public static String SELECT_PROJECTS_W_PAGE = """
             SELECT p.*, t.token_symbol, t.token_name

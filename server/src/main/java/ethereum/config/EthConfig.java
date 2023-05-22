@@ -13,7 +13,7 @@ import org.web3j.protocol.http.HttpService;
 public class EthConfig {
 
     @Value("${wallet.public.address}")
-    private String publicKey;
+    private String walletAddress;
     @Value("${wallet.private.key}")
     private String privateKey;
     @Value("${rpc.url}")

@@ -3,6 +3,7 @@ package ethereum.services.ethereum;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -371,7 +372,6 @@ public class BlockchainService {
             } else {
                 Class<?>[] paramsTypeList = new Class<?>[params.length];
                 Object[] paramsArray = new Object[params.length];
-
                 // conversting the param types that matches the solidity function
                 for (int i = 0; i < params.length; i++) {
                     Class<?> paramClass = params[i].getClass();
@@ -386,12 +386,17 @@ public class BlockchainService {
                         paramsArray[i] = paramClass.cast(params[i]);
                     }
                 }
-                // for (Class<?> classtype : paramsTypeList) {
-                //     System.out.println(classtype.getName());
-                // }
+                for (Class<?> classtype : paramsTypeList) {
+                    System.out.println(classtype.getName());
+                }
+
                 logger.info("getting function from getFunction method >> {}", functionName);
                 // get the method by using function name and param types
                 Method contractFunction = contractClass.getMethod(functionName, paramsTypeList);
+                Parameter[] parameters = contractFunction.getParameters();
+                for (Object object : parameters) {
+                    System.out.println(object.toString());
+                }
                 Class<?>[] parameterTypes = contractFunction.getParameterTypes();
                 for (Class<?> class1 : parameterTypes) {
                     logger.info(class1.getName());

@@ -10,3 +10,7 @@
 .card{
    cursor: pointer;
 }
+
+:host ::ng-deep .p-paginator{
+   background-color: var(--custom-background-colour1);
+}

@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -33,7 +34,9 @@ import ethereum.javaethereum.wrapper.DevFaucet;
 import ethereum.javaethereum.wrapper.Token;
 import ethereum.models.Request;
 import ethereum.repository.SqlCrowdfundingRepo;
+import ethereum.repository.SqlRepoInferface;
 import ethereum.services.ethereum.BlockchainService;
+import ethereum.services.ethereum.EtherscanService;
 import ethereum.services.ethereum.LoadContractService;
 import ethereum.services.repository.SqlRepoService;
 import ethereum.util.eventFlowable.CrowdfundingEvents;
@@ -50,6 +53,11 @@ public class BlockchainEventHandler {
     private LoadContractService lcSvc;
     @Autowired
     private SqlCrowdfundingRepo sqlRepo;
+    @Autowired
+    private SqlRepoInferface sqlRepoInter;
+    @Autowired
+    private EtherscanService etherscanSvc;
+
     @Autowired
     private SqlRepoService sqlRepoSvc;
     @Value("${crowdfunding.factory.contract.address}")
@@ -73,14 +81,22 @@ public class BlockchainEventHandler {
                 .subscribe((event) -> {
                     logger.info("event: create new project, blockhash >> {}, project title >> {}", blockHash,
                             event._title);
+
+                    // sequence of params is important. must be same as the one used in the constructior of Crowdfunding contract
+                    // String[] params = { event._goal.toString(), event._deadline.toString(), event._tokenUsed,
+                    //         event._title };
+
+                    // verify contract on etherscan sepolia
+                    // etherscanSvc.verifyContract(event._projectAddress, "Crowdfunding", params);
+
                     /* at this point the smart contract has verified that token address given by
                      * the user is a token therefore it is valid to store address into db 
                      */
-                    int count = sqlRepo.doesTokenExist(event._tokenUsed.toLowerCase());
+                    int count = sqlRepoInter.doesTokenExist(event._tokenUsed.toLowerCase());
                     if (count == 0)
-                        sqlRepo.insertToken(event._tokenUsed.toLowerCase(), event.tokenSymbol, event.tokenName);
-                    int tokenId = sqlRepo.getTokenId(event._tokenUsed);
-                    sqlRepo.insertProject(
+                        sqlRepoInter.insertToken(event._tokenUsed.toLowerCase(), event.tokenSymbol, event.tokenName);
+                    int tokenId = sqlRepoInter.getTokenId(event._tokenUsed);
+                    sqlRepoInter.insertProject(
                             event._projectAddress,
                             event._projectCreator,
                             event._title,
@@ -105,13 +121,13 @@ public class BlockchainEventHandler {
                     logger.info("event: contribute to project, contributor address >> {}", event._contributor);
 
                     // if contributor does not exist, add contributor to DB
-                    int count = sqlRepo.countContributor(event._contributor);
+                    int count = sqlRepoInter.countContributor(event._contributor);
                     if (count < 1) {
-                        sqlRepo.insertContributor(event._contributor);
+                        sqlRepoInter.insertContributor(event._contributor);
                     }
                     // TODO: GET RAISED AMOUNT FROM DB THEN UPDATE RAISED AMOUNT IN SQL
 
-                    sqlRepo.insertContribution(
+                    sqlRepoInter.insertContribution(
                             event._contributor,
                             event._amount.intValue(),
                             projectAddress,
@@ -125,11 +141,11 @@ public class BlockchainEventHandler {
                 .subscribe((event) -> {
                     logger.info("event: getting refund");
                     // TODO: update projects completed expired to true
-                    sqlRepo.updateContribution(
-                            false,
+                    sqlRepoInter.updateProjectExpired(true, projectAddress);
+                    sqlRepoInter.updateContribution(
+                            true,
                             event._contributor,
-                            projectAddress,
-                            event._RefundAmount.intValue());
+                            projectAddress);
                 });
     }
 
@@ -139,7 +155,7 @@ public class BlockchainEventHandler {
                 .createRequestForProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
                     logger.info("event: inserting request");
-                    sqlRepo.insertProjectRequest(
+                    sqlRepoInter.insertProjectRequest(
                             event.requestNum.intValue(),
                             projectAddress,
                             event._title,
@@ -156,7 +172,7 @@ public class BlockchainEventHandler {
                 .subscribe((event) -> {
                     logger.info("event: inserting vote");
                     Optional<Integer> requestId = sqlRepoSvc.getRequestId(projectAddress, event._requestNo.intValue());
-                    sqlRepo.insertVote(
+                    sqlRepoInter.insertVote(
                             requestId.get(),
                             event._voter,
                             event._valueOfVote.intValue());
@@ -170,10 +186,11 @@ public class BlockchainEventHandler {
                     logger.info("event: receive contribution");
                     // received contribution so request completes
 
-                    // TODO update projectRequest completed column to true in the request using project address and requestno
+                    // update projects completed column to true
                     // fundraising project completes as goal has been reached
-                    // TODO update projects completed column to true
-                    sqlRepo.updateRequest(
+                    sqlRepoInter.updateProjectCompleted(true, projectAddress);
+                    // update projectRequest completed column to true in the request using project address and requestno
+                    sqlRepoInter.updateRequest(
                             event._requestNo.intValue(),
                             true);
                 });
