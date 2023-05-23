@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS crowdfunding;
+CREATE DATABASE IF NOT EXISTS crowdfunding2;
 
-USE crowdfunding;
+USE crowdfunding2;
 
 CREATE TABLE ProjectCreators (
     username VARCHAR(42) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE Projects (
     creator_address VARCHAR(42) NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    goal INT NOT NULL,
+    goal BIGINT NOT NULL,
     deadline TIMESTAMP NOT NULL,
     -- raised_amount INT, 
     completed BOOLEAN NOT NULL,

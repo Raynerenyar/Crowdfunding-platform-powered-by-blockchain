@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ethereum.models.User;
+import ethereum.models.sql.auth.User;
 
 public class UserDetailsImpl implements UserDetails {
 

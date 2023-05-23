@@ -16,19 +16,12 @@ export class MongoRepoService {
 
   public insertAnnouncement(announcement: Announcement): Observable<any> {
     let url = this.urlBuilder.setPath('api/insert-announcement').build()
-    console.log(url)
     return this.http.post(url, announcement)
   }
 
   public editAnnouncement(announcement: Announcement): Observable<any> {
     let url = this.urlBuilder.setPath('api/edit-announcement').build()
     return this.http.put(url, announcement)
-  }
-
-  public getAnnouncements(projectAddress: string): Observable<any> {
-    let url = this.urlBuilder.setPath('api/get-announcements').build()
-    let params = new HttpParams().append('projectAddress', projectAddress)
-    return this.http.get(url, { params })
   }
 
   public getAnnouncementsByPage(projectAddress: string, offset: number, limit: number): Observable<any> {
@@ -42,12 +35,6 @@ export class MongoRepoService {
 
   public countAnnouncements(projectAddress: string): Observable<any> {
     let url = this.urlBuilder.setPath('api/count-announcements').build()
-    let params = new HttpParams().append('projectAddress', projectAddress)
-    return this.http.get(url, { params })
-  }
-
-  public getComments(projectAddress: string): Observable<any> {
-    let url = this.urlBuilder.setPath('api/get-comments').build()
     let params = new HttpParams().append('projectAddress', projectAddress)
     return this.http.get(url, { params })
   }

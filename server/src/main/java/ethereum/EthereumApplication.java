@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.javaethereum.wrapper.CrowdfundingFactory;
-import ethereum.repository.SqlCrowdfundingRepo;
+import ethereum.repository.sql.crowdfunding.SqlCrowdfundingRepo;
 import ethereum.services.ethereum.BlockchainService;
 import ethereum.services.ethereum.EtherscanService;
 import ethereum.services.ethereum.LoadContractService;

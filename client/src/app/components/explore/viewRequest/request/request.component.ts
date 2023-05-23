@@ -14,7 +14,7 @@ import { WalletService } from 'src/app/services/wallet.service';
   templateUrl: './request.component.html',
   styleUrls: ['./request.component.css']
 })
-export class RequestComponent implements OnDestroy, AfterViewInit {
+export class RequestComponent implements OnDestroy {
 
   request!: Request
   projectAddress!: string
@@ -105,11 +105,6 @@ export class RequestComponent implements OnDestroy, AfterViewInit {
     console.log(this.projectAddress)
   }
 
-  ngAfterViewInit(): void {
-    // contributeReq
-
-  }
-
   voteRequest() {
     if (this.walletSvc.isOnRightChain()) {
       console.log(this.request.requestNo)
@@ -121,7 +116,11 @@ export class RequestComponent implements OnDestroy, AfterViewInit {
             this.msgSvc.generalSuccessMethod("You have successfully voted")
             window.location.reload()
           },
-          error: () => this.msgSvc.generalErrorMethod("There was an error, failed to vote")
+          error: (error) => {
+            console.log(error)
+            this.msgSvc.generalErrorMethod("There was an error, failed to vote")
+          }
+
         })
     } else this.msgSvc.tellToConnectToChain()
   }

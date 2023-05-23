@@ -16,4 +16,14 @@ public class Util {
         JsonReader jsonReader = Json.createReader(reader);
         return jsonReader.readObject();
     }
+
+    public static BigInteger convertToBaseUnit(long value, int decimals) {
+        BigInteger decimalsBN = BigInteger.valueOf(10).pow(decimals);
+        return BigInteger.valueOf(value).multiply(decimalsBN);
+    }
+
+    public static long revertFromBaseUnit(BigInteger value, int decimals) {
+        BigInteger decimalsBN = BigInteger.valueOf(10).pow(decimals);
+        return value.divide(decimalsBN).longValue();
+    }
 }

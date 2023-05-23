@@ -1,449 +1,402 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
-import { SmartContract } from '../smartContractRelated/contracts';
 import Web3 from 'web3';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { constants } from 'src/environments/environment';
-import { ContractTxProperties, NonceResponse } from '../model/model';
+import { ContractTxProperties, NonceResponse, EncodedFunction } from '../model/model';
 import { Url } from '../util/url.util';
 import { AuthService } from './auth.service';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { WalletService } from './wallet.service';
 import { SessionStorageService } from './session.storage.service';
 import { Router } from '@angular/router';
 import { PrimeMessageService } from './prime.message.service';
 import { UrlBuilderService } from './url-builder.service';
-import { tokenFunctionsAbi, getTransactionObject } from "../../app/smartContractRelated/contract-functons/abi.functions";
+import { tokenFunctionsAbi, getTransactionObject } from "../util/abi.functions";
 import BN from 'bn.js';
-
-// import * as contract from "../../assets/tokenInterface/token.json";
-
 
 @Injectable({
   providedIn: 'root'
 })
-export class BlockchainService implements OnDestroy, OnInit {
+/*  - To send transaction, first get the function encoded from the server
+*     upon receiving it, send transaction with the encoded function.
+*     Same for view functions.
+*
+*   - Interactions with smart contract can be done from the client side but exposes client to smart contract ABI
+*     that may be private.
+*   - All interactions with own smart contract was done this way for learning and practice.
+*   - Some transactions or view functions were done on the client side sucn as
+*     approving token spend and getting token balance for learning and practice
+*   - Although not having exposed ABI or smart contract source code does not guarantee zero exploitation
+*     It just makes it slightly more tedious as the bytecode on the blockchain has to be decoded.
+*/
+export class BlockchainService {
 
   projectAddress!: string
 
   web3: Web3 = new Web3(window.ethereum);
+  postSubscription$!: Subscription
+  subArr: Subscription[] = []
 
-  notifier$ = new Subject<boolean>();
+  // notifier$ = new Subject<boolean>();
+  readEventEndpoint!: string
 
-  constructor(private http: HttpClient, private authSvc: AuthService, private storageSvc: SessionStorageService, private router: Router, private msgSvc: PrimeMessageService, private urlBuilder: UrlBuilderService) { }
-  ngOnInit(): void { }
+  constructor(
+    private http: HttpClient,
+    private authSvc: AuthService,
+    private storageSvc: SessionStorageService,
+    private router: Router,
+    private msgSvc: PrimeMessageService,
+    private urlBuilder: UrlBuilderService
+  ) { this.readEventEndpoint = this.urlBuilder.setPath("api/read-event").build() }
 
-  // project owner functions they can interact with
   createProject(goal: number, deadline: number, tokenAddress: string, title: string, description: string) {
     console.log("create project")
-    // let numb = this.web3.utils.toBN(goal)
-    // let decimals = this.web3.utils.toBN(18)
-    // let d: BN = this.web3.utils.toBN(10).pow(decimals)
-    // console.log(d)
-    // console.log(numb.mul(d).toString())
     return new Observable(observer => {
-      let properties = SmartContract.crowdfundingFactory().createNewProject(goal, deadline, tokenAddress, title)
-      this.getEncodedFunctionVariableObservable(properties)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          let abiFunction = response as { encodedFunction: string, contractAddress: string }
-          console.log(abiFunction.encodedFunction)
-          console.log(abiFunction.contractAddress)
-          this.sendTransaction(abiFunction.encodedFunction, abiFunction.contractAddress)
-            .on('transactionHash', async (hash) => {
-              let result = await this.web3.eth.getTransactionReceipt(hash)
-              console.log(result)
-            }
-            )
+      let url = this.urlBuilder.setPath("api/factory/project").build()
+      let subscription$ = new Subscription
+
+      // post to server to get encoded abi function
+      subscription$ = this.http.post(url, { goal: goal, deadline: deadline, tokenAddress: tokenAddress, title: title })
+        .pipe()
+        .subscribe((resp) => {
+          let encodedFunction = resp as EncodedFunction;
+          console.log(resp)
+
+          // send transaction through metamask
+          this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
             .on(('receipt'), (receipt) => {
               let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
               console.log(receiptCast.blockHash)
-
-              let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
               let body = {
-                contractName: properties.contractName,
-                functionName: properties.functionName,
+                contractName: "CrowdfundingFactory",
+                functionName: "createNewProject",
                 blockHash: receiptCast.blockHash,
                 description: description
               }
+              let subscription$ = new Subscription
 
-              this.http.post(url, body)
-                .pipe(takeUntil(this.notifier$))
-                .subscribe((data) => {
-                  observer.next()
-                  console.log(data)
-                })
-              // this.router.navigate(['project-admin'])
-            })
-            .on(('error'), (error: Error) => {
-              console.log(error.message)
-              console.log(error.stack)
-              console.log(error.cause)
-              this.msgSvc.generalErrorMethod(error.message)
-              observer.error()
-            })
-        })
-    })
-  }
-
-  createRequest(projectAddress: string, title: string, description: string, recipient: string, amount: number) {
-    return new Observable(observer => {
-      let properties = SmartContract.crowdfunding().createRequest(title, recipient, amount)
-      console.log(properties)
-      this.getEncodedFunctionVariableObservable(properties, projectAddress)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          // on getting abi encoded function & parameters
-          let abiFunction = response as { encodedFunction: string }
-          console.log(abiFunction.encodedFunction)
-          // get user to send transaction to crowdfunding factory contract
-          this.sendTransaction(abiFunction.encodedFunction, projectAddress)
-            .on(('receipt'), (receipt) => {
-              let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-              let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
-              // TODO SEND REQUEST WITH PROJECT ADDRESS
-              let body = {
-                contractName: properties.contractName,
-                functionName: properties.functionName,
-                blockHash: receiptCast.blockHash,
-                description: description,
-                address: projectAddress
-              }
-              console.log(receipt)
-              // post blockhash and projectAddress for backend to read events on successful creation of request
-              this.http.post(url, body)
-                .pipe(takeUntil(this.notifier$))
-                .subscribe((data) => {
-                  observer.next()
-                  console.log(data)
-                })
-            })
-            .on(('error'), (error) => {
-              console.log(error)
-              this.msgSvc.generalErrorMethod("error creating new request")
-              observer.error()
-            })
-        })
-    })
-  }
-
-  receiveContribution(projectAddress: string, requestNum: number): Observable<any> {
-    return new Observable(observer => {
-
-      let properties = SmartContract.crowdfunding().receiveContribution(requestNum)
-      this.getEncodedFunctionVariableObservable(properties, projectAddress)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          let abiFunction = response as { encodedFunction: string }
-          console.log(abiFunction.encodedFunction)
-          this.sendTransaction(abiFunction.encodedFunction, projectAddress)
-            .on(('receipt'), (receipt) => {
-              let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-              let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
-              // TODO SEND REQUEST WITH PROJECT ADDRESS
-              let body = {
-                contractName: properties.contractName,
-                functionName: properties.functionName,
-                blockHash: receiptCast.blockHash,
-                address: projectAddress
-              }
-              console.log(receipt)
-              this.http.post(url, body)
-                .pipe(takeUntil(this.notifier$))
-                .subscribe((data) => {
-                  console.log(data)
+              // post to server to retrieve events
+              subscription$ = this.http.post(this.readEventEndpoint, body)
+                .pipe()
+                .subscribe(() => {
                   observer.next()
                 })
+              this.subArr.push(subscription$)
             })
-            .on(('error'), (error) => {
-              console.log(error)
-              observer.error()
-            })
+            .on(('error'), (error) => observer.error(error))
         })
+      this.subArr.push(subscription$)
     })
   }
 
-  // user functions they can interact with
-  voteRequest(projectAddress: string, requestNum: number) {
-
+  createRequest(projectAddress: string, title: string, description: string, recipient: string, amount: number): Observable<any> {
     return new Observable(observer => {
-      console.log(requestNum)
-      let properties = SmartContract.crowdfunding().voteRequest(requestNum)
-      this.getEncodedFunctionVariableObservable(properties, projectAddress)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          let abiFunction = response as { encodedFunction: string }
-          console.log(abiFunction.encodedFunction)
-          this.sendTransaction(abiFunction.encodedFunction, projectAddress)
-            .on(('receipt'), (receipt) => {
-              // on successful vote
-              observer.next()
+      let url = this.urlBuilder.setPath("api/crowdfunding/transaction/request").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let subscription$ = new Subscription
 
-              let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-              let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
-              // TODO SEND REQUEST WITH PROJECT ADDRESS
-              let body = {
-                contractName: properties.contractName,
-                functionName: properties.functionName,
-                blockHash: receiptCast.blockHash,
-                address: projectAddress
-              }
-              console.log(receipt)
-              this.http.post(url, body)
-                .pipe(takeUntil(this.notifier$))
-                .subscribe((data) => {
-                  console.log(data)
-                })
-            })
-            .on(('error'), (error) => {
-              console.log(error)
-              observer.error()
-            })
-        })
-
-    })
-  }
-
-  // approve token
-  approveTokenSpendByContract(projectAddress: string, tokenAddress: string, walletAddress: string, amount: number) {
-    return new Observable(observer => {
-
-      let properties = SmartContract.Token().approve(projectAddress, amount)
-      this.getEncodedFunctionVariableObservable(properties, tokenAddress)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          let abiFunction = response as { encodedFunction: string }
-          console.log(abiFunction.encodedFunction)
-          this.sendTransaction(abiFunction.encodedFunction, tokenAddress)
-            .on(('receipt'), (receipt) => {
-              // emiting true
-              observer.next()
-
-              /* approve token has no event */
-
-              // let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-              // let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
-              // // TODO SEND REQUEST WITH PROJECT ADDRESS
-              // let body = { contractName: properties.contractName, functionName: properties.functionName, blockHash: receiptCast.blockHash }
-              // console.log(receipt)
-              // // sending blockhash to server to read event
-              // this.http.post(url, body)
-              //   .pipe(takeUntil(this.notifier$))
-              //   .subscribe((data) => {
-              //     console.log(data)
-              //   })
-            })
-            .on(('error'), (error) => {
-              console.log(error)
-              // emiting false
-              observer.error()
-            })
-        })
-    })
-  }
-
-  contribute(projectAddress: string, amount: number) {
-
-    return new Observable(observer => {
-
-      let properties = SmartContract.crowdfunding().contribute(amount)
-      console.log(properties)
-      this.getEncodedFunctionVariableObservable(properties, projectAddress)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          let abiFunction = response as { encodedFunction: string }
-          console.log(abiFunction.encodedFunction)
-          this.sendTransaction(abiFunction.encodedFunction, projectAddress)
-            .on(('receipt'), (receipt) => {
-              // on tx success
-              observer.next()
-              let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-              let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
-              // TODO SEND REQUEST WITH PROJECT ADDRESS
-              let body = {
-                contractName: properties.contractName,
-                functionName: properties.functionName,
-                blockHash: receiptCast.blockHash,
-                address: projectAddress
-              }
-              this.http.post(url, body)
-                .pipe(takeUntil(this.notifier$))
-                .subscribe((data) => { })
-            })
-            .on(('error'), (error) => {
-              observer.error(error.message)
-            })
-
-        })
-    })
-  }
-
-  getRefund(projectAddress: string) {
-    return new Observable(observer => {
-
-      let properties = SmartContract.crowdfunding().getRefund()
-      this.getEncodedFunctionVariableObservable(properties, projectAddress)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          let abiFunction = response as { encodedFunction: string }
-          console.log(abiFunction.encodedFunction)
-          this.sendTransaction(abiFunction.encodedFunction, projectAddress)
-            .on(('receipt'), (receipt) => {
-              // on successful refund
-              observer.next()
-              let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-              let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
-              // TODO SEND REQUEST WITH PROJECT ADDRESS
-              let body = {
-                contractName: properties.contractName,
-                functionName: properties.functionName,
-                blockHash: receiptCast.blockHash,
-                address: projectAddress
-              }
-              console.log(receipt)
-              this.http.post(url, body)
-                .pipe(takeUntil(this.notifier$))
-                .subscribe((data) => {
-                  console.log(data)
-                })
-            })
-            .on(('error'), (error) => {
-              // on failure to refund
-              console.log(error.message)
-              console.log(error.cause)
-              observer.error()
-            })
-        })
-    })
-  }
-
-  getContributionAmount(projectAddress: string, address: string): Observable<any> {
-    return new Observable(observer => {
-      let properties = SmartContract.crowdfunding().contributors(address)
-      this.getViewFunctionsReturn(properties, projectAddress)
-        .pipe(takeUntil(this.notifier$))
+      // post to server to get encoded abi function
+      subscription$ = this.http.post(url, { title, recipient, amount }, { params })
+        .pipe()
         .subscribe({
           next: (resp) => {
-            let value = resp as { returnFromView: string }
-            observer.next(value.returnFromView)
+            let encodedFunction = resp as EncodedFunction
+
+            // send transaction through metamask
+            this.sendTransaction(encodedFunction.encodedFunction, projectAddress)
+              .on(('receipt'), (receipt) => {
+                let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
+                let body = {
+                  contractName: "Crowdfunding",
+                  functionName: "createRequest",
+                  blockHash: receiptCast.blockHash,
+                  description: description,
+                  address: projectAddress
+                }
+                console.log(receipt)
+                let subscription$ = new Subscription
+
+                // post to server to retrieve blockchain event
+                subscription$ = this.http.post(this.readEventEndpoint, body)
+                  .pipe()
+                  .subscribe((data) => {
+                    observer.next()
+                    console.log(data)
+                  })
+                this.subArr.push(subscription$)
+              })
+              .on(('error'), (error) => {
+                this.msgSvc.generalErrorMethod("error creating new request")
+                observer.error(error)
+              })
           },
           error: (err) => {
             observer.error(err)
           },
         })
+      this.subArr.push(subscription$)
     })
   }
 
-  getRaisedAmount(projectAddress: string): Observable<any> {
+  contribute(projectAddress: string, amount: number) {
     return new Observable(observer => {
-      let properties = SmartContract.crowdfunding().raisedAmount()
-      this.getViewFunctionsReturn(properties, projectAddress)
-        .pipe(takeUntil(this.notifier$))
+      let url = this.urlBuilder.setPath("api/crowdfunding/transaction/contribute").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let subscription$ = new Subscription
+
+      // post to server to get encoded abi function
+      subscription$ = this.http.post(url, { amount }, { params })
+        .pipe()
         .subscribe({
           next: (resp) => {
-            let value = resp as { returnFromView: string }
-            observer.next(value.returnFromView)
+            let encodedFunction = resp as EncodedFunction
+
+            // send transaction through metamask
+            this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
+              .on(('receipt'), (receipt) => {
+                let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
+                let body = {
+                  contractName: "Crowdfunding",
+                  functionName: "contribute",
+                  blockHash: receiptCast.blockHash,
+                  address: projectAddress
+                }
+                let subscription$ = new Subscription
+
+                // post to server to read events
+                subscription$ = this.http.post(this.readEventEndpoint, body)
+                  .pipe()
+                  .subscribe(() => observer.next())
+                this.subArr.push(subscription$)
+              })
+              .on(('error'), (error) => observer.error())
           },
           error: (err) => {
             observer.error()
           },
         })
+      this.subArr.push(subscription$)
+
+    })
+  }
+
+  receiveContribution(projectAddress: string, requestNum: number): Observable<any> {
+    return new Observable(observer => {
+      let url = this.urlBuilder.setPath("api/crowdfunding/transaction/receive/contribution").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let subscription$ = new Subscription
+
+      // post to server to get encoded abi function
+      subscription$ = this.http.post(url, { requestNum }, { params })
+        .pipe()
+        .subscribe({
+          next: (resp) => {
+            let encodedFunction = resp as EncodedFunction
+
+            // send transaction through metamask
+            this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
+              .on(('receipt'), (receipt) => {
+                let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
+                let body = {
+                  contractName: "Crowdfunding",
+                  functionName: "receiveContribution",
+                  blockHash: receiptCast.blockHash,
+                  address: projectAddress
+                }
+                let subscription$ = new Subscription
+
+                // post to server to read events
+                subscription$ = this.http.post(this.readEventEndpoint, body)
+                  .pipe()
+                  .subscribe(() => observer.next())
+                this.subArr.push(subscription$)
+              })
+              .on(('error'), (error) => observer.error())
+          },
+          error: () => observer.error()
+        })
+      this.subArr.push(subscription$)
+    })
+  }
+
+  voteRequest(projectAddress: string, requestNum: number): Observable<any> {
+    return new Observable(observer => {
+      let url = this.urlBuilder.setPath("api/crowdfunding/transaction/vote").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let subscription$ = new Subscription
+
+      // post to server to get encoded abi function
+      subscription$ = this.http.post(url, { requestNum }, { params })
+        .pipe()
+        .subscribe({
+          next: (resp) => {
+            let encodedFunction = resp as EncodedFunction
+
+            // send transaction through metamask
+            this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
+              .on(('receipt'), (receipt) => {
+                let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
+                let body = {
+                  contractName: "Crowdfunding",
+                  functionName: "voteRequest",
+                  blockHash: receiptCast.blockHash,
+                  address: projectAddress
+                }
+                let subscription$ = new Subscription
+
+                // post to server to retrieve events
+                subscription$ = this.http.post(this.readEventEndpoint, body)
+                  .pipe()
+                  .subscribe(() => observer.next())
+                this.subArr.push(subscription$)
+              })
+              .on(('error'), (error: any) => observer.error(error))
+          },
+          error: (err) => observer.error(),
+        })
+      this.subArr.push(subscription$)
+
+    })
+  }
+
+  getRefund(projectAddress: string) {
+    return new Observable(observer => {
+      let url = this.urlBuilder.setPath("api/crowdfunding/transaction/refund").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let subscription$ = new Subscription
+
+      // post to server to get encoded abi function
+      subscription$ = this.http.get(url, { params })
+        .pipe()
+        .subscribe({
+          next: (resp) => {
+            let encodedFunction = resp as EncodedFunction
+
+            // send transaction through metamask
+            this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
+              .on(('receipt'), (receipt) => {
+                let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
+                let body = {
+                  contractName: "Crowdfunding",
+                  functionName: "getRefund",
+                  blockHash: receiptCast.blockHash,
+                  address: projectAddress
+                }
+                let subscription$ = new Subscription
+
+                // post to server to read events
+                subscription$ = this.http.post(this.readEventEndpoint, body)
+                  .pipe()
+                  .subscribe({ next: () => observer.next() })
+                this.subArr.push(subscription$)
+
+              })
+              .on(('error'), (error: any) => observer.error())
+          },
+          error: (err) => observer.error(),
+        })
+      this.subArr.push(subscription$)
+
+    })
+  }
+
+  getContributionAmount(projectAddress: string, contributorAddress: string, tokenAddress: string): Observable<any> {
+    return new Observable(observer => {
+      let url = this.urlBuilder.setPath("api/crowdfunding/view/contribute/amount").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let body = {
+        contributorAddress: contributorAddress
+      }
+      let subscription$ = new Subscription
+
+      // post to server for value
+      subscription$ = this.http.post(url, body, { params })
+        .pipe()
+        .subscribe({
+          next: (amount) => {
+            let amountNum = amount as number
+            observer.next(amountNum)
+          },
+          error: (err) => observer.error(err),
+        })
+      this.subArr.push(subscription$)
+
+    })
+  }
+
+  getRaisedAmount(projectAddress: string, tokenAddress: string): Observable<any> {
+    return new Observable(observer => {
+      let url = this.urlBuilder.setPath("api/crowdfunding/view/raised/amount").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let subscription$ = new Subscription
+
+      // post to server for value
+      subscription$ = this.http.get(url, { params })
+        .pipe()
+        .subscribe({
+          next: (amount) => {
+            let amountNum = amount as number
+            observer.next(amountNum)
+          },
+          error: (err) => observer.error(),
+        })
+      this.subArr.push(subscription$)
+
     })
   }
 
   // FAUCET
   distributeFromFaucet(): Observable<any> {
     return new Observable(observer => {
-      let properties = SmartContract.DevFaucet().distribute()
-      console.log(properties)
-      this.getEncodedFunctionVariableObservable(properties)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe((response) => {
-          let abiFunction = response as { encodedFunction: string, contractAddress: string }
-          // this.web3.eth.handleRevert = true
-          try {
+      let url = this.urlBuilder.setPath("api/faucet/distribute").build()
+      let subscription$ = new Subscription
 
-            this.sendTransaction(abiFunction.encodedFunction, abiFunction.contractAddress)
-              // .then((receipt) => {
-              //   console.log(receipt)
-              // })
-              // .catch(error => { console.log(error) })
+      // post to server to get encoded abi function
+      subscription$ = this.http.get(url)
+        .pipe()
+        .subscribe({
+          next: (resp) => {
+            let encodedFunction = resp as EncodedFunction;
+
+            // send transaction through metamask
+            this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
               .on(('receipt'), (receipt) => {
                 let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-                let url: string = new Url().add(constants.SERVER_URL).add("api/").add("read-event").getUrl()
-                // TODO SEND REQUEST WITH PROJECT ADDRESS
-                let body = { contractName: properties.contractName, blockNumber: receiptCast.blockNumber, functionName: properties.functionName, blockHash: receiptCast.blockHash }
-                console.log(receipt)
-                this.http.post(url, body)
-                  .pipe(takeUntil(this.notifier$))
-                  .subscribe((data) => {
-                    observer.next()
+                let body = {
+                  contractName: "DevFaucet",
+                  functionName: "distribute",
+                  blockNumber: receiptCast.blockNumber,
+                  blockHash: receiptCast.blockHash
+                }
+                let subscription$ = new Subscription
+
+                // post to server to read events
+                subscription$ = this.http.post(this.readEventEndpoint, body)
+                  .pipe()
+                  .subscribe({
+                    next: () => {
+                      observer.next()
+                    }
                   })
-              })
-              .on(('error'), (error: any) => {
-                this.msgSvc.generalErrorMethod("You probably have claimed from the faucet less than 25 hours ago")
-
-                console.log(this.web3.eth.handleRevert)
-                console.error(error.message)
-                let receiptCast = error as { blockHash: string, logs: Object[], blockNumber: number }
-                let a = error.message as { blockHash: string }
-                observer.error()
+                this.subArr.push(subscription$)
 
               })
-          } catch (error) {
+              .on(('error'), (error: any) => observer.error())
+          },
+          error: (err) => {
             observer.error()
-          }
+          },
         })
+      this.subArr.push(subscription$)
+
     })
-  }
-
-  private getViewFunctionsReturn(properties: ContractTxProperties, contractAddress?: string) {
-    let requestBody: any[] = []
-    if (properties.parameters) {
-      requestBody = properties.parameters
-    }
-    let url = this.urlBuilder
-      .setPath('api/get-view-functions')
-      .build()
-    let httpParams;
-    // somehow i cant append or set new httpParams in the 'if'
-    // scope after setting it outside the 'if' scope
-    if (contractAddress) {
-      httpParams = new HttpParams()
-        .set('contractName', properties.contractName)
-        .set('functionName', properties.functionName)
-        .set('contractAddress', contractAddress)
-    } else {
-      httpParams = new HttpParams()
-        .set('contractName', properties.contractName)
-        .set('functionName', properties.functionName)
-    }
-    return this.http.post(url, requestBody, { params: httpParams })
-  }
-
-  private getEncodedFunctionVariableObservable(properties: ContractTxProperties, contractAddress?: string): Observable<any> {
-    let requestBody: any[] = []
-    if (properties.parameters) {
-      requestBody = properties.parameters
-    }
-    let url: string = new Url()
-      .add(constants.SERVER_URL)
-      .add("api/")
-      .add("get-function-encoded")
-      .getUrl()
-    let httpParams;
-    // somehow i cant append or set new httpParams in the 'if'
-    // scope after setting it outside the 'if' scope
-    if (contractAddress) {
-      httpParams = new HttpParams()
-        .set('contractName', properties.contractName)
-        .set('functionName', properties.functionName)
-        .set('contractAddress', contractAddress)
-    } else {
-      httpParams = new HttpParams()
-        .set('contractName', properties.contractName)
-        .set('functionName', properties.functionName)
-    }
-    return this.http.post(url, requestBody, { params: httpParams })
   }
 
   public getBlockTimestamp(): Observable<any> {
@@ -473,15 +426,6 @@ export class BlockchainService implements OnDestroy, OnInit {
     })
   }
 
-  private callFunction(encodedFunction: string, projectAddress: string) {
-    let address = this.storageSvc.getAddress()
-    return this.web3.eth.call({
-      from: address,
-      to: projectAddress,
-      data: encodedFunction as string
-    })
-  }
-
   public getTokenSymbol(TokenAddress: string) {
     let abi = tokenFunctionsAbi.symbol
     let functionParams: string[] = []
@@ -498,47 +442,54 @@ export class BlockchainService implements OnDestroy, OnInit {
     let data = this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.balanceOf, functionParams)
     let transactionObj = getTransactionObject(tokenAddress, data)
 
-    return this.web3.eth.call(transactionObj).then((result) => {
-      let balance = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.balanceOf.outputs[0].type], result)
-      return balance[0]
-    }).catch((error) => { return error })
+    return this.web3.eth.call(transactionObj)
+      .then(async (result) => {
+        let balance = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.balanceOf.outputs[0].type], result)
+        this.getTokenDecimals(tokenAddress)
+        let valueBN = new BN(balance[0])
+        let decimals = await this.getTokenDecimals(tokenAddress)
+        let decimalsBN = new BN(decimals)
+        let value = valueBN.div(new BN(10).pow(decimalsBN)).toNumber()
+        return value
+      }).catch((error) => { return error })
   }
 
 
 
   public async approveToken(tokenAddress: string, spenderAddress: string, fromAddress: string, amount: number) {
-    let stringAmount = amount.toString()
-    let functionParams = [spenderAddress, stringAmount]
-
+    console.log("approving token")
     // get decimals of token
-    let result = await this.getTokenDecimals(tokenAddress)
-    let tokenDecimals = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.decimals.outputs[0].type], result)
-    let valueString = (amount * 10 ** parseInt(tokenDecimals[0])).toString()
+    let decimals = await this.getTokenDecimals(tokenAddress)
+    console.log(decimals)
+    let amountBN = new BN(amount)
+    let tenBN = new BN(10)
+    let decimalsBN = new BN(decimals)
+    let valueString = amountBN.mul(tenBN.pow(decimalsBN)).toString()
 
-    console.log(valueString)
-
+    let functionParams = [spenderAddress, valueString]
+    console.log(valueString, functionParams)
     let transactionObj = {
       to: tokenAddress,
       data: this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.approve, functionParams),
       from: fromAddress
     }
-    // let output = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.approve.outputs[0].type], result)
     return this.web3.eth.sendTransaction(transactionObj)
 
   }
 
   private getTokenDecimals(tokenAddress: string): Promise<string> {
     let functionParams: string[] = []
-    let transactionObj = {
-      to: tokenAddress,
-      data: this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.decimals, functionParams)
-    }
+    let data = this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.decimals, functionParams)
+    let transactionObj = getTransactionObject(tokenAddress, data)
     let returnResult: { [key: string]: any; }
-    return this.web3.eth.call(transactionObj, (error, result) => {
-      if (error) {
-        console.log(error)
-      } else {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await this.web3.eth.call(transactionObj)
         returnResult = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.decimals.outputs[0].type], result)
+        resolve(returnResult[0])
+      } catch (error) {
+        // defaults to 18 decimals if error
+        reject("18")
       }
     })
   }
@@ -557,10 +508,13 @@ export class BlockchainService implements OnDestroy, OnInit {
     return this.web3.utils.isAddress(address)
   }
 
-  ngOnDestroy(): void {
-    this.notifier$.next(true);
-    this.notifier$.unsubscribe()
+  // manually clean up service
+  cleanUp() {
+    this.subArr.forEach(sub => {
+      console.log("sub getting unsub")
+      sub.unsubscribe()
+    });
+    this.subArr = []
   }
-
 
 }

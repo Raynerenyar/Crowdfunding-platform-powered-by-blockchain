@@ -23,6 +23,11 @@ export interface ContractTxProperties {
     parameters?: any[]
 }
 
+export interface EncodedFunction {
+    encodedFunction: string
+    contractAddress: string
+}
+
 
 export interface Project {
     projectAddress: string

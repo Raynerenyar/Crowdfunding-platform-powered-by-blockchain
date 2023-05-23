@@ -57,5 +57,6 @@ export class OverlayPanelComponent implements OnInit {
   ngOnDestroy(): void {
     this.notifier$.next(true)
     this.notifier$.unsubscribe()
+    this.walletSvc.cleanUp()
   }
 }

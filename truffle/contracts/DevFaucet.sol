@@ -36,7 +36,7 @@ contract DevFaucet is Ownable {
             "Cannot mint yet, still on cooldown."
         );
         require(msg.sender != address(0), "address not be 0x0");
-        uint amount = 1000;
+        uint amount = 1000 * 10 ** 18;
         token.approve(msg.sender, amount);
         token.transfer(msg.sender, amount);
         balance -= amount;

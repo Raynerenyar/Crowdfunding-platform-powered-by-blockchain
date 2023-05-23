@@ -10,11 +10,6 @@ import ethereum.javaethereum.wrapper.Crowdfunding.CreateRequestEventEventRespons
 import ethereum.javaethereum.wrapper.Crowdfunding.ReceiveContributionEventEventResponse;
 import ethereum.javaethereum.wrapper.Crowdfunding.VoteRequestEventEventResponse;
 import ethereum.javaethereum.wrapper.Crowdfunding.GetRefundEventEventResponse;
-// import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.ContributeToProjectEventEventResponse;
-// import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.CreateRequestForProjectEventEventResponse;
-// import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.ReceiveContributionFromProjectEventEventResponse;
-// import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.VoteRequestForProjectEventEventResponse;
-// import ethereum.tutorials.java.ethereum.javaethereum.wrapper.CrowdfundingFactory.GetRefundFromProjectEventEventResponse;
 import io.reactivex.Flowable;
 
 // method are named according to the functions on solidity that emits their respective events

@@ -9,9 +9,10 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ethereum.models.Announcement;
-import ethereum.models.Comment;
-import ethereum.repository.MongoRepo;
+import ethereum.models.mongo.Announcement;
+import ethereum.models.mongo.Comment;
+import ethereum.repository.mongo.MongoRepo;
+
 import static ethereum.util.mongo.MongoUtil.*;
 
 @Service

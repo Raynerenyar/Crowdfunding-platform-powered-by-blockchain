@@ -16,7 +16,7 @@ export class ExploreProjectsComponent implements OnInit {
   projects!: Project[]
 
   // total count of projects
-  length!: number
+  length = 0
 
   // first index
   first = 0
@@ -115,7 +115,7 @@ export class ExploreProjectsComponent implements OnInit {
 
   getRaisedAmount() {
     this.projects.forEach((project: Project) => {
-      this.bcSvc.getRaisedAmount(project.projectAddress)
+      this.bcSvc.getRaisedAmount(project.projectAddress, project.acceptingToken)
         .pipe(takeUntil(this.notifier$))
         .subscribe({
           next: (value) => {

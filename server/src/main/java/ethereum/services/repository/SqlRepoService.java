@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ethereum.javaethereum.wrapper.Crowdfunding;
-import ethereum.models.Project;
-import ethereum.models.Request;
-import ethereum.repository.SqlCrowdfundingRepo;
+import ethereum.models.sql.crowdfunding.Project;
+import ethereum.models.sql.crowdfunding.Request;
+import ethereum.repository.sql.crowdfunding.SqlCrowdfundingRepo;
 
 @Service
 public class SqlRepoService {

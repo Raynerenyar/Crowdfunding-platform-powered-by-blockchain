@@ -16,6 +16,10 @@ export class ViewAnnouncementComponent implements OnInit {
   projectAddress!: string
   notifier$ = new Subject<boolean>()
   announcements!: Announcement[]
+  first = 0
+  rows = 10
+  length = 0
+
   constructor(private mongoSvc: MongoRepoService, private walletSvc: WalletService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
@@ -26,21 +30,40 @@ export class ViewAnnouncementComponent implements OnInit {
         this.projectAddress = param.get('projectAddress')!
 
         console.log(this.projectAddress)
-        this.mongoSvc.getAnnouncements(this.projectAddress)
-          .pipe(takeUntil(this.notifier$))
-          .subscribe({
-            next: (announcements: Announcement[]) => {
-              this.announcements = announcements
-              console.log(this.announcements)
-            },
-            error: (error: HttpErrorResponse) => { }
-          })
+        this.getAnnouncements(this.projectAddress, this.first, this.rows)
+        this.getCountAnnouncements()
       })
 
   }
 
   goBack() {
     this.router.navigate(['explore', this.projectAddress], { replaceUrl: false })
+  }
+
+  onPageNumChange(event: Event) {
+
+  }
+
+  getAnnouncements(projectAddress: string, offset: number, limit: number) {
+    this.mongoSvc.getAnnouncementsByPage(projectAddress, offset, limit)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe({
+        next: (announcements: Announcement[]) => {
+          this.announcements = announcements
+
+          // assign new first and rows value
+          this.first = offset
+          this.rows = limit
+        }
+      });
+  }
+
+  getCountAnnouncements() {
+    this.mongoSvc.countAnnouncements(this.projectAddress!)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe((count) => {
+        this.length = count
+      })
   }
 
   ngOnDestroy(): void {

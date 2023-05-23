@@ -23,7 +23,8 @@
 
         <!-- main body card -->
         <div class="flex flex-column gap-3 pt-4 px-3 flex-wrap lg:flex-nowrap base-card">
-        <ng-container *ngIf="comments">
+            <p-paginator styleClass="bg-colour" [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+            <ng-container *ngIf="comments">
                 <div class="flex flex-column w-full gap-2">
                     <ng-container *ngFor="let comment of comments">
                         <div class="card flex flex-column mx-2 mb-2 pt-3">
@@ -43,16 +44,16 @@
                     </ng-container>
                 </div>
             </ng-container>
+            <p-paginator styleClass="bg-colour" [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
 
             <!-- new comment field -->
-            <div class="w-full p-3 pb-0 flex flex-column">
+            <div class="w-full p-3 pb-0 flex flex-column"> 
                 <app-new-comment [projectAddress]="projectAddress"></app-new-comment>
             </div>
             <div class="p-3 pt-0">
             </div>
+
         </div>
         
-
-
     </div>
 </div>

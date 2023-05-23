@@ -18,6 +18,7 @@ export class ProjectOverviewComponent implements OnInit {
   requests!: Request[]
   notifier$ = new Subject<boolean>()
   project!: Project
+  numOfRequests = 0
 
   projectAddress!: string
   raisedAmount!: number
@@ -38,8 +39,10 @@ export class ProjectOverviewComponent implements OnInit {
           this.requests = requests
           // assign to repoSvc requests so that new-request compo can retrieve it 
           this.repoSvc.requests = requests
+          if (requests)
+            this.numOfRequests = requests.length
 
-          this.bcSvc.getRaisedAmount(this.projectAddress)
+          this.bcSvc.getRaisedAmount(this.projectAddress, this.project.acceptingToken)
             .pipe(takeUntil(this.notifier$))
             .subscribe({
               next: (value) => {

@@ -30,33 +30,14 @@
                     </ng-container>
                     <div class="flex flex-row w-3 justify-content-between gap-3">
                         <p-button icon="add-white-icon" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none" pInputText pTooltip="New Announcement" tooltipPosition="top" [showDelay]="600" (click)="newAnnouncement()"></p-button>
-                        <p-button icon="edit-white-icon" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none" pInputText pTooltip="Select One To Edit" tooltipPosition="top" [showDelay]="600" (click)="onEdit()"></p-button>
-                        
-                        <!-- <div class="flex button-card w-full justify-content-center p-2 custom-bg-accent" pTooltip="New Announcement" tooltipPosition="top" [showDelay]="600" (click)="newAnnouncement()">
-                            <div class="add-white-icon"></div>
-                        </div>
-                        <div class="flex button-card w-full justify-content-center p-2 custom-bg-accent" pInputText pTooltip="Select One To Edit" tooltipPosition="top" [showDelay]="600" (click)="onEdit()">
-                            <div class="edit-white-icon"></div>
-                        </div> -->
+                        <p-button icon="edit-white-icon" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none" pInputText pTooltip="Select One To Edit" tooltipPosition="top" [showDelay]="600" (click)="onEdit()"></p-button>                        
                     </div>
-                    <!-- <div class="flex flex-row w-3 justify-content-between">
-                        <div class="flex w-full">
-                            <div style="cursor: pointer;border: 1px solid #b8b5b5c5;border-radius: 10px; width: 3rem;" class="flex justify-content-center button" routerLink="new-project">
-                                <div class="plus-icon"></div>
-                            </div>    
-                        </div>
-                        <div class="flex">
-                            <div style="cursor: pointer;border: 1px solid #b8b5b5c5;border-radius: 10px; width: 3rem;" class="flex justify-content-center button" routerLink="new-project">
-                                <div class="edit-icon"></div>
-                            </div>    
-                        </div>
-                    </div> -->
                 </div>
 
-                <ng-container *ngIf="announcements">
+                <ng-container *ngIf="announcements" >
 
                     <!-- top paginator  -->
-                    <p-paginator styleClass="bg-colour" [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+                    <p-paginator [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
                     <!-- announcements -->
                     <div class="flex flex-column gap-3">
                         <ng-container *ngFor="let announcement of announcements; let i = index">
@@ -79,9 +60,7 @@
                     </div>
 
                     <!-- bottom paginator  -->
-                    <div class="base-card">
-                        <p-paginator [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
-                     </div>
+                    <p-paginator [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
                         
                 </ng-container>
             </div>
@@ -91,6 +70,8 @@
     
     </div>
 </div>
+
+
 
 <ng-template #ThereAreNoAnnouncements>
     <div class="text-xl">

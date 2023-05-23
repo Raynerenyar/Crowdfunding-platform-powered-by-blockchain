@@ -95,11 +95,11 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       this.bcSvc.createProject(goal, deadline, tokenAddress, title, description)
         .pipe(takeUntil(this.notifier$))
         .subscribe({
-          next: (result) => {
+          next: () => {
             this.msgSvc.generalSuccessMethod("Project has been created.")
             this.router.navigateByUrl('/project-admin')
           },
-          error: (error) => {
+          error: () => {
             this.submitted = false
             this.msgSvc.detailedErrorMethod("Execution", "Address provided is not valid.")
           }

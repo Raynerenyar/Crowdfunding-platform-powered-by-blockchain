@@ -10,10 +10,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import ethereum.models.Role;
-import ethereum.models.User;
-import ethereum.repository.RoleRepository;
-import ethereum.repository.UserRepository;
+import ethereum.models.sql.auth.Role;
+import ethereum.models.sql.auth.User;
+import ethereum.repository.sql.auth.RoleRepository;
+import ethereum.repository.sql.auth.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

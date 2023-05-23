@@ -20,6 +20,9 @@ export class CommentsComponent implements OnInit {
   comments!: NewComment[]
   charCount = 0
   charLimit = 2000
+  first = 0 // first index
+  rows = 10 // number of results to show
+  length = 0 // total length of results.
   notifier$ = new Subject<boolean>()
 
   constructor(private mongoSvc: MongoRepoService, private fb: FormBuilder, private storageSvc: SessionStorageService, private msgSvc: PrimeMessageService, private router: Router, private route: ActivatedRoute) { }
@@ -29,15 +32,11 @@ export class CommentsComponent implements OnInit {
       .pipe(takeUntil(this.notifier$))
       .subscribe((param: ParamMap) => {
         this.projectAddress = param.get('projectAddress')!
-        this.mongoSvc.getComments(this.projectAddress)
-          .pipe(takeUntil(this.notifier$))
-          .subscribe({
-            next: (comments: NewComment[]) => {
-              if (comments)
-                this.comments = comments.reverse()
-            },
-            error: (error: HttpErrorResponse) => { }
-          })
+
+        this.getComments(this.projectAddress, this.first, this.rows)
+        this.countComments(this.projectAddress)
+
+
       })
 
     this.commentForm = this.fb.group({
@@ -78,6 +77,30 @@ export class CommentsComponent implements OnInit {
     } else {
       this.msgSvc.generalErrorMethod("Your wallet is not connected!")
     }
+  }
+
+  getComments(projectAddress: string, offset: number, limit: number) {
+    this.mongoSvc.getCommentsByPage(projectAddress, offset, limit)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe((comments: NewComment[]) => {
+        this.comments = comments
+
+        // assign new first and rows value
+        this.first = offset
+        this.rows = limit
+      })
+  }
+
+  countComments(projectAddress: string) {
+    this.mongoSvc.countComments(projectAddress)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe((count) => {
+        this.length = count
+      })
+  }
+
+  onPageNumChange(event: { first: number; rows: number; }) {
+    this.getComments(this.projectAddress, event.first, event.rows)
   }
 
   ngOnDestroy(): void {

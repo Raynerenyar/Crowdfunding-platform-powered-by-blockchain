@@ -23,10 +23,11 @@
 
         <!-- main body card -->
         <ng-container *ngIf="announcements">
-            <div class="flex flex-row gap-3 flex-wrap lg:flex-nowrap base-card">
+            <p-paginator styleClass="bg-colour" [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+            <div class="flex flex-row gap-3 flex-wrap lg:flex-nowrap base-card p-3">
                 <div class="flex flex-column w-full gap-2">
                     <ng-container *ngFor="let announce of announcements">
-                        <div class="card flex flex-column mx-2 mb-2">
+                        <div class="card flex flex-column">
                             <div class="px-3 pt-0 font-normal overflow-wrap-anywhere">
                                 <span [innerHTML]="announce.body"></span>
                             </div>
@@ -44,6 +45,7 @@
                     </ng-container>
                 </div>
             </div>
+            <p-paginator styleClass="bg-colour" [first]="first" [rows]="rows" [alwaysShow]="false" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
         </ng-container>
 
 

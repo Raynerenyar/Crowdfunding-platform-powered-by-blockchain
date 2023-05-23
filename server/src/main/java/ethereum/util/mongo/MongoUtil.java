@@ -6,8 +6,8 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ethereum.models.Announcement;
-import ethereum.models.Comment;
+import ethereum.models.mongo.Announcement;
+import ethereum.models.mongo.Comment;
 
 public class MongoUtil {
     private static final Logger logger = LoggerFactory.getLogger(MongoUtil.class);
@@ -23,12 +23,6 @@ public class MongoUtil {
     }
 
     public static Announcement documentToAnnouncement(Document document) {
-        // Announcement ann = new Announcement();
-        // ann.setProjectAddress(document.getString("projectAddress"));
-        // ann.setCreatorAddress(document.getString("creatorAddress"));
-        // ann.setBody(document.getString("body"));
-        // ann.setDatetimePosted(document.getDate("datetimePosted"));
-        // ann.setDatetimeEdited((Date) document.getOrDefault("datetimeEdited", null));
         return new Announcement(
                 document.getString("projectAddress"),
                 document.getString("creatorAddress"),

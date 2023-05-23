@@ -10,7 +10,7 @@ import { ProfileComponent } from './components/auth/components/profile/profile.c
 import { NewProjectComponent } from './components/projectAdmin/new-project/new-project.component';
 import { ProjectOverviewComponent } from './components/projectAdmin/project-overview/project-overview.component';
 import { ExploreProjectsComponent } from './components/explore/explore-projects/explore-projects.component';
-import { ProjectMainComponent } from './components/explore/project/project-main/project-main.component';
+import { ProjectMainComponent } from './components/explore/project/project-main.component';
 import { RequestDetailsComponent } from './components/projectAdmin/request-details/request-details.component';
 import { AnnouncementEditorComponent } from './components/projectAdmin/new-announcement/new-announcement.component';
 import { ProjectCommentsComponent } from './components/projectAdmin/project-comments/project-comments.component';

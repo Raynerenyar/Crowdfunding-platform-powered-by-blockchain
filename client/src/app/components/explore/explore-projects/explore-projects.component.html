@@ -3,7 +3,7 @@
         
         <!-- top paginator  -->
         <div class="base-card">
-            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="false" (onPageChange)="onPageNumChange($event)"></p-paginator>
         </div>
 
         
@@ -51,7 +51,7 @@
         </div>
 
         <div class="base-card">
-            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" (onPageChange)="onPageNumChange($event)"></p-paginator>
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="false" (onPageChange)="onPageNumChange($event)"></p-paginator>
         </div>
         
     </div>

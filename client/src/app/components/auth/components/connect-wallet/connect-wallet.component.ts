@@ -32,11 +32,6 @@ export class ConnectWalletComponent implements OnInit, OnDestroy {
         }
       })
   }
-  ngOnDestroy(): void {
-    if (this.walletAddressSub$) this.walletAddressSub$.unsubscribe()
-    this.notifier$.next(true)
-    this.notifier$.unsubscribe()
-  }
 
   // duplidate method in overlay panel component
   connectToWallet() {
@@ -54,6 +49,13 @@ export class ConnectWalletComponent implements OnInit, OnDestroy {
           error: (err) => { },
         })
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.walletAddressSub$) this.walletAddressSub$.unsubscribe()
+    this.notifier$.next(true)
+    this.notifier$.unsubscribe()
+    this.walletSvc.cleanUp()
   }
 
 }

@@ -35,21 +35,25 @@ export class NewRequestComponent implements OnInit, OnDestroy {
     private walletSvc: WalletService) { }
 
   ngOnInit(): void {
-    if (this.repoSvc.requests) {
-      let walletAddress = this.storageSvc.getUser()
-      this.newRequestForm = this.fb.group({
-        title: this.fb.control(null, [Validators.required]),
-        description: this.fb.control(null, [Validators.required, Validators.maxLength(this.charLimit)]),
-        recipient: this.fb.control<string>(walletAddress.username, [Validators.required, this.validatorSvc.addressValidator()]),
-        amount: this.fb.control(null, [Validators.required])
-      })
-
+    if (this.repoSvc.project) {
       this.route.paramMap.subscribe((params: ParamMap) => {
         let address = params.get('address')
+        // checks if reposvc has project data else redirect
+        if (this.repoSvc.project.projectAddress == address) {
+          let walletAddress = this.storageSvc.getUser()
+          this.newRequestForm = this.fb.group({
+            title: this.fb.control(null, [Validators.required]),
+            description: this.fb.control(null, [Validators.required, Validators.maxLength(this.charLimit)]),
+            recipient: this.fb.control<string>(walletAddress.username, [Validators.required, this.validatorSvc.addressValidator()]),
+            amount: this.fb.control(null, [Validators.required])
+          })
+        } else {
+          this.router.navigate(['project-admin'])
+        }
         if (address) this.projectAddress = address
       })
     } else {
-      this.router.navigate(['project-admin'])
+      this.router.navigate(['project-admin']).then(() => window.location.reload())
     }
   }
 
@@ -62,26 +66,30 @@ export class NewRequestComponent implements OnInit, OnDestroy {
         let description = this.newRequestForm.get('description')?.value
         let recipient = this.newRequestForm.get('recipient')?.value
         let amount = this.newRequestForm.get('amount')?.value
-        if (this.calculateAmountLeftover() > amount) {
-          this.bcSvc.createRequest(this.projectAddress, title, description, recipient, amount)
-            .pipe(takeUntil(this.notifier$))
-            .subscribe({
-              next: () => this.router.navigate(['project-admin', this.projectAddress]),
-              error: () => { }
-            })
-        } else {
-          this.msgSvc.generalErrorMethod("This request exceeds the raised amount")
-        }
+        // if (this.calculateAmountLeftover() > amount) {
+        this.bcSvc.createRequest(this.projectAddress, title, description, recipient, amount)
+          .pipe(takeUntil(this.notifier$))
+          .subscribe({
+            next: () => this.router.navigate(['project-admin', this.projectAddress]),
+            error: () => { }
+          })
+        // } else {
+        // this.msgSvc.generalErrorMethod("This request exceeds the raised amount")
+        // }
       }
     } else this.msgSvc.tellToConnectToChain()
   }
 
   calculateAmountLeftover(): number {
     let totalReqAmount = 0
-    this.repoSvc.requests.forEach(request => {
-      totalReqAmount += request.amount
-    });
-    return this.repoSvc.project.raisedAmount - totalReqAmount
+    if (this.repoSvc.requests) {
+      this.repoSvc.requests.forEach(request => {
+        totalReqAmount += request.amount
+      });
+      return this.repoSvc.project.raisedAmount - totalReqAmount
+    } else {
+      return this.repoSvc.project.raisedAmount
+    }
   }
 
   goBack() {

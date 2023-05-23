@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ethereum.models.NonceResponse;
+import ethereum.models.payload.auth.NonceResponse;
 
 @Service
 public class EthAuthService {

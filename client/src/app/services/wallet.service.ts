@@ -1,5 +1,5 @@
 import { Injectable, NgZone, Output } from '@angular/core';
-import { Observable, Subject, catchError, from, switchMap, takeUntil } from 'rxjs';
+import { Observable, Subject, Subscription, catchError, from, switchMap, takeUntil } from 'rxjs';
 
 import Web3 from 'web3';
 import { PrimeMessageService } from './prime.message.service';
@@ -25,7 +25,7 @@ export class WalletService {
   isWalletConnected!: boolean
   chainId!: number
   onChainIdChangeEvent = new Subject<number>
-  notifier$ = new Subject<boolean>()
+  subArr: Subscription[] = []
 
   web3: Web3 = new Web3(window.ethereum);
 
@@ -111,9 +111,10 @@ export class WalletService {
 
   public connectWalletToWebsite() {
     return new Observable(observer => {
+      let subscription$ = new Subscription
 
-      this.connectWallet()
-        .pipe(takeUntil(this.notifier$))
+      subscription$ = this.connectWallet()
+        .pipe()
         .subscribe({
           next: (value) => {
             observer.next(value)
@@ -125,6 +126,8 @@ export class WalletService {
               this.msgSvc.detailedInfoMethod("Login To MetaMask!", "Please open your MetaMask extension and login.")
           },
         })
+      this.subArr.push(subscription$)
+
     })
   }
 
@@ -149,8 +152,14 @@ export class WalletService {
     return address.substring(0, 6) + "..." + address.substring(indexlength - 4, indexlength)
   }
 
-  ngOnDestroy(): void {
-    this.notifier$.next(true)
-    this.notifier$.unsubscribe()
+  // manually clean up service
+  cleanUp() {
+    this.subArr.forEach(sub => {
+      console.log("sub getting unsub")
+      sub.unsubscribe()
+    });
+    this.subArr = []
   }
+
+
 }

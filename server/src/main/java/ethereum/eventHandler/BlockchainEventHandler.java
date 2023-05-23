@@ -32,15 +32,17 @@ import ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.javaethereum.wrapper.DevFaucet;
 import ethereum.javaethereum.wrapper.Token;
-import ethereum.models.Request;
-import ethereum.repository.SqlCrowdfundingRepo;
-import ethereum.repository.SqlRepoInferface;
+import ethereum.models.sql.crowdfunding.Request;
+import ethereum.repository.sql.crowdfunding.SqlCrowdfundingRepo;
+import ethereum.repository.sql.crowdfunding.SqlRepoInferface;
 import ethereum.services.ethereum.BlockchainService;
 import ethereum.services.ethereum.EtherscanService;
 import ethereum.services.ethereum.LoadContractService;
+import ethereum.services.ethereum.smartcontract.TokenFunctionsService;
 import ethereum.services.repository.SqlRepoService;
 import ethereum.util.eventFlowable.CrowdfundingEvents;
 import ethereum.util.eventFlowable.FaucetEvents;
+import ethereum.util.misc.Util;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 
@@ -57,6 +59,8 @@ public class BlockchainEventHandler {
     private SqlRepoInferface sqlRepoInter;
     @Autowired
     private EtherscanService etherscanSvc;
+    @Autowired
+    private TokenFunctionsService tokenFuncSvc;
 
     @Autowired
     private SqlRepoService sqlRepoSvc;
@@ -64,6 +68,8 @@ public class BlockchainEventHandler {
     private String crowdfundingFactoryAddress;
     @Value("${faucet.contract.address}")
     private String faucetAddress;
+    // @Autowired
+    // private BlockchainService bcSvc;
 
     private static final Logger logger = LoggerFactory.getLogger(BlockchainEventHandler.class);
 
@@ -96,24 +102,24 @@ public class BlockchainEventHandler {
                     if (count == 0)
                         sqlRepoInter.insertToken(event._tokenUsed.toLowerCase(), event.tokenSymbol, event.tokenName);
                     int tokenId = sqlRepoInter.getTokenId(event._tokenUsed);
+                    int decimals = tokenFuncSvc.getTokenDecimals(event._tokenUsed);
+                    long goal = Util.revertFromBaseUnit(event._goal, decimals);
                     sqlRepoInter.insertProject(
                             event._projectAddress,
                             event._projectCreator,
                             event._title,
                             description,
-                            event._goal.intValue(),
+                            goal,
                             new Timestamp(event._deadline.longValue()),
                             false,
                             false,
                             event._tokenUsed,
                             tokenId,
                             new Timestamp(System.currentTimeMillis()));
-
                 });
-
     }
 
-    public void contributeToProject(Crowdfunding loadedContract, String blockHash, String projectAddress) {
+    public void contribute(Crowdfunding loadedContract, String blockHash, String projectAddress) {
         contributeSub$ = CrowdfundingEvents
                 .contributeToProject(loadedContract, projectAddress, blockHash)
                 .subscribe(event -> {
@@ -126,21 +132,22 @@ public class BlockchainEventHandler {
                         sqlRepoInter.insertContributor(event._contributor);
                     }
                     // TODO: GET RAISED AMOUNT FROM DB THEN UPDATE RAISED AMOUNT IN SQL
-
+                    String tokenAddress = loadedContract.tokenAddress().sendAsync().get();
+                    int decimals = tokenFuncSvc.getTokenDecimals(tokenAddress);
+                    long amount = Util.revertFromBaseUnit(event._amount, decimals);
                     sqlRepoInter.insertContribution(
                             event._contributor,
-                            event._amount.intValue(),
+                            amount,
                             projectAddress,
                             false);
                 });
     }
 
-    public void refundFromProject(Crowdfunding loadedContract, String blockHash, String projectAddress) {
+    public void getRefund(Crowdfunding loadedContract, String blockHash, String projectAddress) {
         refundFromProjectSub$ = CrowdfundingEvents
                 .getRefundFromProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
                     logger.info("event: getting refund");
-                    // TODO: update projects completed expired to true
                     sqlRepoInter.updateProjectExpired(true, projectAddress);
                     sqlRepoInter.updateContribution(
                             true,
@@ -149,11 +156,14 @@ public class BlockchainEventHandler {
                 });
     }
 
-    public void createRequestForProject(Crowdfunding loadedContract, String blockHash, String description,
+    public void createRequest(Crowdfunding loadedContract, String blockHash, String description,
             String projectAddress) {
         createRequestForProjectSub$ = CrowdfundingEvents
                 .createRequestForProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
+                    String tokenAddress = loadedContract.tokenAddress().sendAsync().get();
+                    int decimals = tokenFuncSvc.getTokenDecimals(tokenAddress);
+                    long amountLong = Util.revertFromBaseUnit(event._amount, decimals);
                     logger.info("event: inserting request");
                     sqlRepoInter.insertProjectRequest(
                             event.requestNum.intValue(),
@@ -161,7 +171,7 @@ public class BlockchainEventHandler {
                             event._title,
                             description,
                             event._recipient,
-                            event._amount.intValue(),
+                            amountLong,
                             false);
                 });
     }
@@ -172,10 +182,13 @@ public class BlockchainEventHandler {
                 .subscribe((event) -> {
                     logger.info("event: inserting vote");
                     Optional<Integer> requestId = sqlRepoSvc.getRequestId(projectAddress, event._requestNo.intValue());
+                    String tokenAddress = loadedContract.tokenAddress().sendAsync().get();
+                    int decimals = tokenFuncSvc.getTokenDecimals(tokenAddress);
+                    long valueOfVoteLong = Util.revertFromBaseUnit(event._valueOfVote, decimals);
                     sqlRepoInter.insertVote(
                             requestId.get(),
                             event._voter,
-                            event._valueOfVote.intValue());
+                            valueOfVoteLong);
                 });
     }
 
@@ -185,13 +198,13 @@ public class BlockchainEventHandler {
                 .subscribe((event) -> {
                     logger.info("event: receive contribution");
                     // received contribution so request completes
-
                     // update projects completed column to true
                     // fundraising project completes as goal has been reached
+                    Optional<Integer> opt = sqlRepoSvc.getRequestId(projectAddress, event._requestNo.intValue());
                     sqlRepoInter.updateProjectCompleted(true, projectAddress);
                     // update projectRequest completed column to true in the request using project address and requestno
                     sqlRepoInter.updateRequest(
-                            event._requestNo.intValue(),
+                            opt.get(),
                             true);
                 });
     }

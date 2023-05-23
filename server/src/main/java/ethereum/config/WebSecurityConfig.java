@@ -4,36 +4,29 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-// import org.springframework.security.web.util.matcher.MultiMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import ethereum.security.jwt.AuthEntryPointJwt;
 import ethereum.security.jwt.AuthTokenFilter;
 import ethereum.security.services.UserDetailsServiceImpl;
 
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
-
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 
 @Configuration
-@EnableGlobalMethodSecurity(
-        // securedEnabled = true,
-        // jsr250Enabled = true,
-        prePostEnabled = true)
+// @EnableGlobalMethodSecurity(
+//         // securedEnabled = true,
+//         // jsr250Enabled = true,
+//         prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     @Autowired
@@ -77,8 +70,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/get-nonce/**").permitAll()
-                        .requestMatchers("/verify-signature").permitAll()
+                        // .requestMatchers("/get-nonce/**").permitAll()
+                        // .requestMatchers("/verify-signature").permitAll()
                         .requestMatchers("/read-event").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         // .requestMatchers(new RegexRequestMatcher(

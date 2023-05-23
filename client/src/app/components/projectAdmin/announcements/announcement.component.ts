@@ -97,7 +97,6 @@ export class AnnouncementComponent implements OnInit {
   }
 
   onPageNumChange(event: { first: number; rows: number; }) {
-    console.log(event.first, event.rows)
     this.getAnnouncements(this.projectAddress!, event.first, event.rows)
   }
 

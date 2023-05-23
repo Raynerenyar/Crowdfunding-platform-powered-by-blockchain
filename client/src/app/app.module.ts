@@ -5,15 +5,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthService } from './services/auth.service';
 import { BlockchainService } from './services/blockchain.service';
-import { ProjectHeaderComponent } from './components/explore/project/projectHeader/project-header.component';
-import { ProjectDashboardComponent } from './components/projectAdmin/project-dashboard/project-dashboard.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FaucetComponent } from './components/faucet/faucet.component';
 import { PrimeNgModule } from './primeng.module';
 import { HeaderComponent } from './layout/header/header.component';
 import { SidebarComponent } from './layout/sidenav/sidebar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NewRequestComponent } from './components/projectAdmin/newRequest/new-request.component';
 import { AuthComponents } from "./components/auth/auth.index"
 import { httpInterceptorProviders } from './components/auth/auth.interceptor';
 import { PrimeMessageService } from './services/prime.message.service';
@@ -28,7 +25,6 @@ import { MongoRepoService } from './services/mongo.repo.service';
 import { exploreComponents } from './components/explore/explore.index';
 import { DatePipe } from '@angular/common';
 import { ValidatorService } from "../app/services/validator.service";
-import { MatIconModule } from '@angular/material/icon';
 import { CommaSeparatedPipe } from './util/commaPipe';
 
 @NgModule({
@@ -52,8 +48,7 @@ import { CommaSeparatedPipe } from './util/commaPipe';
     ReactiveFormsModule,
     FormsModule,
     PrimeNgModule,
-    NgxEditorImportsModule,
-    MatIconModule,
+    NgxEditorImportsModule
   ],
   providers: [
     httpInterceptorProviders,

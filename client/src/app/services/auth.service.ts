@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http'
 import detectEthereumProvider from '@metamask/detect-provider';
-import { Observable, Subject, async, from, timer } from 'rxjs';
+import { Observable, Subject, Subscription, async, from, timer } from 'rxjs';
 import { catchError, switchMap, exhaustMap, filter, takeUntil } from 'rxjs/operators';
 import { VerifyRequest, TokenResponse, NonceResponse } from '../model/model'
 import { constants } from '../../environments/environment'
@@ -16,7 +16,6 @@ const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 
-
 declare global {
   interface Window {
     ethereum: any;
@@ -26,15 +25,14 @@ declare global {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService implements OnDestroy {
+export class AuthService {
 
-  // private auth: Auth = inject(Auth);
   nonce!: string
   web3: Web3 = new Web3(window.ethereum);
   public walletAddress!: string
   private abi!: string
   private contractAddress!: string
-  notifier$ = new Subject()
+  subArr: Subscription[] = []
 
   constructor(private http: HttpClient, private urlBuilder: UrlBuilderService, private msgSvc: PrimeMessageService) { }
 
@@ -97,65 +95,6 @@ export class AuthService implements OnDestroy {
     )
   }
 
-  // public signInWithWeb3() {
-  //   return from(detectEthereumProvider()).pipe(
-  //     switchMap(async (provider) => {
-  //       if (!provider) { throw new Error('Please install MetaMask'); }
-  //       // this.web3 = new Web3(window.ethereum);
-  //       return await window.ethereum.request({ method: 'eth_requestAccounts' });
-  //     }),
-  //     switchMap(async () => {
-  //       return await this.web3.eth.getAccounts()
-  //     }),
-  //     switchMap((resp) => {
-  //       let accounts = resp as string[]
-  //       console.log(resp)
-  //       this.walletAddress = accounts[0];
-  //       // console.log(walletAddress)
-  //       let url = new Url()
-  //         .add(constants.SERVER_URL)
-  //         .add("api/")
-  //         .add("get-nonce")
-  //         .getUrl()
-  //       return this.http.post<NonceResponse>(url, { address: this.walletAddress });
-
-  //     }),
-  //     switchMap(async (response) => {
-  //       this.nonce = response.nonce
-  //       return await this.web3.eth.personal.sign(this.nonce, this.walletAddress, '')
-  //     }),
-  //     switchMap((sig) => {
-  //       let url = new Url()
-  //         .add(constants.SERVER_URL)
-  //         .add("api/auth/")
-  //         .add("verify-signature")
-  //         .getUrl()
-  //       this.urlBuilder.setPath('api/auth/verify-signature')
-  //       const params = new HttpParams()
-  //         .set('nonce', this.nonce)
-  //         .set('sig', sig)
-  //         .set('address', this.walletAddress)
-  //       return this.http.get(url, { params })
-
-  //     }),
-  //     switchMap(async (tokenResp) => {
-  //       let verifiedResp = tokenResp as TokenResponse
-  //       console.log(tokenResp)
-  //       // await signInWithCustomToken(this.auth, verifiedResp.token)
-  //     }),
-  //     catchError((err) => {
-  //       let errorMessage = err as Error
-  //       throw new Error(errorMessage.message);
-
-  //       // return new Observable((observer) => {
-  //       //   observer.next(errorMessage.message)
-  //       //   observer.complete()
-  //       // })
-  //     })
-  //   )
-  // }
-
-
   async requestApproval(encodedTransaction: Object) {
     console.log("requestint approval", encodedTransaction)
     // let contract = await new this.web3.eth.Contract(JSON.parse(this.abi), this.contractAddress)
@@ -174,16 +113,23 @@ export class AuthService implements OnDestroy {
   }
 
   reloadPage(): void {
-    timer(3000)
-      .pipe(takeUntil(this.notifier$))
+    let subscription$ = new Subscription
+
+    subscription$ = timer(3000)
+      .pipe()
       .subscribe(t => {
         window.location.reload()
       })
+    this.subArr.push(subscription$)
+
   }
 
-  ngOnDestroy(): void {
-    this.notifier$.next(true)
-    this.notifier$.unsubscribe()
+  cleanUp() {
+    this.subArr.forEach(sub => {
+      console.log("sub getting unsub")
+      sub.unsubscribe()
+    });
+    this.subArr = []
   }
 
 }

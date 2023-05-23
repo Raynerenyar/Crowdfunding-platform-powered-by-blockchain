@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ethereum.repository.SqlCrowdfundingRepo;
 import ethereum.services.repository.SqlRepoService;
-import ethereum.models.Project;
-import ethereum.models.Request;
-import ethereum.models.Token;
+import ethereum.models.sql.crowdfunding.Project;
+import ethereum.models.sql.crowdfunding.Request;
+import ethereum.models.sql.crowdfunding.Token;
+import ethereum.repository.sql.crowdfunding.SqlCrowdfundingRepo;
 
 @RestController
 @CrossOrigin(origins = "#{'${client.url}'}", maxAge = 3600, allowCredentials = "true")
@@ -65,7 +65,7 @@ public class SqlRepoController {
         if (opt.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(opt.get());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.badRequest().body(null);
     }
 
     @GetMapping("/get-single-project/{projectAddress}")

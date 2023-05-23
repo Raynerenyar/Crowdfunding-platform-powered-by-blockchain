@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ethereum.models.Announcement;
-import ethereum.models.Comment;
-import ethereum.repository.MongoRepo;
+import ethereum.models.mongo.Announcement;
+import ethereum.models.mongo.Comment;
+import ethereum.repository.mongo.MongoRepo;
 import ethereum.services.repository.MongoRepoService;
 
 @Controller
@@ -91,15 +91,6 @@ public class MongoRepoController {
         logger.info("count announcements for project >> {}", projectAddress);
         Long count = mongoRepo.countAnnouncements(projectAddress);
         return ResponseEntity.ok().body(count);
-    }
-
-    @GetMapping(path = "/get-comments")
-    @ResponseBody
-    public ResponseEntity<List<Comment>> getComments(@RequestParam String projectAddress) {
-        List<Comment> comments = mongoSvc.getComments(projectAddress);
-        if (comments.size() >= 1)
-            return ResponseEntity.status(HttpStatus.OK).body(comments);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
     @GetMapping(path = "/get-comments-by-page")

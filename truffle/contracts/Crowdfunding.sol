@@ -120,9 +120,9 @@ contract Crowdfunding is Ownable {
     }
 
     function getRefund() public returns (uint) {
-        require(block.timestamp >= deadline, "Deadline has not passed");
-        require(raisedAmount < goal, "Raised amount is more than goal");
-        require(contributors[msg.sender] > 0, "You need to be a contributor");
+        // require(block.timestamp >= deadline, "Deadline has not passed");
+        // require(raisedAmount < goal, "Raised amount is more than goal");
+        // require(contributors[msg.sender] > 0, "You need to be a contributor");
 
         uint _amount = contributors[msg.sender];
         contributors[msg.sender] = 0;
@@ -137,12 +137,14 @@ contract Crowdfunding is Ownable {
         address _recipient,
         uint _amount
     ) public onlyOwner {
-        if (raisedAmount > 0) {
-            require(
-                (totalRequestAmount + _amount) <= raisedAmount,
-                "This transaction will cause totalRequestAmount to exceed raisedAmount"
-            );
-        }
+        require(
+            raisedAmount > 0,
+            "Unable to create request as there are no contributions"
+        );
+        require(
+            (totalRequestAmount + _amount) <= raisedAmount,
+            "This transaction will cause totalRequestAmount to exceed raisedAmount"
+        );
 
         uint _requestNo = numRequests;
         Request storage newRequest = requests[numRequests];
@@ -198,18 +200,18 @@ contract Crowdfunding is Ownable {
     function receiveContribution(
         uint _requestNo
     ) public onlyOwner returns (address, uint) {
-        require(
-            raisedAmount >= goal,
-            "raisedAmount must be more than or equal to goal"
-        );
+        // require(
+        //     raisedAmount >= goal,
+        //     "raisedAmount must be more than or equal to goal"
+        // );
 
         Request storage thisRequest = requests[_requestNo];
-        require(
-            thisRequest.completed == false,
-            "The request has been completed."
-        );
-        uint ratio = goal / thisRequest.valueOfVotes;
-        require(ratio < 2, "value of votes fail to meet requirement");
+        // require(
+        //     thisRequest.completed == false,
+        //     "The request has been completed."
+        // );
+        // uint ratio = goal / thisRequest.valueOfVotes;
+        // require(ratio < 2, "value of votes fail to meet requirement");
 
         address _recipient = thisRequest.recipient;
         uint _amount = thisRequest.amount;

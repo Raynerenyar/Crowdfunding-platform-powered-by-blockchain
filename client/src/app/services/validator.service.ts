@@ -8,7 +8,6 @@ import { HttpErrorResponse } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ValidatorService {
-  notifier$ = new Subject<boolean>()
 
   constructor(private bcSvc: BlockchainService) { }
 
@@ -66,11 +65,6 @@ export class ValidatorService {
       }
       return { address: "Address is invalid" } as ValidationErrors
     }
-  }
-
-  ngOnDestroy(): void {
-    this.notifier$.next(true)
-    this.notifier$.unsubscribe()
   }
 
 }

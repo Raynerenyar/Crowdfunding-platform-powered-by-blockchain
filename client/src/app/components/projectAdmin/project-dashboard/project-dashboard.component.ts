@@ -69,7 +69,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy {
               if (!project.completed && !project.expired) this.activeCount += 1
 
               // assign raisedAmount to each project retrieve from the blockchain
-              this.bcSvc.getRaisedAmount(project.projectAddress)
+              this.bcSvc.getRaisedAmount(project.projectAddress, project.acceptingToken)
                 .pipe(takeUntil(this.notifier$))
                 .subscribe({
                   next: (value) => { project.raisedAmount = value },
