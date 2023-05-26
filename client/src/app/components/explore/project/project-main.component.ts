@@ -97,11 +97,6 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
               this.raisedAmountCondition = await this.getRaisedAmount()
               this.contributedCondition = await this.getContributedAmount()
               this.blockTimestampCondition = await this.getBlockTimestamp()
-              // try {
-              // } catch (error) {
-              //   console.log(error)
-              // }
-
 
               // same condition as in smart contract
               // if all true then enable the refund button
@@ -112,7 +107,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
               ]
 
               const result = await Promise.all(conditionsForRefund)
-              console.log(result)
+              // console.log(result)
               if (!result.includes(false))
                 this.notRefundable = false
             },
@@ -148,7 +143,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (value) => {
             this.contributedAmount = value
-            console.log("contributed amount", this.contributedAmount)
+            // console.log("contributed amount", this.contributedAmount)
             resolve(this.contributedAmount > 0)
           },
           error: (err) => reject(false)
@@ -164,7 +159,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (value) => {
             this.project.raisedAmount = value
-            console.log("raised amount", this.project.raisedAmount)
+            // console.log("raised amount", this.project.raisedAmount)
             resolve(this.project.raisedAmount >= this.project.goal)
           },
           error: (err) => reject(false)
@@ -207,7 +202,6 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
 
       let walletAddress = this.storageSvc.getAddress()
       let contributeAmount = this.contributeForm.get('amount')?.value
-      console.log("tttt")
       if (this.contributeForm.valid) {
         // approve token before contributing
         this.bcSvc.approveToken(this.project.acceptingToken, this.projectAddress, walletAddress, contributeAmount).then(

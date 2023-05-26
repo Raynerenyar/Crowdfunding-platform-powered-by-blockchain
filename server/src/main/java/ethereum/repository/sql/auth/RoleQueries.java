@@ -9,20 +9,20 @@ public class RoleQueries {
                         """;
 
         public static String INSERT_USER_INTO_ROLE = """
-                        INSERT INTO userRoles (
+                        INSERT INTO user_roles (
                                 user_address,
                                 role_id
                         ) VALUES (?,?)
                         """;
 
         public static String FIND_USER_ROLES = """
-                        SELECT projectcreators.username,roles.id,roles.name
-                        FROM projectcreators
-                        JOIN userroles
-                        ON projectcreators.username=userroles.user_address
+                        SELECT project_creators.username,roles.id,roles.name
+                        FROM project_creators
+                        JOIN user_roles
+                        ON project_creators.username=user_roles.user_address
                         JOIN roles
-                        ON userroles.role_id=roles.id
-                        WHERE projectcreators.username = ?
+                        ON user_roles.role_id=roles.id
+                        WHERE project_creators.username = ?
                         """;
 
 }

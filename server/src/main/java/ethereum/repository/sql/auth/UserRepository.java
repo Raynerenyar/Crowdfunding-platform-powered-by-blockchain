@@ -6,6 +6,8 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +19,8 @@ import ethereum.models.sql.auth.User;
 public class UserRepository {
     @Autowired
     private JdbcTemplate jdbc;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
     public Optional<User> findProjectCreator(String creatorAddress) {
         Object[] args = new Object[] { creatorAddress };
@@ -35,6 +39,7 @@ public class UserRepository {
         String name = "user's name";
         Object[] args = new Object[] { user.getUsername(), name, user.getPassword() };
         int[] argTypes = new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR };
+        logger.info("inserting project creator, {}", user.getUsername());
         return jdbc.update(INSERT_PROJECT_CREATOR, args, argTypes);
     }
 }

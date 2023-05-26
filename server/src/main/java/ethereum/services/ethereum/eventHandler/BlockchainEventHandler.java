@@ -131,6 +131,8 @@ public class BlockchainEventHandler {
                             event._tokenUsed,
                             tokenId,
                             new Timestamp(System.currentTimeMillis()));
+                }, error -> {
+                    logger.error(error.getMessage());
                 });
     }
 
@@ -157,6 +159,8 @@ public class BlockchainEventHandler {
                             amount,
                             projectAddress,
                             false);
+                }, error -> {
+                    logger.error(error.getMessage());
                 });
     }
 
@@ -171,6 +175,8 @@ public class BlockchainEventHandler {
                             true,
                             event._contributor,
                             projectAddress);
+                }, error -> {
+                    logger.error(error.getMessage());
                 });
     }
 
@@ -195,6 +201,8 @@ public class BlockchainEventHandler {
                             event._recipient,
                             amountLong,
                             false);
+                }, error -> {
+                    logger.error(error.getMessage());
                 });
     }
 
@@ -213,6 +221,8 @@ public class BlockchainEventHandler {
                             requestId.get(),
                             event._voter,
                             valueOfVoteLong);
+                }, error -> {
+                    logger.error(error.getMessage());
                 });
     }
 
@@ -233,6 +243,8 @@ public class BlockchainEventHandler {
                     sqlRepoInter.updateRequest(
                             opt.get(),
                             true);
+                }, error -> {
+                    logger.error(error.getMessage());
                 });
     }
 
@@ -243,6 +255,8 @@ public class BlockchainEventHandler {
                 .subscribe((event) -> {
                     logger.info("event: faucet mint, address minted to >> {}, amount minted >> {}",
                             event.mintedToAddress, event.amount);
+                }, error -> {
+                    logger.error(error.getMessage());
                 });
     }
 }

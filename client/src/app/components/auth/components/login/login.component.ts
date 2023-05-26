@@ -116,7 +116,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   reset() {
-    console.log("test reset")
     this.isLoginFailed = false
   }
 

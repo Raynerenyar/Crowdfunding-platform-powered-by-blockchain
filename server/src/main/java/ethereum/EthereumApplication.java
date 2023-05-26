@@ -91,13 +91,13 @@ public class EthereumApplication implements CommandLineRunner {
 		// 		}) // set the function return type
 		// );
 		// String methodName = "balanceOf";
-		List<Type> inputParameters = new ArrayList<>();
+		// List<Type> inputParameters = new ArrayList<>();
 		// List<TypeReference<?>> outputParameters = new ArrayList<>();
 		// TypeReference<Uint256> typeReference = new TypeReference<Uint256>() {
 		// };
 
 		// outputParameters.add(typeReference);
-		inputParameters.add(new Address("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C"));
+		// inputParameters.add(new Address("0x149AaeA6f804Ba0Ea228DFC929C4f42798B54d4C"));
 		// // Function function = new Function(methodName, inputParameters, outputParameters);
 		// Function balanceOf = new Function(methodName, inputParameters, outputParameters);
 		// String encodedFunction = FunctionEncoder.encode(balanceOf);

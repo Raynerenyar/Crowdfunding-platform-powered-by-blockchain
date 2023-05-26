@@ -37,8 +37,8 @@ import ethereum.models.sql.auth.User;
 import ethereum.repository.sql.auth.RoleRepository;
 import ethereum.repository.sql.auth.UserRepository;
 import ethereum.security.jwt.JwtUtils;
+import ethereum.security.services.NonceService;
 import ethereum.security.services.UserDetailsImpl;
-import ethereum.services.auth.EthAuthService;
 import ethereum.services.ethereum.BlockchainService;
 import ethereum.util.misc.Util;
 import jakarta.json.Json;
@@ -69,7 +69,7 @@ public class AuthController {
         @Autowired
         private JwtUtils jwtUtils;
         @Autowired
-        private EthAuthService authSvc;
+        private NonceService authSvc;
         @Autowired
         private BlockchainService bcSvc;
 
@@ -109,7 +109,6 @@ public class AuthController {
         @PostMapping("/signup")
         public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
                 logger.info("signup request obj >> {} & {} & {} * {}", signUpRequest.getUsername(),
-                                signUpRequest.getPassword(),
                                 signUpRequest.getSigned(), signUpRequest.getNonce());
                 // verify if signed message is valid, otherwise bounce with error
                 Boolean isVerified = this.bcSvc.verifySignedMessage(signUpRequest.getSigned(), signUpRequest.getNonce(),

@@ -127,7 +127,10 @@ public class EthController {
 
         if (job.containsKey("description")) {
             String description = job.getString("description");
-            String imageUrl = job.getString("imageUrl");
+            String imageUrl = "";
+            if (job.containsKey("imageUrl")) {
+                imageUrl = job.getString("imageUrl");
+            }
             switch (contractName) {
                 case "CrowdfundingFactory" ->
                     bcSvc.getEvent(contractName, functionName, blockHash, crowdfundingFactoryContractAddress,
