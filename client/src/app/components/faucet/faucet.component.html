@@ -5,7 +5,14 @@
         <div class="flex base-card flex-column justify-content-center p-3">
             <span class="text-2xl font-bold">Token Faucet</span>
             <p class="text-justify line-height-2">Distribution of these tokens are for development purposes only. The crowdfunding contract allows users to choose the token that they want to be funded in. Contract will check if the provided address is not a contract and contains supply of more than 0. Since this application is deployed on Ethereum Sepolia, a token was created to facilitate development. The faucet distributes <u>1000 DEV</u> tokens each time and has a <u>25 hours cooldown</u> per address.</p>
-            <p-button styleClass="p-button-raised" label="Distribute DEV" (click)="distribute()"></p-button>
+            <ng-container *ngIf="!isLoading; else loading">
+                <p-button styleClass="p-button-raised" label="Distribute DEV" (click)="distribute()"></p-button>
+            </ng-container>
+            <ng-template #loading>
+                <p-button styleClass="p-button-raised" (click)="distribute()">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem; color: white;"></i>
+                </p-button>
+            </ng-template>
         </div>
     </div>
 </div>

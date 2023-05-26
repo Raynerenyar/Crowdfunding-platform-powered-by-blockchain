@@ -35,6 +35,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
   raisedAmountCondition = false
   contributedCondition = false
   blockTimestampCondition = false
+  isLoading = false
   notifier$ = new Subject<boolean>()
 
   constructor(
@@ -203,6 +204,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
       let walletAddress = this.storageSvc.getAddress()
       let contributeAmount = this.contributeForm.get('amount')?.value
       if (this.contributeForm.valid) {
+        this.isLoading = true
         // approve token before contributing
         this.bcSvc.approveToken(this.project.acceptingToken, this.projectAddress, walletAddress, contributeAmount).then(
           () => {
@@ -213,10 +215,12 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
               .pipe(takeUntil(this.notifier$))
               .subscribe({
                 next: () => {
+                  this.isLoading = false
                   this.msgSvc.generalSuccessMethod("You have successfully contributed.")
                   this.authSvc.reloadPage();
                 },
                 error: () => {
+                  this.isLoading = false
                   this.msgSvc.detailedErrorMethod("Execution reverted", "Minimum contribution is 100.")
                 }
               })
@@ -233,17 +237,22 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
     if (this.walletSvc.isOnRightChain()) {
       console.log("not refundable?", this.notRefundable)
       let refundable = !this.notRefundable
-      // if (refundable) {
-      this.bcSvc.getRefund(this.projectAddress)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe({
-          next: () => {
-            this.msgSvc.generalSuccessMethod("You have successfully gotten your refund")
-            window.location.reload()
-          },
-          error: () => this.msgSvc.generalErrorMethod("Failed to get refund")
-        })
-      // }
+      if (refundable) {
+        this.isLoading = true
+        this.bcSvc.getRefund(this.projectAddress)
+          .pipe(takeUntil(this.notifier$))
+          .subscribe({
+            next: () => {
+              this.isLoading = false
+              this.msgSvc.generalSuccessMethod("You have successfully gotten your refund")
+              window.location.reload()
+            },
+            error: () => {
+              this.isLoading = false
+              this.msgSvc.generalErrorMethod("Failed to get refund")
+            }
+          })
+      }
     } else this.msgSvc.tellToConnectToChain()
   }
 

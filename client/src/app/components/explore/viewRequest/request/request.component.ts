@@ -27,6 +27,7 @@ export class RequestComponent implements OnDestroy {
   countOfVotes!: number
   notRefundable = true
   requestId!: number
+  isLoading = false
 
   deadlineTimestamp!: number
 
@@ -107,17 +108,19 @@ export class RequestComponent implements OnDestroy {
 
   voteRequest() {
     if (this.walletSvc.isOnRightChain()) {
+      this.isLoading = true
       console.log(this.request.requestNo)
       console.log(this.request.requestId)
       this.bcSvc.voteRequest(this.projectAddress, this.request.requestNo)
         .pipe(takeUntil(this.notifier$))
         .subscribe({
           next: () => {
+            this.isLoading = false
             this.msgSvc.generalSuccessMethod("You have successfully voted")
             window.location.reload()
           },
           error: (error) => {
-            console.log(error)
+            this.isLoading = false
             this.msgSvc.generalErrorMethod("There was an error, failed to vote")
           }
 

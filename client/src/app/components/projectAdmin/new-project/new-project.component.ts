@@ -35,6 +35,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   tokens: Token[] = []
   cities!: City[]
   displayTokenAddress!: string
+  isLoading = false
   @ViewChild('submitButton')
   submitButton!: ElementRef;
 
@@ -87,7 +88,6 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   }
 
   createProject() {
-
     // token address from user selection of the dropdown or user input
     let tokenStringOrObject = this.newProjectForm.get('tokenAddress')?.value
     let tokenAddress: string = ''
@@ -102,6 +102,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
     this.newProjectForm.get('description')?.invalid
     if (this.newProjectForm.valid) {
       console.log("creating project")
+      this.isLoading = true
       let title = this.newProjectForm.get('title')?.value
       let goal = this.newProjectForm.get('goal')?.value
       let dueDate = this.newProjectForm.get('deadline')?.value
@@ -115,10 +116,12 @@ export class NewProjectComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.notifier$))
         .subscribe({
           next: () => {
+            this.isLoading = false
             this.msgSvc.generalSuccessMethod("Project has been created.")
             this.router.navigateByUrl('/project-admin')
           },
           error: () => {
+            this.isLoading = false
             this.submitted = false
             this.msgSvc.detailedErrorMethod("Execution", "Address provided is not valid.")
           }

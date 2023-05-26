@@ -22,6 +22,7 @@ export class NewRequestComponent implements OnInit, OnDestroy {
   charLimit = 2000
   notifier$ = new Subject<boolean>()
   submitted = false
+  isLoading = false
 
   constructor(
     private fb: FormBuilder,
@@ -61,7 +62,7 @@ export class NewRequestComponent implements OnInit, OnDestroy {
     if (this.walletSvc.isOnRightChain()) {
       this.submitted = true
       if (this.newRequestForm.valid) {
-
+        this.isLoading = true
         let title = this.newRequestForm.get('title')?.value
         let description = this.newRequestForm.get('description')?.value
         let recipient = this.newRequestForm.get('recipient')?.value
@@ -70,8 +71,12 @@ export class NewRequestComponent implements OnInit, OnDestroy {
         this.bcSvc.createRequest(this.projectAddress, title, description, recipient, amount)
           .pipe(takeUntil(this.notifier$))
           .subscribe({
-            next: () => this.router.navigate(['project-admin', this.projectAddress]),
-            error: () => { }
+            next: () => {
+              this.isLoading = false
+              this.router.navigate(['project-admin', this.projectAddress])
+            }
+            ,
+            error: () => { this.isLoading = false }
           })
         // } else {
         // this.msgSvc.generalErrorMethod("This request exceeds the raised amount")

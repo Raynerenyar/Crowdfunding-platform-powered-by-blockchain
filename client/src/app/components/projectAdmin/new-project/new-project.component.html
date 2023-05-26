@@ -23,7 +23,14 @@
                     <!-- <div class="flex button-card w-full bg-primary border-none justify-content-center p-2" pInputText pTooltip="Select One To Edit" tooltipPosition="top" [showDelay]="600" (click)="createProject()">
                         <div class="publish-white-icon"></div>
                     </div> -->
-                    <p-button icon="publish-white-icon" id="submitButton" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text p-button-text border-none" pInputText pTooltip="Submit" tooltipPosition="top" [showDelay]="600" (click)="createProject()"></p-button>
+                    <ng-container *ngIf="!isLoading; else loading">
+                        <p-button icon="publish-white-icon" id="submitButton" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none" pInputText pTooltip="Submit" tooltipPosition="top" [showDelay]="600" (click)="createProject()"></p-button>
+                    </ng-container>
+                    <ng-template #loading>
+                        <p-button class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text border-none justify-content-center" pInputText pTooltip="Loading" tooltipPosition="top" [showDelay]="600">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 1rem; color: white;"></i>
+                        </p-button>
+                    </ng-template>
                 </div>
             </div>
 

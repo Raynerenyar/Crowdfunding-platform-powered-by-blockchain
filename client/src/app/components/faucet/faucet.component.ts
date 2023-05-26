@@ -11,18 +11,25 @@ import { SessionStorageService } from 'src/app/services/session.storage.service'
 })
 export class FaucetComponent implements OnDestroy {
 
-
+  isLoading = false
   notifier$ = new Subject<boolean>()
 
   constructor(private bcSvc: BlockchainService, private storageSvc: SessionStorageService, private msgSvc: PrimeMessageService) { }
 
   distribute() {
     if (this.storageSvc.getAddress()) {
+      this.isLoading = true
       this.bcSvc.distributeFromFaucet()
         .pipe(takeUntil(this.notifier$))
         .subscribe({
-          next: (value) => this.msgSvc.generalSuccessMethod("You have received some DEV"),
-          error: (err) => this.msgSvc.generalErrorMethod("You probaby have recently used the faucet")
+          next: (value) => {
+            this.isLoading = false
+            this.msgSvc.generalSuccessMethod("You have received some DEV")
+          },
+          error: (err) => {
+            this.isLoading = false
+            this.msgSvc.generalErrorMethod("You probaby have recently used the faucet")
+          }
         })
       return
     }

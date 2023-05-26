@@ -53,7 +53,14 @@
             <!-- right -->
             <div class="base-card flex flex-column w-full lg:w-3 justify-content-center">
                 <div class="flex p-2 px-4  align-content-center justify-content-center">
-                    <p-button icon="vote-white-icon" styleClass="p-button-raised p-button-rounded custom-bg-accent" label="Collect Contributions" (click)="collectContributions()"></p-button>
+                    <ng-container *ngIf="!isLoading; else loading">
+                        <p-button icon="vote-white-icon" styleClass="p-button-raised p-button-rounded custom-bg-accent" label="Collect Contributions" (click)="collectContributions()"></p-button>
+                    </ng-container>
+                    <ng-template #loading>
+                        <p-button styleClass="p-button-raised p-button-rounded custom-bg-accent justify-content-center">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 1rem; color: white;"></i>
+                        </p-button>
+                    </ng-template>
                 </div>
             </div>
         </div>

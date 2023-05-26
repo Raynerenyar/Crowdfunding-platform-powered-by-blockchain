@@ -10,8 +10,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PanelModule } from 'primeng/panel';
 import { ToolbarModule } from 'primeng/toolbar';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { MessagesModule } from 'primeng/messages';
-import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { TabViewModule } from 'primeng/tabview';
 import { DividerModule } from 'primeng/divider';
@@ -31,6 +29,7 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DropdownModule } from 'primeng/dropdown';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 const PrimeNgModules = [
     ButtonModule,
@@ -62,7 +61,8 @@ const PrimeNgModules = [
     TagModule,
     TooltipModule,
     ProgressBarModule,
-    DropdownModule
+    DropdownModule,
+    ProgressSpinnerModule
 ]
 
 @NgModule({

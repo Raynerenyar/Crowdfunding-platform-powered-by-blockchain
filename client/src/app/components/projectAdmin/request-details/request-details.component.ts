@@ -20,6 +20,7 @@ export class RequestDetailsComponent implements OnInit, OnDestroy {
   valueOfVotes!: number
   countOfVotes!: number
   project!: Project
+  isLoading = false
 
   constructor(
     private bcSvc: BlockchainService,
@@ -72,11 +73,18 @@ export class RequestDetailsComponent implements OnInit, OnDestroy {
   }
 
   collectContributions() {
+    this.isLoading = true
     this.bcSvc.receiveContribution(this.projectAddress, this.request!.requestNo)
       .pipe(takeUntil(this.notifier$))
       .subscribe({
-        next: () => this.msgSvc.generalSuccessMethod(`You have collected the contributions of request ${this.request!.requestNo}`),
-        error: (err) => this.msgSvc.generalErrorMethod('Unable to collect the contributions')
+        next: () => {
+          this.isLoading = false
+          this.msgSvc.generalSuccessMethod(`You have collected the contributions of request ${this.request!.requestNo}`)
+        },
+        error: (err) => {
+          this.isLoading = false
+          this.msgSvc.generalErrorMethod('Unable to collect the contributions')
+        }
       })
   }
 
