@@ -144,7 +144,7 @@
                                     </div>
                                 </form>
                                 <div class="flex w-full">
-                                    <ng-container *ngIf="isLoading; else loading">
+                                    <ng-container *ngIf="!isLoading; else loading">
                                         <p-button class="w-full" styleClass="w-full" label="Contribute" (click)="onContribute()"></p-button>
                                     </ng-container>
                                     <ng-template #loading>
