@@ -29,53 +29,35 @@ contract Crowdfunding is Ownable {
     }
 
     event ContributeEvent(
-        // address _projectAddress,
         address _contributor,
         address _tokenAddress,
         uint _amount
     );
     event GetRefundEvent(
-        // address _projectAddress,
         address _contributor,
         address _RefundToken,
         uint _RefundAmount
     );
     event CreateRequestEvent(
         uint requestNum,
-        // address _projectAddress,
         address _projectCreator,
         string _title,
         address _recipient,
         uint _amount
     );
     event ReceiveContributionEvent(
-        // address _projectAddress,
         address _projectCreator,
         address _recipient,
         uint _amount,
         uint _requestNo
     );
-    event voteRequestEvent(
-        // address _projectAddress,
-        address _voter,
-        uint _requestNo,
-        uint _valueOfVote
-    );
+    event voteRequestEvent(address _voter, uint _requestNo, uint _valueOfVote);
 
     // cannot store Request in array as it contains mapping
     // therefore use mapping
     uint public numRequests;
     mapping(uint => Request) public requests;
     mapping(address => uint) public contributors;
-
-    // // allows factory to call the functions here
-    // modifier sharedOwner() {
-    //     require(
-    //         msg.sender == owner() || msg.sender == crowdfundingFactory,
-    //         "You are neither the owner nor the factory"
-    //     );
-    //     _;
-    // }
 
     constructor(
         uint _goal,
@@ -120,9 +102,9 @@ contract Crowdfunding is Ownable {
     }
 
     function getRefund() public returns (uint) {
-        // require(block.timestamp >= deadline, "Deadline has not passed");
-        // require(raisedAmount < goal, "Raised amount is more than goal");
-        // require(contributors[msg.sender] > 0, "You need to be a contributor");
+        require(block.timestamp >= deadline, "Deadline has not passed");
+        require(raisedAmount < goal, "Raised amount is more than goal");
+        require(contributors[msg.sender] > 0, "You need to be a contributor");
 
         uint _amount = contributors[msg.sender];
         contributors[msg.sender] = 0;
@@ -200,18 +182,18 @@ contract Crowdfunding is Ownable {
     function receiveContribution(
         uint _requestNo
     ) public onlyOwner returns (address, uint) {
-        // require(
-        //     raisedAmount >= goal,
-        //     "raisedAmount must be more than or equal to goal"
-        // );
+        require(
+            raisedAmount >= goal,
+            "raisedAmount must be more than or equal to goal"
+        );
 
         Request storage thisRequest = requests[_requestNo];
-        // require(
-        //     thisRequest.completed == false,
-        //     "The request has been completed."
-        // );
-        // uint ratio = goal / thisRequest.valueOfVotes;
-        // require(ratio < 2, "value of votes fail to meet requirement");
+        require(
+            thisRequest.completed == false,
+            "The request has been completed."
+        );
+        uint ratio = goal / thisRequest.valueOfVotes;
+        require(ratio < 2, "value of votes fail to meet requirement");
 
         address _recipient = thisRequest.recipient;
         uint _amount = thisRequest.amount;
@@ -224,42 +206,6 @@ contract Crowdfunding is Ownable {
             _requestNo
         );
         return (thisRequest.recipient, thisRequest.amount);
-    }
-
-    function getRequestTitle(
-        uint _requestNo
-    ) external view returns (string memory) {
-        return requests[_requestNo].title;
-    }
-
-    function getRequestRecipient(
-        uint _requestNo
-    ) external view returns (address) {
-        return requests[_requestNo].recipient;
-    }
-
-    function getRequestAmount(uint _requestNo) external view returns (uint) {
-        return requests[_requestNo].amount;
-    }
-
-    function getRequestCompleted(uint _requestNo) external view returns (bool) {
-        return requests[_requestNo].completed;
-    }
-
-    function getRequestNumOfVoters(
-        uint _requestNo
-    ) external view returns (uint) {
-        return requests[_requestNo].noOfVoters;
-    }
-
-    function getRequestValueOfVotes(
-        uint _requestNo
-    ) external view returns (uint) {
-        return requests[_requestNo].valueOfVotes;
-    }
-
-    function currBlockTimestamp() public view returns (uint) {
-        return block.timestamp;
     }
 
     // this function will run at constructor

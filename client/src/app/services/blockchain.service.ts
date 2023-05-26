@@ -49,14 +49,14 @@ export class BlockchainService {
     private urlBuilder: UrlBuilderService
   ) { this.readEventEndpoint = this.urlBuilder.setPath("api/read-event").build() }
 
-  createProject(goal: number, deadline: number, tokenAddress: string, title: string, description: string) {
+  createProject(goal: number, deadline: number, tokenAddress: string, title: string, description: string, imageUrl: string) {
     console.log("create project")
     return new Observable(observer => {
       let url = this.urlBuilder.setPath("api/factory/project").build()
       let subscription$ = new Subscription
 
       // post to server to get encoded abi function
-      subscription$ = this.http.post(url, { goal: goal, deadline: deadline, tokenAddress: tokenAddress, title: title })
+      subscription$ = this.http.post(url, { goal: goal, deadline: deadline, tokenAddress: tokenAddress, title: title, imageUrl: imageUrl })
         .pipe()
         .subscribe((resp) => {
           let encodedFunction = resp as EncodedFunction;
@@ -71,7 +71,8 @@ export class BlockchainService {
                 contractName: "CrowdfundingFactory",
                 functionName: "createNewProject",
                 blockHash: receiptCast.blockHash,
-                description: description
+                description: description,
+                imageUrl: imageUrl
               }
               let subscription$ = new Subscription
 

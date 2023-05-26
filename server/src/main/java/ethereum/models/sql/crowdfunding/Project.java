@@ -16,7 +16,8 @@ public class Project {
     private String creatorAddress;
     private String title;
     private String description;
-    private Integer goal; // might need BigInteger
+    private String imageUrl;
+    private Integer goal;
     private Timestamp deadline;
     private boolean completed;
     private boolean expired;

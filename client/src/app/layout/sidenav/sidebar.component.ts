@@ -54,7 +54,6 @@ export class SidebarComponent implements OnInit {
       // this.showModeratorBoard = false
     }
 
-    console.log(this.showUserBoard)
     if (this.showUserBoard) {
       this.items = [
         // this.homeMenu,

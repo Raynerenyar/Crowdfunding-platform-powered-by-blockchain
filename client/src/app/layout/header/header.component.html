@@ -7,8 +7,8 @@
             <div class="flex">
                 <p-toast position="top-center"></p-toast>
                 <p-confirmPopup #cpop></p-confirmPopup>
-                <p-overlayPanel #op>
-                    <app-overlayPanel (onLoginEvent)="hideOverlay()"></app-overlayPanel>
+                <p-overlayPanel #op class="custom-bg-bgColour1" styleClass="custom-bg-bgColour1">
+                     <app-overlayPanel (onLoginEvent)="hideOverlay()" (walletConnected)="hideOverlay()" (onRegisterEvent)="hideOverlay()"></app-overlayPanel>
                 </p-overlayPanel>
             </div>
             <nav class="p-toolbar-group-end flex">

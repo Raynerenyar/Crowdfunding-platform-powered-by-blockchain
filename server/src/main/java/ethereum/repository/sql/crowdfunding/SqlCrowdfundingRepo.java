@@ -9,13 +9,17 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import ethereum.eventHandler.BlockchainEventHandler;
 import ethereum.models.sql.crowdfunding.Project;
 import ethereum.models.sql.crowdfunding.Request;
 import ethereum.models.sql.crowdfunding.Token;
+import ethereum.services.ethereum.eventHandler.BlockchainEventHandler;
 
 import static ethereum.repository.sql.crowdfunding.Queries.*;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -36,6 +40,7 @@ public class SqlCrowdfundingRepo implements SqlRepoInferface {
                         String creatorAddress,
                         String title,
                         String description,
+                        String imageUrl,
                         long goal,
                         Timestamp deadline,
                         boolean completed,
@@ -48,6 +53,7 @@ public class SqlCrowdfundingRepo implements SqlRepoInferface {
                                 creatorAddress,
                                 title,
                                 description,
+                                imageUrl,
                                 goal,
                                 deadline,
                                 completed,
@@ -61,13 +67,15 @@ public class SqlCrowdfundingRepo implements SqlRepoInferface {
                                 Types.VARCHAR,
                                 Types.VARCHAR,
                                 Types.VARCHAR,
+                                Types.VARCHAR,
                                 Types.INTEGER,
                                 Types.TIMESTAMP,
                                 Types.BOOLEAN,
                                 Types.BOOLEAN,
                                 Types.VARCHAR,
                                 Types.INTEGER,
-                                Types.TIMESTAMP };
+                                Types.TIMESTAMP
+                };
                 return jdbc.update(INSERT_PROJECT, args, argTypes);
         }
 

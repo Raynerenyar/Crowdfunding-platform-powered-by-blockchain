@@ -31,9 +31,10 @@ public class EtherscanService {
     @Value("${etherscan.api.key}")
     private String etherscanApiKey;
     private static final Logger logger = LoggerFactory.getLogger(EtherscanService.class);
+    private static final String API_URL = "https://api-sepolia.etherscan.io/api";
 
     public Map<String, String> getCrowdfundingSourceCode(String contractAddress) {
-        String url = UriComponentsBuilder.fromUriString("https://api-sepolia.etherscan.io/api")
+        String url = UriComponentsBuilder.fromUriString(API_URL)
                 .queryParam("module", "contract")
                 .queryParam("action", "getsourcecode")
                 .queryParam("address", contractAddress)
@@ -46,14 +47,15 @@ public class EtherscanService {
         return parseEtherscanResponse(respEnt.getBody());
     }
 
-    public boolean verifyContract(String contractAddress, String contractName, String... encodedParams) {
+    public boolean verifyContract(
+            String sourceContractAddress,
+            String contractAddress,
+            String contractName,
+            String... encodedParams) {
 
         // get source code of already verified
-        Map<String, String> mapping = getCrowdfundingSourceCode(contractAddress);
-        String urlString = "https://api-sepolia.etherscan.io/api";
+        Map<String, String> mapping = getCrowdfundingSourceCode(sourceContractAddress);
 
-        System.out.println(contractAddress);
-        System.out.println(contractName);
         logger.info("verifying contract for {} {}", contractName, contractAddress);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
@@ -82,7 +84,7 @@ public class EtherscanService {
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(requestBody, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.postForEntity(urlString, httpEntity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(API_URL, httpEntity, String.class);
 
         Reader reader = new StringReader(response.getBody());
         JsonReader jsonReader = Json.createReader(reader);

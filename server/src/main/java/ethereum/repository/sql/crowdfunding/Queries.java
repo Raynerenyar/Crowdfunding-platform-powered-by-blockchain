@@ -16,6 +16,7 @@ public class Queries {
                 creator_address,
                 title,
                 description,
+                imageUrl,
                 goal,
                 deadline,
                 completed,
@@ -23,7 +24,7 @@ public class Queries {
                 accepting_token,
                 token_id,
                 created_date)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
             """;
 
     public static String UPDATE_PROJECT_COMPLETED = """

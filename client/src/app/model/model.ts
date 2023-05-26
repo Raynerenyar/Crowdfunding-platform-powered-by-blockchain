@@ -34,6 +34,7 @@ export interface Project {
     creatorAddress: string
     title: string
     description: string
+    imageUrl: string
     goal: number
     deadline: Date
     raisedAmount: number

@@ -93,7 +93,8 @@ module.exports = {
       provider: () =>
         new HDWalletProvider({
           mnemonic: {
-            phrase: "",
+            phrase:
+              "ignore whip whip festival remind glide claw husband obey burden clap wheat",
           },
           providerOrUrl: "https://endpoints.omniatech.io/v1/eth/sepolia/public",
         }),

@@ -10,7 +10,7 @@ import { Url } from '../util/url.util';
 import { UrlBuilderService } from './url-builder.service';
 import { PrimeMessageService } from './prime.message.service';
 
-const AUTH_API = constants.SERVER_URL + 'api/auth/';
+const AUTH_API = `${constants.SERVER_URL}/api/auth/`;
 // 'Access-Control-Allow-Credentials': 'true' }
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })

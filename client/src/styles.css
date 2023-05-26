@@ -112,39 +112,10 @@ body {
   transform: scale(1.06);
 }
 
-:root .megaphone-icon{
-  width: 2rem;
-  height: 2rem;
-  background-image: url("./assets/icons/megaphone.svg");
-  background-size: contain;
-  color: #6366f1;
-}
-
 :root .campaign-white-icon{
   width: 1.5rem;
   height: 1.5rem;
   background-image: url("./assets/icons/campaign_white_48dp.svg");
-  background-size: contain;
-}
-
-:root .plus-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/add_black_48dp.svg");
-  background-size: contain;
-}
-
-:root .create-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/create_black_24dp.svg");
-  background-size: contain;
-}
-
-:root .comment-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/comment.svg");
   background-size: contain;
 }
 
@@ -155,31 +126,10 @@ body {
   background-size: contain;
 }
 
-:root .kb-arrow-left-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/keyboard_arrow_left.svg");
-  background-size: contain;
-}
-
 :root .edit-white-icon{
   width: 1.5rem;
   height: 1.5rem;
   background-image: url("./assets/icons/edit_white_48dp.svg");
-  background-size: contain;  
-}
-
-:root .edit-black-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/edit_black_48dp.svg");
-  background-size: contain;
-}
-
-:root .assignment-add-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/assignment_add_FILL0_wght400_GRAD0_opsz48.svg");
   background-size: contain;  
 }
 
@@ -204,12 +154,6 @@ body {
   background-size: contain;  
 }
 
-:root .description-white-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/description_white_48dp.svg");
-  background-size: contain;  
-}
 /* html, body { height: 100%; } */
 /* body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
@@ -277,13 +221,6 @@ body {
   background-size: contain;  
 }
 
-:root .new-note-icon2{
-  width: 1.5rem;
-  height: 1.4rem;
-  background-image: url("./assets/icons/note_add_FILL0_wght100_GRAD200_opsz48.svg");
-  background-size: contain;  
-}
-
 :root .info-icon{
   width: 1.5rem;
   height: 1.5rem;
@@ -302,30 +239,9 @@ body {
   background-size: contain;  
 }
 
-:root .vote-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/how_to_vote_FILL0_wght100_GRAD200_opszNaN.svg");
-  background-size: contain;  
-}
-
 :root .vote-white-icon{
   width: 1.5rem;
   height: 1.5rem;
   background-image: url("./assets/icons/how_to_vote_white_48dp.svg");
-  background-size: contain;  
-}
-
-:root .pan-white-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/pan_tool_white_48dp.svg");
-  background-size: contain;  
-}
-
-:root .paid-white-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  background-image: url("./assets/icons/paid_white_48dp.svg");
   background-size: contain;  
 }

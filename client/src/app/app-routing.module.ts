@@ -21,6 +21,7 @@ import { RequestComponent } from './components/explore/viewRequest/request/reque
 import { CommentsComponent } from './components/explore/comments/view-comments/comments.component';
 import { NewCommentComponent } from './components/explore/comments/new-comment/new-comment.component';
 import { LoginPageComponent } from './components/auth/components/login-page/login-page.component';
+import { AboutComponent } from './components/about/about.component';
 
 
 const routes: Routes = [
@@ -36,40 +37,19 @@ const routes: Routes = [
       { path: 'project-admin/:address/announcements', component: AnnouncementComponent, canActivate: [authenticationGuard()] },
       { path: 'project-admin/:address/edit-announcement/:edit', component: AnnouncementEditorComponent, canActivate: [authenticationGuard()] },
       { path: 'project-admin/:address/request/:requestId', component: RequestDetailsComponent, canActivate: [authenticationGuard()] },
-
-      // {
-      //   path: 'project-admin', component: ProjectDashboardComponent, canActivate: [authenticationGuard()],
-      //   children: [
-      //     { path: ':address', component: ProjectOverviewComponent },
-      //     { path: 'new-project', component: NewProjectComponent },
-      //     { path: ':address/new-request', component: NewRequestComponent },
-      //     { path: ':address/new-announcement', component: AnnouncementEditorComponent },
-      //     { path: ':address/comments', component: ProjectCommentsComponent },
-      //     { path: ':address/announcements', component: AnnouncementComponent },
-      //     { path: ':address/edit-announcement/:edit', component: AnnouncementEditorComponent },
-      //     { path: ':address/:requestId', component: RequestDetailsComponent },
-
-      //   ]
-      // },
       { path: 'explore', component: ExploreProjectsComponent },
       { path: 'explore/:projectAddress', component: ProjectMainComponent },
       { path: 'explore/:projectAddress/announcements', component: ViewAnnouncementComponent },
       { path: 'explore/:projectAddress/request/:requestId', component: RequestComponent },
       { path: 'explore/:projectAddress/comments', component: CommentsComponent },
       { path: 'explore/:projectAddress/comments/new-comment', component: NewCommentComponent },
-      // {
-      //   path: 'explore/:projectAddress', component: ProjectMainComponent,
-      //   children: [
-      //     { path: 'request/:requestNum', component: RequestListComponent },
-      //   ]
-      // },
       { path: 'login', component: LoginPageComponent },
       { path: 'faucet', component: FaucetComponent },
       { path: 'profile', component: ProfileComponent },
+      { path: 'about', component: AboutComponent },
       { path: '**', redirectTo: 'explore', pathMatch: 'full' },
     ]
   },
-  // { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 // { useHash: true }
 @NgModule({

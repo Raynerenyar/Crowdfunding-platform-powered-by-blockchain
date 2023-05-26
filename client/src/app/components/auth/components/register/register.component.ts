@@ -1,7 +1,7 @@
 /* component binds form data (username, email, password) 
 from template to AuthService.register() method that returns 
 an Observable object. */
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { WalletService } from 'src/app/services/wallet.service';
@@ -9,6 +9,8 @@ import { AuthService as AuthzService } from '../../../../services/auth.service'
 import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { SessionStorageService } from '../../../../services/session.storage.service';
 import { Router } from '@angular/router';
+import { OverlayPanelComponent } from 'src/app/layout/overlayPanel/overlay.panel.component';
+import { HeaderComponent } from 'src/app/layout/header/header.component';
 
 @Component({
   selector: 'app-register',
@@ -30,6 +32,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
   isWalletSigned = false;
   isSignedMsgFailed = false;
 
+  @Output()
+  onRegisterEvent = new Subject()
+
   registerForm!: FormGroup
   walletAddress!: string
   chainId!: number
@@ -37,6 +42,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   shortenedAddress!: string
   minLength = 10
   maxLength = 20
+
 
   onWalletAddressSub$!: Subscription
   onChainIdChangeSub$!: Subscription
@@ -85,6 +91,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
               console.log(data);
               this.isSuccessful = true;
               this.isSignUpFailed = false;
+              this.onRegisterEvent.next(true)
+              this.router.navigate(['login']).then(() => window.location.reload())
+
             },
             error: err => {
               this.errorMessage = err.error.message;
@@ -103,36 +112,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
         },
       })
 
-    // let password = this.registerForm.get('password')?.value
-    // let username = this.walletAddress
-    // console.log("registering")
-    // this.authSvc.signInWithWeb3().subscribe({
-    //   next: token => {
-    //     console.log(token)
-    //     this.isWalletSigned = true;
-    //     this.isSignedMsgFailed = false
-
-    //     this.authSvc.register(username, password).subscribe({
-    //       next: data => {
-    //         // TODO: reload and ask to sign in
-    //         console.log(data);
-    //         this.isSuccessful = true;
-    //         this.isSignUpFailed = false;
-    //       },
-    //       error: err => {
-    //         this.errorMessage = err.error.message;
-    //         this.msgSvc.failedToRegister(err.error.message)
-    //         this.isSignUpFailed = true;
-    //         // navigate to login page
-    //       }
-    //     })
-    //   },
-    //   error: error => {
-    //     console.log(error)
-    //     this.msgSvc.failedToSignMsg(error)
-    //     this.isSignedMsgFailed = true;
-    //   }
-    // })
   }
 
   ngOnDestroy(): void {

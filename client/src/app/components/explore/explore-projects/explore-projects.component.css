@@ -22,3 +22,28 @@
 :host ::ng-deep .p-paginator{
     background-color: var(--custom-background-colour1);
 }
+
+.container {
+    display: grid;
+    grid-template-rows: auto auto; /* Two rows with auto height */
+    gap: 10px; /* Gap between the small containers */
+  }
+  
+  .row {
+    display: flex;
+    justify-content: space-between; /* Distribute the small containers evenly */
+  }
+  
+  .small-container {
+    flex: 1; /* Make each small container grow to occupy equal space */
+    background-color: lightgray;
+    padding: 10px;
+  }
+  
+  .row:last-child {
+    justify-content: flex-start; /* Align items to the start of the row */
+  }
+  
+  .row:last-child .small-container {
+    flex-grow: 0; /* Prevent the last row from growing */
+  }

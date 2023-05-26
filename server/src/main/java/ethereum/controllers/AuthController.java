@@ -195,4 +195,10 @@ public class AuthController {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
                 }
         }
+
+        @GetMapping(path = "/get-url")
+        public ResponseEntity<String> getUrl(@RequestParam String param) {
+                return null;
+        }
+
 }

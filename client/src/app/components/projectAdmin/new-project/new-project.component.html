@@ -23,7 +23,7 @@
                     <!-- <div class="flex button-card w-full bg-primary border-none justify-content-center p-2" pInputText pTooltip="Select One To Edit" tooltipPosition="top" [showDelay]="600" (click)="createProject()">
                         <div class="publish-white-icon"></div>
                     </div> -->
-                    <p-button icon="publish-white-icon" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text p-button-text border-none" pInputText pTooltip="Submit" tooltipPosition="top" [showDelay]="600" (click)="createProject()"></p-button>
+                    <p-button icon="publish-white-icon" id="submitButton" class="border-none flex w-full p-1" styleClass="custom-bg-accent w-full p-button-raised p-button-text p-button-text border-none" pInputText pTooltip="Submit" tooltipPosition="top" [showDelay]="600" (click)="createProject()"></p-button>
                 </div>
             </div>
 
@@ -98,16 +98,31 @@
 
                 </div>
 
+                <!-- image field -->
+                <div>
+                    <div class="field p-float-label align-items-center align-content-center align-self-center">
+                        <input type="text" id="url" pInputText
+                            class="text-base text-color border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full h-3rem"
+                            formControlName="imageUrl">
+                        <label for="url" >Image Url</label>
+                    </div>
+                    <div style="position: relative; bottom: 13px;" class="text-right">
+                        <span class="text-xs text-red-500 vertical-align-top" *ngIf="submitted && newProjectForm.get('imageUrl')?.errors?.['required']; else blank">Field is mandatory.</span>
+                        <span class="text-xs text-red-500 vertical-align-top" *ngIf="submitted && newProjectForm.get('imageUrl')?.errors?.['pattern']; else blank">Url is Invalid.</span>
+                    </div>
+                </div>
                 
                 <!-- description field -->
-                <div class="field p-float-label ">
-                    <textarea id="description" cols="30" rows="10" maxlength="5000" class="text-base text-color surface-overlay border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full" (input)="charCount = this.newProjectForm.get('description')?.value.length" pInputTextarea [autoResize]="true" formControlName="description" ></textarea>
-                    <label for="description">Description</label>
-                </div>
-                <div style="position: relative; bottom: 15px;" class="flex justify-content-between align-self-center">
-                    <span class="text-left text-xs">{{charCount}} / {{charLimit}}</span>
-                    <span class="text-xs text-red-500 text-right vertical-align-top" *ngIf="submitted && newProjectForm.get('description')?.errors?.['required']">This field is mandatory.</span>
-                    <span class="text-xs text-red-500 text-right vertical-align-top" *ngIf="submitted && newProjectForm.get('description')?.errors?.['maxlength']">&nbsp;Max length is 1000.</span>
+                <div>
+                    <div class="field p-float-label">
+                        <textarea id="description" cols="30" rows="10" maxlength="5000" class="text-base text-color surface-overlay border-2 border-solid border-round appearance-none outline-none focus:border-primary w-full" (input)="charCount = this.newProjectForm.get('description')?.value.length" pInputTextarea [autoResize]="true" formControlName="description" ></textarea>
+                        <label for="description">Description</label>
+                    </div>
+                    <div style="position: relative; bottom: 15px;" class="flex justify-content-between align-self-center">
+                        <span class="text-left text-xs">{{charCount}} / {{charLimit}}</span>
+                        <span class="text-xs text-red-500 text-right vertical-align-top" *ngIf="submitted && newProjectForm.get('description')?.errors?.['required']">This field is mandatory.</span>
+                        <span class="text-xs text-red-500 text-right vertical-align-top" *ngIf="submitted && newProjectForm.get('description')?.errors?.['maxlength']">&nbsp;Max length is 1000.</span>
+                    </div>
                 </div>
             </form>
         </div>        

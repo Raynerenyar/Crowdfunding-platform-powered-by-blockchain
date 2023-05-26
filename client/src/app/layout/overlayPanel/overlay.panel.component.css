@@ -1,0 +1,15 @@
+/* :host ::ng-deep .p-tabview{
+    background-color: var(--background-colour1);
+} */
+
+:host ::ng-deep .p-tabview-panels{
+    background-color: var(--custom-background-colour1)!important;
+}
+
+:host ::ng-deep .p-tabview-nav	{
+    background-color: var(--custom-background-colour1)!important;
+}
+
+:host ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    background-color: var(--custom-background-colour1)!important;
+}

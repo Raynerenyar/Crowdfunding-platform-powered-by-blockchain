@@ -8,8 +8,6 @@ import { BlockchainService } from './services/blockchain.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FaucetComponent } from './components/faucet/faucet.component';
 import { PrimeNgModule } from './primeng.module';
-import { HeaderComponent } from './layout/header/header.component';
-import { SidebarComponent } from './layout/sidenav/sidebar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthComponents } from "./components/auth/auth.index"
 import { httpInterceptorProviders } from './components/auth/auth.interceptor';
@@ -26,13 +24,13 @@ import { exploreComponents } from './components/explore/explore.index';
 import { DatePipe } from '@angular/common';
 import { ValidatorService } from "../app/services/validator.service";
 import { CommaSeparatedPipe } from './util/commaPipe';
+import { AboutComponent } from './components/about/about.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FaucetComponent,
-    HeaderComponent,
-    SidebarComponent,
+    AboutComponent,
     ...layoutComponents,
     ...AuthComponents,
     ...projectAdminComponents,

@@ -24,7 +24,7 @@ public class LoadContractService {
     @Value("${wallet.private.key}")
     private String privateKey;
     @Value("${chain.id}")
-    private int chainId;
+    private Integer chainId;
     @Value("${rpc.url}")
     private String rpcUrl;
 

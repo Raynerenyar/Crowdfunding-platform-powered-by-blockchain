@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { constants } from '../../environments/environment';
 
-const API_URL = constants.SERVER_URL + 'api/test/';
+const API_URL = `${constants.SERVER_URL}/api/test/`;
 
 @Injectable({
   providedIn: 'root',

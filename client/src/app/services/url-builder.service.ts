@@ -5,7 +5,7 @@ import { constants } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class UrlBuilderService {
-  private baseUrl = constants.SERVER_URL2;
+  private baseUrl = constants.SERVER_URL;
   private path = '';
 
   constructor() { }

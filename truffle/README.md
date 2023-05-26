@@ -35,7 +35,7 @@ ganache --account="0xe2904547b5dc392af1862d4bda879e91c74ccfccbdbbaa5cf17bd4f9c1f
 `--network <network name, the one in truffle-config.js>`
 `--verifiers=etherscan` by default truffle deploy to etherscan and sourcify
 
-`<contract name>@a<contract address>` for targeting specific contract address
+`<contract name>@<contract address>` for targeting specific contract address
 
 ## testing with truffle-suit
 run ganache first

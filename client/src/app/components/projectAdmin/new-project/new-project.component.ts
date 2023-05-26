@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -9,6 +9,8 @@ import { SessionStorageService } from 'src/app/services/session.storage.service'
 import { ValidatorService } from 'src/app/services/validator.service';
 import { MessageService } from 'primeng/api';
 import { PrimeMessageService } from 'src/app/services/prime.message.service';
+import { HttpClient } from '@angular/common/http';
+// import {  } from "../../../../assets/misc";
 
 
 interface City {
@@ -33,6 +35,8 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   tokens: Token[] = []
   cities!: City[]
   displayTokenAddress!: string
+  @ViewChild('submitButton')
+  submitButton!: ElementRef;
 
   constructor(
     private fb: FormBuilder,
@@ -42,7 +46,8 @@ export class NewProjectComponent implements OnInit, OnDestroy {
     private storageSvc: SessionStorageService,
     private validatorSvc: ValidatorService,
     private msgSvc: PrimeMessageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient,
   ) { }
 
   ngOnInit(): void {
@@ -63,9 +68,22 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       goal: this.fb.control(null, [Validators.required]),
       deadline: this.fb.control(null, [Validators.required, this.validatorSvc.futureDateValidator()]), // futureDateValidator()
       tokenAddress: this.fb.control('', [Validators.required, this.validatorSvc.addressValidator()]),
+      imageUrl: this.fb.control(null, [Validators.required, Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')]),
       description: this.fb.control<string>('', [Validators.required, Validators.maxLength(this.charLimit)])
     })
     this.creatorAddress = this.storageSvc.getAddress()
+
+    this.http.get("../../../../assets/misc/products.json")
+      .pipe(takeUntil(this.notifier$))
+      .subscribe({
+        next: (data: any) => {
+          let url = "https://primefaces.org/cdn/primeng/images/demo/product/"
+          let index = this.getRandomInt(0, 30)
+          let d = data as { data: any }
+          let dataObj = d.data
+          console.log(`${url}${dataObj[index].image}`)
+        }
+      })
   }
 
   createProject() {
@@ -87,12 +105,13 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       let title = this.newProjectForm.get('title')?.value
       let goal = this.newProjectForm.get('goal')?.value
       let dueDate = this.newProjectForm.get('deadline')?.value
+      let imageUrl = this.newProjectForm.get('imageUrl')?.value
       // let tokenAddress = this.newProjectForm.get('tokenAddress')?.value
       let description = this.newProjectForm.get('description')?.value
 
       // get 23:59 hours of that day
       let deadline = Date.parse(dueDate) + 86400000 - 1000
-      this.bcSvc.createProject(goal, deadline, tokenAddress, title, description)
+      this.bcSvc.createProject(goal, deadline, tokenAddress, title, description, imageUrl)
         .pipe(takeUntil(this.notifier$))
         .subscribe({
           next: () => {
@@ -119,6 +138,12 @@ export class NewProjectComponent implements OnInit, OnDestroy {
     if (typeof event.value == 'string') {
       this.displayTokenAddress = ''
     }
+  }
+
+  getRandomInt(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
   }
 
   ngOnDestroy(): void {

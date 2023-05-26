@@ -1,5 +1,9 @@
 package ethereum.util.misc;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -26,4 +30,19 @@ public class Util {
         BigInteger decimalsBN = BigInteger.valueOf(10).pow(decimals);
         return value.divide(decimalsBN).longValue();
     }
+
+    // public static void writeToDML(String sqlQuery, Object... params) {
+    //     for (Object object : params) {
+    //         sqlQuery.replaceFirst("?", object.toString());
+    //     }
+
+    //     // Append the executed queries to DML.sql file
+    //     try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("DML.sql", true)))) {
+    //         out.println("INSERT INTO employees (id, name, age) VALUES (1, 'John Doe', 25);");
+    //         out.println("UPDATE employees SET age = 26 WHERE id = 1;");
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+
+    // }
 }

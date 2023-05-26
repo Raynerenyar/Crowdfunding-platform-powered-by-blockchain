@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS crowdfunding2;
+CREATE DATABASE IF NOT EXISTS crowdfunding;
 
-USE crowdfunding2;
+USE crowdfunding;
 
 CREATE TABLE ProjectCreators (
     username VARCHAR(42) NOT NULL,
@@ -22,6 +22,7 @@ CREATE TABLE Projects (
     creator_address VARCHAR(42) NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
+    imageUrl TEXT NOT NULL,
     goal BIGINT NOT NULL,
     deadline TIMESTAMP NOT NULL,
     -- raised_amount INT, 
@@ -88,7 +89,3 @@ CREATE TABLE userRoles(
 	role_id INT NOT NULL,
 	PRIMARY KEY(user_address,role_id)
 );
-
-INSERT INTO roles(name) VALUES('ROLE_USER');
-INSERT INTO roles(name) VALUES('ROLE_MODERATOR');
-INSERT INTO roles(name) VALUES('ROLE_ADMIN');

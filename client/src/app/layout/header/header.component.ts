@@ -47,16 +47,6 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterContentInit {
   }
 
   signOut(event: Event) {
-    // const containerOffset = DomHandler.getOffset(this.confirmPopup.container)
-    // const targetOffset = DomHandler.getOffset(this.confirmPopup.confirmation.target)
-    // console.log(containerOffset)
-    // console.log(targetOffset)
-    // let arrowLeft = 0
-    // if (containerOffset.left < targetOffset.left) {
-    //   arrowLeft = targetOffset.left - containerOffset.left;
-    // }
-    // this.confirmPopup.container.style.setProperty('--overlayArrowLeft', `${1000}px`);
-
 
     // show popup to get confirmation on logging out
     this.confirmSvc.confirm({

@@ -52,11 +52,11 @@ import org.web3j.utils.Numeric;
 
 import com.mysql.cj.jdbc.ha.BalanceStrategy;
 
-import ethereum.eventHandler.BlockchainEventHandler;
 import ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.javaethereum.wrapper.Token;
 import ethereum.models.smartcontract.Project;
+import ethereum.services.ethereum.eventHandler.BlockchainEventHandler;
 import ethereum.javaethereum.wrapper.DevFaucet;
 // import ethereum.util.contractEncodedFunctions.CrowdfundingViewFunctions;
 import jakarta.json.Json;
@@ -589,7 +589,8 @@ public class BlockchainService {
                             .loadCrowdfundingFactoryContract(crowdfundingFactoryContractAddress);
                     switch (functionName) {
                         case "createNewProject" ->
-                            BcEventHandler.createNewProject(loadedFactoryContract, blockHash, description[0]);
+                            BcEventHandler.createNewProject(loadedFactoryContract, blockHash, description[0],
+                                    description[1]);
                     }
                 }
                 // ignore projectAddress

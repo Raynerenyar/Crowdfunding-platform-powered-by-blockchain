@@ -11,9 +11,18 @@ import ethereum.models.sql.crowdfunding.Token;
 
 public interface SqlRepoInferface {
 
-        public int insertProject(String projectAddress, String creatorAddress, String title, String description,
+        public int insertProject(
+                        String projectAddress,
+                        String creatorAddress,
+                        String title,
+                        String description,
+                        String imageUrl,
                         long goal,
-                        Timestamp deadline, boolean completed, boolean expired, String acceptingtoken, int tokenId,
+                        Timestamp deadline,
+                        boolean completed,
+                        boolean expired,
+                        String acceptingtoken,
+                        int tokenId,
                         Timestamp createdDate);
 
         public int insertProjectRequest(int requestNo, String projectAddress, String title, String description,

@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { Subject, takeUntil } from 'rxjs';
+import { ViewAnnouncementComponent } from 'src/app/components/explore/viewAnnouncements/view-announcement.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { SessionStorageService } from 'src/app/services/session.storage.service';
@@ -16,7 +17,11 @@ export class OverlayPanelComponent implements OnInit {
   isLoggedIn = false;
 
   @Output()
+  onRegisterEvent = new Subject()
+  @Output()
   onLoginEvent = new Subject<string>()
+  @Output()
+  walletConnected = new Subject()
   walletAddress!: string
   roles: string[] = [];
   notifier$ = new Subject<boolean>()
@@ -45,6 +50,7 @@ export class OverlayPanelComponent implements OnInit {
           this.isWalletConnected = true
           this.msgSvc.generalSuccessMethod("You have successfully connected")
           this.storageSvc.saveAddress(address[0])
+          this.walletConnected.next(true)
         },
         error: (error) => { }
       })
@@ -52,6 +58,10 @@ export class OverlayPanelComponent implements OnInit {
 
   emitLoginEvent() {
     this.onLoginEvent.next("login")
+  }
+
+  emitRegisterEvent() {
+    this.onRegisterEvent.next(true)
   }
 
   ngOnDestroy(): void {
