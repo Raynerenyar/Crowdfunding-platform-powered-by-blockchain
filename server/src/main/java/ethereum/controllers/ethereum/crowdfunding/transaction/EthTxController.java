@@ -31,7 +31,7 @@ public class EthTxController {
     private static final Logger logger = LoggerFactory.getLogger(EthTxController.class);
 
     @PostMapping(path = "/request", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EncodedFunction> postMethodName(
+    public ResponseEntity<EncodedFunction> createRequest(
             @RequestParam String projectAddress,
             @RequestBody Request entity) {
         logger.info("creating new requenst {}", entity);
@@ -83,4 +83,5 @@ public class EthTxController {
             return ResponseEntity.ok().body(new EncodedFunction(opt.get(), projectAddress));
         return ResponseEntity.badRequest().body(null);
     }
+
 }

@@ -14,12 +14,6 @@ public class JdbcConfig {
     @Autowired
     Environment env;
 
-    /*     public static final String MYSQL_URL = "MYSQL_URL";
-    public static final String MYSQL_DATABASE = "MYSQLDATABASE";
-    public static final String MYSQL_USER = "MYSQLUSER";
-    public static final String MYSQL_PASSOWORD = "MYSQLPASSWORD";
-    public static final String MYSQL_PORT = "MYSQLPORT";
-    public static final String MYSQL_HOST = "MYSQLHOST"; */
     @Bean
     public DataSource dataSource() {
 
