@@ -65,7 +65,7 @@ export class NewCommentComponent implements OnDestroy {
           error: () => { }
         })
     } else {
-      this.msgSvc.generalErrorMethod("You have to login to post a comment.")
+      this.msgSvc.generalErrorMethod("You have to connect your wallet to post a comment.")
     }
   }
 

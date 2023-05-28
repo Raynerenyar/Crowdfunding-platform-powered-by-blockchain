@@ -24,7 +24,12 @@ export class BoardUserComponent implements OnInit, OnDestroy {
   onChainIdChangeSub$!: Subscription
   onGettingUserBoard$!: Subscription
 
-  constructor(private userService: UserService, private walletSvc: WalletService, private storageSvc: SessionStorageService, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private userService: UserService,
+    private walletSvc: WalletService,
+    private storageSvc: SessionStorageService,
+    private cdr: ChangeDetectorRef
+  ) { }
   ngOnInit(): void {
     // check if logged in to project creator account
     if (this.storageSvc.isLoggedIn()) {

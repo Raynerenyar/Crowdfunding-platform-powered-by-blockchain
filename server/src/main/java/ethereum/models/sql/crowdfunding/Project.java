@@ -1,7 +1,5 @@
 package ethereum.models.sql.crowdfunding;
 
-import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;

@@ -45,7 +45,6 @@ public class TokenFunctionsService {
                                 .sendAsync()
                                 .get();
                 String decimalsValue = decimalsResponse.getValue();
-                System.out.println("getting decimals");
                 logger.info("decimals >> {}", decimalsValue);
                 decimalsFunction.getOutputParameters();
                 List<Type> decimalsResult = FunctionReturnDecoder.decode(decimalsValue,

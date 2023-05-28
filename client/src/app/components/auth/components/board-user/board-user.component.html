@@ -1,18 +1,21 @@
-<p-panel>
-  <ng-template pTemplate="header">
-    <div class="flex align-items-center text-primary">
-        <span class="pi pi-wallet mr-2"></span>
-        <span class="font-bold text-md">Wallet Address</span>
-    </div>
-</ng-template>
-  <p>{{walletAddress}}</p>
-</p-panel>
-<p-panel>
-  <ng-template pTemplate="header">
-    <div class="flex align-items-center text-primary">
-        <span class="pi pi-server mr-2"></span>
-        <span class="font-bold text-md">Chain</span>
-    </div>
-</ng-template>
-  <p>{{chainName}}</p>
-</p-panel>
+<div class="flex flex-column gap-3">
+  <p-panel>
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center text-primary">
+          <span class="pi pi-wallet mr-2"></span>
+          <span class="font-bold text-md">Wallet Address</span>
+      </div>
+  </ng-template>
+    <p>{{walletAddress}}</p>
+  </p-panel>
+  
+  <p-panel>
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center text-primary">
+          <span class="pi pi-server mr-2"></span>
+          <span class="font-bold text-md">Chain</span>
+      </div>
+  </ng-template>
+    <p>{{chainName}}</p>
+  </p-panel>
+</div>

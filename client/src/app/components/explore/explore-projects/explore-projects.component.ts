@@ -32,6 +32,7 @@ export class ExploreProjectsComponent implements OnInit {
   btmRowProjects!: Project[]
 
   onRightChain = false
+  chain = 'Sepolia'
 
   constructor(
     private repoSvc: SqlRepositoryService,
@@ -43,43 +44,48 @@ export class ExploreProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (this.walletSvc.isOnRightChain()) {
-      this.onRightChain = true
+    // if (this.walletSvc.isOnRightChain()) {
+    this.onRightChain = true
 
-      this.repoSvc.getProjectsWithPage(this.first, this.rows)
-        .pipe(takeUntil(this.notifier$))
-        .subscribe({
-          next: (projects: Project[]) => {
-            this.projects = projects
-            this.length = projects.length
-            console.log(this.length)
-            this.sliceArray(this.projects)
-            console.log(this.projects)
+    this.repoSvc.getProjectsWithPage(this.first, this.rows)
+      .pipe(takeUntil(this.notifier$))
+      .subscribe({
+        next: (projects: Project[]) => {
+          this.projects = projects
+          this.length = projects.length
+          console.log(this.length)
+          this.sliceArray(this.projects)
+          console.log(this.projects)
 
-            this.repoSvc.getCountProjects()
-              .pipe(takeUntil(this.notifier$))
-              .subscribe({
-                next: (count) => {
-                  this.length = count
-                  this.cdr.detectChanges()
-                  console.log("count of all projects", count)
-                },
-                error: (error) => {
-                  this.msgSvc.generalErrorMethod(error);
-                }
-              })
-
-            this.getRaisedAmount()
-
-          },
-          error: error => {
-            this.msgSvc.generalErrorMethod(error)
+          if (this.walletSvc.isOnRightChain()) {
+            this.onRightChain = true
           }
-        })
-    } else {
-      this.onRightChain = false
-      this.msgSvc.tellToConnectToChain()
-    }
+
+
+          this.repoSvc.getCountProjects()
+            .pipe(takeUntil(this.notifier$))
+            .subscribe({
+              next: (count) => {
+                this.length = count
+                this.cdr.detectChanges()
+                console.log("count of all projects", count)
+              },
+              error: (error) => {
+                this.msgSvc.generalErrorMethod(error);
+              }
+            })
+
+          this.getRaisedAmount()
+
+        },
+        error: error => {
+          this.msgSvc.generalErrorMethod(error)
+        }
+      })
+    // } else {
+    // this.onRightChain = false
+    // this.msgSvc.tellToConnectToChain()
+    // }
 
 
 

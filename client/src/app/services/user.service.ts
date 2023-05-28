@@ -1,4 +1,5 @@
-/* service provides methods to access public and protected resources.
+/* LEAVING THIS HERE FOR FUTURE REFERENCE
+service provides methods to access public and protected resources.
 Because HttpOnly Cookies will be automatically sent along with HTTP requests
  (via Http Interceptor), so we just simply use Http module without caring about JWT. */
 import { Injectable } from '@angular/core';

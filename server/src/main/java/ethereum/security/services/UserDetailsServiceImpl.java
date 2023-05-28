@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -30,6 +33,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // get user's roles that are in db
         List<Role> userRoles = roleRepository.findUserRole(user);
+        logger.info("getting user role >> " + userRoles.size());
+        // logger.info("getting user role >> " );
         Set<Role> setRoles = new HashSet<>();
         setRoles.addAll(userRoles);
         user.setRoles(setRoles);

@@ -3,8 +3,6 @@ package ethereum.repository.sql.crowdfunding;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import ethereum.models.sql.crowdfunding.Project;
 import ethereum.models.sql.crowdfunding.Request;
 import ethereum.models.sql.crowdfunding.Token;

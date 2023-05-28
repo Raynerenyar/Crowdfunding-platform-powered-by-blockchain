@@ -34,7 +34,7 @@ public class SqlRepoController {
     private SqlCrowdfundingRepo sqlRepo;
 
     @GetMapping("/get-projects-by-creator-address/{address}")
-    // @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<Project>> getProjectsByCreatorAddress(@PathVariable String address) {
         logger.info("get project by creator address, address >> {} ", address);
         Optional<List<Project>> opt = crowdfundingRepoSvc.getProjectsByCreatorAddress(address);

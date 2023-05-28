@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { BlockchainService } from 'src/app/services/blockchain.service';
 import { PrimeMessageService } from 'src/app/services/prime.message.service';
@@ -14,7 +14,12 @@ export class FaucetComponent implements OnDestroy {
   isLoading = false
   notifier$ = new Subject<boolean>()
 
-  constructor(private bcSvc: BlockchainService, private storageSvc: SessionStorageService, private msgSvc: PrimeMessageService) { }
+  constructor(
+    private bcSvc: BlockchainService,
+    private storageSvc: SessionStorageService,
+    private msgSvc: PrimeMessageService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   distribute() {
     if (this.storageSvc.getAddress()) {
@@ -25,10 +30,12 @@ export class FaucetComponent implements OnDestroy {
           next: (value) => {
             this.isLoading = false
             this.msgSvc.generalSuccessMethod("You have received some DEV")
+            this.cdr.detectChanges()
           },
           error: (err) => {
             this.isLoading = false
             this.msgSvc.generalErrorMethod("You probaby have recently used the faucet")
+            this.cdr.detectChanges()
           }
         })
       return

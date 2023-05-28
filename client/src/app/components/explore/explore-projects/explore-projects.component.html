@@ -33,8 +33,13 @@
             <img alt="Card" src={{project.imageUrl}} class="border-transparent border-none max-w-full h-auto" style="border-top-left-radius: 10px; border-top-right-radius: 10px;"/>
             <div class="flex flex-column">
                 <div class="text-2xl p-3 overflow-hidden text-overflow-ellipsis">{{project.title | titlecase}}</div>
-                <div class="p-3 overflow-hidden text-overflow-ellipsis">Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}</div>
-                <div class="p-3 text-sm overflow-hidden text-overflow-ellipsis">{{project.projectAddress}}</div>
+                <ng-container *ngIf="onRightChain; else notOnChain">
+                    <div class="p-3 overflow-hidden text-overflow-ellipsis">Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}</div>
+                    <div class="p-3 text-sm overflow-hidden text-overflow-ellipsis">{{project.projectAddress}}</div>
+                </ng-container>
+                <ng-template #notOnChain>
+                    <div>This project is on {{chain}}</div>
+                </ng-template>
             </div>
         </div>
     </div>

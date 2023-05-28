@@ -11,9 +11,6 @@ import org.springframework.web.util.WebUtils;
 
 import ethereum.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.impl.Base64Codec;
-// import javax.servlet.http.Cookie;
-// import javax.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 

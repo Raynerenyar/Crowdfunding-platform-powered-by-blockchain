@@ -1,12 +1,7 @@
 package ethereum.util.misc;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import jakarta.json.Json;

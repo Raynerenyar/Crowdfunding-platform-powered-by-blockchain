@@ -1,8 +1,5 @@
 package ethereum.models.smartcontract;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

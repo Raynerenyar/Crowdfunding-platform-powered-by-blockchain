@@ -8,18 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.Web3j;
 
 import ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.models.smartcontract.Request;
-import ethereum.services.ethereum.BlockchainService;
 import ethereum.services.ethereum.LoadContractService;
 import ethereum.util.misc.Util;
 
 @Service
 public class CrowdfundingFunctionsService {
-    @Autowired
-    private Web3j web3;
     @Autowired
     private LoadContractService lcSvc;
     @Autowired

@@ -314,61 +314,50 @@ export class BlockchainService {
 
   getContributionAmount(projectAddress: string, contributorAddress: string, tokenAddress: string): Observable<any> {
     return new Observable(observer => {
-      if (this.walletSvc.isOnRightChain()) {
 
-        let url = this.urlBuilder.setPath("api/crowdfunding/view/contribute/amount").build()
-        let params = new HttpParams()
-          .set('projectAddress', projectAddress)
-        let body = {
-          contributorAddress: contributorAddress
-        }
-        let subscription$ = new Subscription
-
-        // post to server for value
-        subscription$ = this.http.post(url, body, { params })
-          .pipe()
-          .subscribe({
-            next: (amount) => {
-              let amountNum = amount as number
-              observer.next(amountNum)
-            },
-            error: (err) => observer.error(err),
-          })
-        this.subArr.push(subscription$)
-
-      } else {
-        this.msgSvc.tellToConnectToChain()
-        observer.error()
+      let url = this.urlBuilder.setPath("api/crowdfunding/view/contribute/amount").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let body = {
+        contributorAddress: contributorAddress
       }
+      let subscription$ = new Subscription
+
+      // post to server for value
+      subscription$ = this.http.post(url, body, { params })
+        .pipe()
+        .subscribe({
+          next: (amount) => {
+            let amountNum = amount as number
+            observer.next(amountNum)
+          },
+          error: (err) => observer.error(err),
+        })
+      this.subArr.push(subscription$)
 
     })
   }
 
   getRaisedAmount(projectAddress: string, tokenAddress: string): Observable<any> {
     return new Observable(observer => {
-      if (this.walletSvc.isOnRightChain()) {
-        let url = this.urlBuilder.setPath("api/crowdfunding/view/raised/amount").build()
-        let params = new HttpParams()
-          .set('projectAddress', projectAddress)
-        let subscription$ = new Subscription
+      let url = this.urlBuilder.setPath("api/crowdfunding/view/raised/amount").build()
+      let params = new HttpParams()
+        .set('projectAddress', projectAddress)
+      let subscription$ = new Subscription
 
-        // post to server for value
-        subscription$ = this.http.get(url, { params })
-          .pipe()
-          .subscribe({
-            next: (amount) => {
-              let amountNum = amount as number
-              observer.next(amountNum)
-            },
-            error: (err) => {
-              observer.error(err)
-            },
-          })
-        this.subArr.push(subscription$)
-      } else {
-        this.msgSvc.tellToConnectToChain()
-        observer.error()
-      }
+      // post to server for value
+      subscription$ = this.http.get(url, { params })
+        .pipe()
+        .subscribe({
+          next: (amount) => {
+            let amountNum = amount as number
+            observer.next(amountNum)
+          },
+          error: (err) => {
+            observer.error(err)
+          },
+        })
+      this.subArr.push(subscription$)
     })
   }
 

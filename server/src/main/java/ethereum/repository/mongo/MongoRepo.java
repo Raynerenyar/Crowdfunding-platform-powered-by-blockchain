@@ -1,8 +1,5 @@
 package ethereum.repository.mongo;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -16,11 +13,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.UpdateResult;
 
 import ethereum.util.mongo.MongoUtil;
-import ethereum.util.mongo.MongoUtil.*;
 import ethereum.models.mongo.Announcement;
 import ethereum.models.mongo.Comment;
 

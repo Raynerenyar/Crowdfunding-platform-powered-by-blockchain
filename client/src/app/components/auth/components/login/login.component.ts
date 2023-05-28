@@ -97,6 +97,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.notifier$))
             .subscribe({
               next: (resp) => {
+                console.log(resp)
                 this.storageService.saveUser(resp);
 
                 this.isLoginFailed = false

@@ -1,60 +1,28 @@
 package ethereum.services.ethereum.eventHandler;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.web3j.abi.EventEncoder;
-import org.web3j.abi.datatypes.Event;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameter;
-import org.web3j.protocol.core.DefaultBlockParameterNumber;
-import org.web3j.protocol.core.methods.request.EthFilter;
-import org.web3j.utils.Numeric;
-import org.web3j.tx.Contract;
-
 import ethereum.javaethereum.wrapper.Crowdfunding;
 import ethereum.javaethereum.wrapper.CrowdfundingFactory;
 import ethereum.javaethereum.wrapper.DevFaucet;
-import ethereum.javaethereum.wrapper.Token;
-import ethereum.models.sql.crowdfunding.Request;
-import ethereum.repository.sql.crowdfunding.SqlCrowdfundingRepo;
 import ethereum.repository.sql.crowdfunding.SqlRepoInferface;
-import ethereum.services.ethereum.BlockchainService;
 import ethereum.services.ethereum.EtherscanService;
-import ethereum.services.ethereum.LoadContractService;
 import ethereum.services.ethereum.smartcontract.TokenFunctionsService;
 import ethereum.services.repository.SqlRepoService;
 import ethereum.util.eventFlowable.CrowdfundingEvents;
 import ethereum.util.eventFlowable.FaucetEvents;
 import ethereum.util.misc.Util;
-import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 
 @Service
 public class BlockchainEventHandler {
 
-    @Autowired
-    private Web3j web3;
-    @Autowired
-    private LoadContractService lcSvc;
-    @Autowired
-    private SqlCrowdfundingRepo sqlRepo;
     @Autowired
     private SqlRepoInferface sqlRepoInter;
     @Autowired

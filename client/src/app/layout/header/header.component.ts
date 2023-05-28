@@ -80,10 +80,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.storageService.clean()
             this.isLoggedIn = false
             this.overlayPanel.hide()
-            this.router.navigate(['explore']).then(() => {
-              // window.location.reload()
-              this.msgSvc.generalSuccessMethod("You have logged out")
-            })
+            this.msgSvc.generalSuccessMethod("You have logged out")
+            this.reload(4000)
+              .pipe(takeUntil(this.notifier$))
+              .subscribe({
+                next: () => {
+                  this.router.navigate(['explore']).then(() => window.location.reload())
+                }
+              })
           },
           error: err => {
             console.log(err);
@@ -103,6 +107,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     console.log("hiding overlay")
     this.overlayPanel.hide()
   }
+
+  private reload(miliseconds: number) {
+    return timer(miliseconds)
+  }
+
 
   @HostListener('window:scroll', ['$event'])
   onWindowScroll(event: any) {
@@ -128,5 +137,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.timerSub$) this.timerSub$.unsubscribe()
     if (this.signInSub$) this.signInSub$.unsubscribe()
     if (this.chainSub$) this.chainSub$.unsubscribe()
+    if (this.timerSub$) this.timerSub$.unsubscribe()
   }
 }
