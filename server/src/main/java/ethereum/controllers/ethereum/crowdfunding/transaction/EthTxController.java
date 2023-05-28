@@ -32,7 +32,7 @@ public class EthTxController {
     private static final Logger logger = LoggerFactory.getLogger(EthTxController.class);
 
     @PostMapping(path = "/request", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER')")
+    // @PreAuthorize("hasRole('USER')")
     public ResponseEntity<EncodedFunction> createRequest(
             @RequestParam String projectAddress,
             @RequestBody Request entity) {
@@ -48,7 +48,7 @@ public class EthTxController {
     }
 
     @PostMapping(path = "/receive/contribution", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER')")
+    // @PreAuthorize("hasRole('USER')")
     public ResponseEntity<EncodedFunction> receiveContribution(
             @RequestParam String projectAddress,
             @RequestBody MiscEntity entity) {

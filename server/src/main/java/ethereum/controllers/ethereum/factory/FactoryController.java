@@ -32,7 +32,7 @@ public class FactoryController {
     private static final Logger logger = LoggerFactory.getLogger(FactoryController.class);
 
     @PostMapping(path = "/project")
-    @PreAuthorize("hasRole('USER')")
+    // @PreAuthorize("hasRole('USER')")
     public ResponseEntity<EncodedFunction> postMethodName(@RequestBody Project entity) {
         logger.info("create new project {}", entity.toString());
         Optional<String> opt = factoryFuncSvc.createNewProject(entity);

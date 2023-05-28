@@ -37,7 +37,7 @@ public class MongoRepoController {
 
     @PostMapping(path = "/insert-announcement", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    @PreAuthorize("hasRole('USER')")
+    // @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Boolean> insertAnnouncement(@RequestBody Announcement announcement) {
         boolean result = mongoSvc.insertAnnouncement(announcement);
         if (result)
@@ -47,7 +47,7 @@ public class MongoRepoController {
 
     @PutMapping(path = "/edit-announcement")
     @ResponseBody
-    @PreAuthorize("hasRole('USER')")
+    // @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Boolean> editAnnouncement(@RequestBody Announcement announcement) {
         boolean result = mongoSvc.updateAnnouncement(announcement);
         if (result)
