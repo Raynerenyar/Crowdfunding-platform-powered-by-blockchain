@@ -32,25 +32,25 @@ export class BoardUserComponent implements OnInit, OnDestroy {
   ) { }
   ngOnInit(): void {
     // check if logged in to project creator account
-    if (this.storageSvc.isLoggedIn()) {
-      const user = this.storageSvc.getUser();
-      this.roles = user.roles;
-      this.isLoggedIn = this.roles.includes('ROLE_USER')
+    // if (this.storageSvc.isLoggedIn()) {
+    //   const user = this.storageSvc.getUser();
+    //   this.roles = user.roles;
+    //   this.isLoggedIn = this.roles.includes('ROLE_USER')
 
-      this.onGettingUserBoard$ = this.userService.getUserBoard().subscribe({
-        next: data => {
-          this.content = data;
-        },
-        error: err => {
-          // console.log(err)
-          if (err.error) {
-            this.content = JSON.parse(err.error).message;
-          } else {
-            this.content = "Error with status: " + err.status;
-          }
-        }
-      });
-    } else this.isLoggedIn = false;
+    //   this.onGettingUserBoard$ = this.userService.getUserBoard().subscribe({
+    //     next: data => {
+    //       this.content = data;
+    //     },
+    //     error: err => {
+    //       // console.log(err)
+    //       if (err.error) {
+    //         this.content = JSON.parse(err.error).message;
+    //       } else {
+    //         this.content = "Error with status: " + err.status;
+    //       }
+    //     }
+    //   });
+    // } else this.isLoggedIn = false;
 
     this.onWalletAddressSub$ = this.walletSvc.walletAddressEvent.subscribe((address) => {
       this.walletAddress = address
