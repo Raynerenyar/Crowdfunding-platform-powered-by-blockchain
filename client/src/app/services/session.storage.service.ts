@@ -13,8 +13,10 @@ export class SessionStorageService {
 
   clean(): void {
     let address = this.getAddress()
+    let chain = this.getChain()
     window.sessionStorage.clear();
     this.saveAddress(address)
+    this.saveChain(chain)
   }
 
   public saveUser(user: any): void {

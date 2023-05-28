@@ -12,7 +12,7 @@ export function authenticationGuard(): CanActivateFn {
         }
         // TODO: redirect to login
         // storageSvc.login();
-        router.navigate(['explore'])
+        router.navigate(['explore']).then(() => window.location.reload())
         return false
     };
 }

@@ -79,9 +79,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.msgSvc.signedOut()
             this.storageService.clean()
             this.isLoggedIn = false
-            this.msgSvc.generalSuccessMethod("You have logged out.")
             this.overlayPanel.hide()
-            this.router.navigate(['explore']).then(() => window.location.reload())
+            this.router.navigate(['explore']).then(() => {
+              // window.location.reload()
+              this.msgSvc.generalSuccessMethod("You have logged out")
+            })
           },
           error: err => {
             console.log(err);

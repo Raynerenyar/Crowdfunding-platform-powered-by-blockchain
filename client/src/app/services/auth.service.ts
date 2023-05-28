@@ -50,6 +50,7 @@ export class AuthService {
   }
 
   changePassword(username: string, password: string, signed: string, nonce?: string) {
+    console.log(username, password, signed, nonce)
     return this.http.post(
       AUTH_API + 'change-password',
       {

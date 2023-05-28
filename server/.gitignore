@@ -35,7 +35,6 @@ build/
 ### environment ###
 .env
 
-###
-# Dockerfile
+### just some test dockerfiles
 docker
 .dockerignore

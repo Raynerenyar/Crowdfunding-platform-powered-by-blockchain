@@ -18,14 +18,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import ethereum.models.payload.request.LoginRequest;
 import ethereum.models.payload.request.SignupRequest;
@@ -45,7 +44,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.validation.Valid;
 
-@Controller
+@RestController
 // @CrossOrigin(origins = "*")
 // @CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600, allowCredentials = "true")
 @CrossOrigin(origins = "#{'${client.url}'}", maxAge = 3600, allowCredentials = "true")
@@ -175,7 +174,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody SignupRequest loginRequest) {
+    public ResponseEntity<?> changePassword(@Valid @RequestBody LoginRequest loginRequest) {
         logger.info("change password request obj >> {} & {} & {} * {}", loginRequest.getUsername(),
                 loginRequest.getSigned(), loginRequest.getNonce());
         // verify if signed message is valid, otherwise bounce with error
@@ -193,7 +192,6 @@ public class AuthController {
     }
 
     @PostMapping(path = "/get-nonce", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
     public ResponseEntity<String> getNonce(@RequestBody String body) {
 
         logger.info("endpoint from AuthController.java");
