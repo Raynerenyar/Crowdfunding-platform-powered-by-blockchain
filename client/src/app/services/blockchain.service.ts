@@ -46,7 +46,8 @@ export class BlockchainService {
     private storageSvc: SessionStorageService,
     private router: Router,
     private msgSvc: PrimeMessageService,
-    private urlBuilder: UrlBuilderService
+    private urlBuilder: UrlBuilderService,
+    private walletSvc: WalletService
   ) { this.readEventEndpoint = this.urlBuilder.setPath("api/read-event").build() }
 
   createProject(goal: number, deadline: number, tokenAddress: string, title: string, description: string, imageUrl: string) {
@@ -60,13 +61,11 @@ export class BlockchainService {
         .pipe()
         .subscribe((resp) => {
           let encodedFunction = resp as EncodedFunction;
-          console.log(resp)
 
           // send transaction through metamask
           this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
             .on(('receipt'), (receipt) => {
               let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-              console.log(receiptCast.blockHash)
               let body = {
                 contractName: "CrowdfundingFactory",
                 functionName: "createNewProject",
@@ -266,90 +265,110 @@ export class BlockchainService {
 
   getRefund(projectAddress: string) {
     return new Observable(observer => {
-      let url = this.urlBuilder.setPath("api/crowdfunding/transaction/refund").build()
-      let params = new HttpParams()
-        .set('projectAddress', projectAddress)
-      let subscription$ = new Subscription
 
-      // post to server to get encoded abi function
-      subscription$ = this.http.get(url, { params })
-        .pipe()
-        .subscribe({
-          next: (resp) => {
-            let encodedFunction = resp as EncodedFunction
+      if (this.walletSvc.isOnRightChain()) {
 
-            // send transaction through metamask
-            this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
-              .on(('receipt'), (receipt) => {
-                let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
-                let body = {
-                  contractName: "Crowdfunding",
-                  functionName: "getRefund",
-                  blockHash: receiptCast.blockHash,
-                  address: projectAddress
-                }
-                let subscription$ = new Subscription
+        let url = this.urlBuilder.setPath("api/crowdfunding/transaction/refund").build()
+        let params = new HttpParams()
+          .set('projectAddress', projectAddress)
+        let subscription$ = new Subscription
 
-                // post to server to read events
-                subscription$ = this.http.post(this.readEventEndpoint, body)
-                  .pipe()
-                  .subscribe({ next: () => observer.next() })
-                this.subArr.push(subscription$)
+        // post to server to get encoded abi function
+        subscription$ = this.http.get(url, { params })
+          .pipe()
+          .subscribe({
+            next: (resp) => {
+              let encodedFunction = resp as EncodedFunction
 
-              })
-              .on(('error'), (error: any) => observer.error())
-          },
-          error: (err) => observer.error(),
-        })
-      this.subArr.push(subscription$)
+              // send transaction through metamask
+              this.sendTransaction(encodedFunction.encodedFunction, encodedFunction.contractAddress)
+                .on(('receipt'), (receipt) => {
+                  let receiptCast = receipt as { blockHash: string, logs: Object[], blockNumber: number }
+                  let body = {
+                    contractName: "Crowdfunding",
+                    functionName: "getRefund",
+                    blockHash: receiptCast.blockHash,
+                    address: projectAddress
+                  }
+                  let subscription$ = new Subscription
+
+                  // post to server to read events
+                  subscription$ = this.http.post(this.readEventEndpoint, body)
+                    .pipe()
+                    .subscribe({ next: () => observer.next() })
+                  this.subArr.push(subscription$)
+
+                })
+                .on(('error'), (error: any) => observer.error())
+            },
+            error: (err) => observer.error(),
+          })
+        this.subArr.push(subscription$)
+      } else {
+        this.msgSvc.tellToConnectToChain()
+        observer.error()
+      }
 
     })
   }
 
   getContributionAmount(projectAddress: string, contributorAddress: string, tokenAddress: string): Observable<any> {
     return new Observable(observer => {
-      let url = this.urlBuilder.setPath("api/crowdfunding/view/contribute/amount").build()
-      let params = new HttpParams()
-        .set('projectAddress', projectAddress)
-      let body = {
-        contributorAddress: contributorAddress
-      }
-      let subscription$ = new Subscription
+      if (this.walletSvc.isOnRightChain()) {
 
-      // post to server for value
-      subscription$ = this.http.post(url, body, { params })
-        .pipe()
-        .subscribe({
-          next: (amount) => {
-            let amountNum = amount as number
-            observer.next(amountNum)
-          },
-          error: (err) => observer.error(err),
-        })
-      this.subArr.push(subscription$)
+        let url = this.urlBuilder.setPath("api/crowdfunding/view/contribute/amount").build()
+        let params = new HttpParams()
+          .set('projectAddress', projectAddress)
+        let body = {
+          contributorAddress: contributorAddress
+        }
+        let subscription$ = new Subscription
+
+        // post to server for value
+        subscription$ = this.http.post(url, body, { params })
+          .pipe()
+          .subscribe({
+            next: (amount) => {
+              let amountNum = amount as number
+              observer.next(amountNum)
+            },
+            error: (err) => observer.error(err),
+          })
+        this.subArr.push(subscription$)
+
+      } else {
+        this.msgSvc.tellToConnectToChain()
+        observer.error()
+      }
 
     })
   }
 
   getRaisedAmount(projectAddress: string, tokenAddress: string): Observable<any> {
     return new Observable(observer => {
-      let url = this.urlBuilder.setPath("api/crowdfunding/view/raised/amount").build()
-      let params = new HttpParams()
-        .set('projectAddress', projectAddress)
-      let subscription$ = new Subscription
+      if (this.walletSvc.isOnRightChain()) {
+        let url = this.urlBuilder.setPath("api/crowdfunding/view/raised/amount").build()
+        let params = new HttpParams()
+          .set('projectAddress', projectAddress)
+        let subscription$ = new Subscription
 
-      // post to server for value
-      subscription$ = this.http.get(url, { params })
-        .pipe()
-        .subscribe({
-          next: (amount) => {
-            let amountNum = amount as number
-            observer.next(amountNum)
-          },
-          error: (err) => observer.error(),
-        })
-      this.subArr.push(subscription$)
-
+        // post to server for value
+        subscription$ = this.http.get(url, { params })
+          .pipe()
+          .subscribe({
+            next: (amount) => {
+              let amountNum = amount as number
+              observer.next(amountNum)
+            },
+            error: (err) => {
+              observer.error(err)
+            },
+          })
+        this.subArr.push(subscription$)
+      } else {
+        this.msgSvc.tellToConnectToChain()
+        observer.error()
+      }
     })
   }
 
@@ -402,17 +421,24 @@ export class BlockchainService {
 
   public getBlockTimestamp(): Observable<any> {
     return new Observable(observer => {
+
       this.web3.eth.getBlockNumber()
         .then((blockNum) => {
-          console.log(blockNum)
           this.web3.eth.getBlock(blockNum)
             .then(
               (blockTimestamp) => {
                 let blockTimestampSeconds = blockTimestamp.timestamp as number
                 let blockTimestampMiliSeconds = blockTimestampSeconds * 1000
                 observer.next(blockTimestampMiliSeconds)
-              }
-            )
+              })
+            .catch((error) => {
+              console.log(error)
+              observer.error(error)
+            })
+        })
+        .catch((error) => {
+          console.log(error)
+          observer.error(error)
         })
     })
   }
@@ -438,21 +464,26 @@ export class BlockchainService {
     }).catch((error) => { return error })
   }
 
-  public getBalanceOf(addressToCheck: string, tokenAddress: string) {
+  public getBalanceOf(addressToCheck: string, tokenAddress: string): Promise<any> {
     let functionParams = [addressToCheck]
     let data = this.web3.eth.abi.encodeFunctionCall(tokenFunctionsAbi.balanceOf, functionParams)
     let transactionObj = getTransactionObject(tokenAddress, data)
-
-    return this.web3.eth.call(transactionObj)
-      .then(async (result) => {
-        let balance = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.balanceOf.outputs[0].type], result)
-        this.getTokenDecimals(tokenAddress)
-        let valueBN = new BN(balance[0])
-        let decimals = await this.getTokenDecimals(tokenAddress)
-        let decimalsBN = new BN(decimals)
-        let value = valueBN.div(new BN(10).pow(decimalsBN)).toNumber()
-        return value
-      }).catch((error) => { return error })
+    return new Promise((resolve, reject) => {
+      try {
+        this.web3.eth.call(transactionObj)
+          .then(async (result) => {
+            let balance
+            balance = this.web3.eth.abi.decodeParameters([tokenFunctionsAbi.balanceOf.outputs[0].type], result)
+            this.getTokenDecimals(tokenAddress)
+            let valueBN = new BN(balance[0])
+            let decimals = await this.getTokenDecimals(tokenAddress)
+            let decimalsBN = new BN(decimals)
+            let value = valueBN.div(new BN(10).pow(decimalsBN)).toNumber()
+            resolve(value)
+          })
+          .catch((error) => { reject(error) })
+      } catch (error) { reject(error) }
+    })
   }
 
 

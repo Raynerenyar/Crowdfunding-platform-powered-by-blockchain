@@ -49,6 +49,19 @@ export class AuthService {
     );
   }
 
+  changePassword(username: string, password: string, signed: string, nonce?: string) {
+    return this.http.post(
+      AUTH_API + 'change-password',
+      {
+        username,
+        password,
+        signed,
+        nonce
+      },
+      httpOptions
+    )
+  }
+
   register(username: string, password: string, signed?: string, nonce?: string): Observable<any> {
     return this.http.post(
       AUTH_API + 'signup',

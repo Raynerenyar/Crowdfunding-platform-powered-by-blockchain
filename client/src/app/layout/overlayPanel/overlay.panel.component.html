@@ -14,6 +14,12 @@
             </ng-template>
             <app-register (onRegisterEvent)="emitRegisterEvent()"></app-register>
         </p-tabPanel>
+        <!-- <p-tabPanel>
+            <ng-template pTemplate="header">
+                <span>Forget password?</span>
+            </ng-template>
+            <app-forget (onRegisterEvent)="emitRegisterEvent()"></app-forget>
+        </p-tabPanel> -->
     </p-tabView>
     <app-board-user *ngIf="isLoggedIn"></app-board-user>
 </div>

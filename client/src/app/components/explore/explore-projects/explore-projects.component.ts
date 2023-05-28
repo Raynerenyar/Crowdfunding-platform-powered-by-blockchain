@@ -6,6 +6,7 @@ import { Project } from 'src/app/model/model';
 import { BlockchainService } from 'src/app/services/blockchain.service';
 import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { SqlRepositoryService } from 'src/app/services/sql.repo.service';
+import { WalletService } from 'src/app/services/wallet.service';
 
 @Component({
   selector: 'app-explore-projects',
@@ -30,39 +31,55 @@ export class ExploreProjectsComponent implements OnInit {
   topRowProjects!: Project[]
   btmRowProjects!: Project[]
 
-  constructor(private repoSvc: SqlRepositoryService, private msgSvc: PrimeMessageService, private router: Router, private cdr: ChangeDetectorRef, private bcSvc: BlockchainService) { }
+  onRightChain = false
+
+  constructor(
+    private repoSvc: SqlRepositoryService,
+    private msgSvc: PrimeMessageService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private bcSvc: BlockchainService,
+    private walletSvc: WalletService
+  ) { }
 
   ngOnInit(): void {
-    this.repoSvc.getProjectsWithPage(this.first, this.rows)
-      .pipe(takeUntil(this.notifier$))
-      .subscribe({
-        next: (projects: Project[]) => {
-          this.projects = projects
-          this.length = projects.length
-          console.log(this.length)
-          this.sliceArray(this.projects)
-          console.log(this.projects)
+    if (this.walletSvc.isOnRightChain()) {
+      this.onRightChain = true
 
-          this.repoSvc.getCountProjects()
-            .pipe(takeUntil(this.notifier$))
-            .subscribe({
-              next: (count) => {
-                this.length = count
-                this.cdr.detectChanges()
-                console.log("count of all projects", count)
-              },
-              error: (error) => {
-                this.msgSvc.generalErrorMethod(error);
-              }
-            })
+      this.repoSvc.getProjectsWithPage(this.first, this.rows)
+        .pipe(takeUntil(this.notifier$))
+        .subscribe({
+          next: (projects: Project[]) => {
+            this.projects = projects
+            this.length = projects.length
+            console.log(this.length)
+            this.sliceArray(this.projects)
+            console.log(this.projects)
 
-          this.getRaisedAmount()
+            this.repoSvc.getCountProjects()
+              .pipe(takeUntil(this.notifier$))
+              .subscribe({
+                next: (count) => {
+                  this.length = count
+                  this.cdr.detectChanges()
+                  console.log("count of all projects", count)
+                },
+                error: (error) => {
+                  this.msgSvc.generalErrorMethod(error);
+                }
+              })
 
-        },
-        error: error => {
-          this.msgSvc.generalErrorMethod(error)
-        }
-      });
+            this.getRaisedAmount()
+
+          },
+          error: error => {
+            this.msgSvc.generalErrorMethod(error)
+          }
+        })
+    } else {
+      this.onRightChain = false
+      this.msgSvc.tellToConnectToChain()
+    }
 
 
 

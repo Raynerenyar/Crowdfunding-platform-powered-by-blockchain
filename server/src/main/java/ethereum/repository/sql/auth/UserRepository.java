@@ -42,4 +42,10 @@ public class UserRepository {
         logger.info("inserting project creator, {}", user.getUsername());
         return jdbc.update(INSERT_PROJECT_CREATOR, args, argTypes);
     }
+
+    public int updateUser(User user) {
+        Object[] args = new Object[] { user.getPassword(), user.getUsername() };
+        int[] argTypes = new int[] { Types.VARCHAR, Types.VARCHAR };
+        return jdbc.update(UPDATE_USER_PASSWORD, args, argTypes);
+    }
 }

@@ -24,7 +24,14 @@
         <small class="text-red-500 text-sm" *ngIf="registerForm.get('password')?.errors?.['maxlength']; else small" id="password-error">Maximum length required is {{maxLength}}.</small>
       </div>
     </form>
-    <p-button class="ml-0 mr-0 mt-1" styleClass="p-button-raised p-button-sm" label="Register" [disabled]="onRegistering" (click)="onRegister()"></p-button>
+    <ng-container *ngIf="!isLoading; else loading">
+      <p-button class="ml-0 mr-0 mt-1" styleClass="p-button-raised p-button-sm" label="Register" [disabled]="onRegistering" (click)="onRegister()"></p-button>
+    </ng-container>
+    <ng-template #loading>
+      <p-button class="ml-0 mr-0 mt-1" styleClass="p-button-raised p-button-sm justify-content-center" [disabled]="onRegistering">
+        <i class="pi pi-spin pi-spinner" style="font-size: 1rem; color: white;"></i>
+      </p-button>
+    </ng-template>
   </div>
 <ng-template #small>
   <small>&nbsp;</small>

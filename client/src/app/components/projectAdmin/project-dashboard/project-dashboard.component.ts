@@ -73,7 +73,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy {
                 .pipe(takeUntil(this.notifier$))
                 .subscribe({
                   next: (value) => { project.raisedAmount = value },
-                  error: (err) => { }
+                  error: (err) => { project.raisedAmount = 0 }
                 })
             });
           }

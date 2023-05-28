@@ -6,7 +6,7 @@ import { SessionStorageService } from '../../../../services/session.storage.serv
 import { WalletService } from 'src/app/services/wallet.service';
 import { Subject, Subscription, takeUntil, timer } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService as AuthzService } from '../../../../services/auth.service'
+import { AuthService } from '../../../../services/auth.service'
 import { PrimeMessageService } from 'src/app/services/prime.message.service';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { Router } from '@angular/router';
@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   isLoggedIn = false
   isLoginFailed = false
   isLoggingIn = false
+  isLoading = false
   errorMessage = ''
   roles: string[] = []
 
@@ -36,7 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   shortenedAddress!: string
   minLength = 10
   maxLength = 20
-  isWalletSigned = false;
+  isWalletSigned = false
   isSignedMsgFailed = false
 
   onChainIdChangeSub$!: Subscription
@@ -48,7 +49,16 @@ export class LoginComponent implements OnInit, OnDestroy {
   @Output()
   onLoginEvent = new Subject<string>()
 
-  constructor(private storageService: SessionStorageService, private walletSvc: WalletService, private cdr: ChangeDetectorRef, private fb: FormBuilder, private authSvc: AuthzService, private msgSvc: PrimeMessageService, private router: Router, private storageSvc: SessionStorageService) { }
+  constructor(
+    private storageService: SessionStorageService,
+    private walletSvc: WalletService,
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder,
+    private authSvc: AuthService,
+    private msgSvc: PrimeMessageService,
+    private router: Router,
+    private storageSvc: SessionStorageService
+  ) { }
 
   ngOnInit(): void {
     if (this.storageSvc.isLoggedIn()) {
@@ -63,6 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     })
     this.onChainIdChangeSub$ = this.walletSvc.onChainIdChangeEvent.subscribe((chainId) => {
       this.chainId = chainId
+      this.chainName = "Unknown"
       if (chainId == 11155111) this.chainName = "Sepolia"
       if (chainId == 1337) this.chainName = "Ganache"
       this.cdr.detectChanges()
@@ -73,7 +84,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onLogin(): void {
-    this.isLoggingIn = true
+    this.isLoading = true
     this.authSvc.getSigned()
       .pipe(takeUntil(this.notifier$))
       .subscribe({
@@ -88,19 +99,20 @@ export class LoginComponent implements OnInit, OnDestroy {
               next: (resp) => {
                 this.storageService.saveUser(resp);
 
-                this.isLoginFailed = false;
-                this.isLoggedIn = true;
+                this.isLoginFailed = false
+                this.isLoggedIn = true
+                this.isLoading = false
 
                 this.msgSvc.successfulWalletConnection(this.walletAddress)
                 this.msgSvc.successfulLogin()
                 this.onLoginEvent.next("login")
 
-                console.log("navigate")
+                console.log("navigate back to project admin")
                 this.router.navigate(['project-admin']).then(() => window.location.reload())
 
               },
               error: (err) => {
-                this.isLoggingIn = false
+                this.isLoading = false
                 this.isLoginFailed = true;
                 this.loginForm.get('password')?.markAsPristine()
                 this.msgSvc.failedToLogin(err.errorMessage)
@@ -108,8 +120,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             })
         },
         error: (err) => {
-          this.isLoggingIn = false
-          this.msgSvc.failedToSignMsg(err)
+          this.isLoading = false
+          this.msgSvc.failedToSignMsg("There was an error when logging in")
           this.isSignedMsgFailed = true
         }
       })

@@ -102,15 +102,11 @@ export class RequestComponent implements OnDestroy {
             })
         }
       })
-
-    console.log(this.projectAddress)
   }
 
   voteRequest() {
     if (this.walletSvc.isOnRightChain()) {
       this.isLoading = true
-      console.log(this.request.requestNo)
-      console.log(this.request.requestId)
       this.bcSvc.voteRequest(this.projectAddress, this.request.requestNo)
         .pipe(takeUntil(this.notifier$))
         .subscribe({

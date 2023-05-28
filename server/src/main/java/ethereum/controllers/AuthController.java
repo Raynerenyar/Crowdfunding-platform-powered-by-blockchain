@@ -52,152 +52,170 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-        private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-        @Autowired
-        private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-        @Autowired
-        private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-        @Autowired
-        private RoleRepository roleRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
-        @Autowired
-        private PasswordEncoder encoder;
+    @Autowired
+    private PasswordEncoder encoder;
 
-        @Autowired
-        private JwtUtils jwtUtils;
-        @Autowired
-        private NonceService authSvc;
-        @Autowired
-        private BlockchainService bcSvc;
+    @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
+    private NonceService authSvc;
+    @Autowired
+    private BlockchainService bcSvc;
 
-        @PostMapping("/signin")
-        public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-                logger.info("login request obj >> {} & {} & {}", loginRequest.getUsername(), loginRequest.getPassword(),
-                                loginRequest.getSigned());
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        logger.info("login request obj >> {} & {} & {}", loginRequest.getUsername(), loginRequest.getPassword(),
+                loginRequest.getSigned());
 
-                // verify if signed message is valid, otherwise bounce with error
-                Boolean isVerified = this.bcSvc.verifySignedMessage(loginRequest.getSigned(), loginRequest.getNonce(),
-                                loginRequest.getUsername());
-                if (!isVerified)
-                        return ResponseEntity.badRequest()
-                                        .body(new MessageResponse("Signed message cannot be verified"));
+        // verify if signed message is valid, otherwise bounce with error
+        Boolean isVerified = this.bcSvc.verifySignedMessage(loginRequest.getSigned(), loginRequest.getNonce(),
+                loginRequest.getUsername());
+        if (!isVerified)
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse("Signed message cannot be verified"));
 
-                // from here on verify password and username
-                Authentication authentication = authenticationManager
-                                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                                                loginRequest.getPassword()));
+        // from here on verify password and username
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                        loginRequest.getPassword()));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-                ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-                List<String> roles = userDetails.getAuthorities().stream()
-                                .map(item -> item.getAuthority())
-                                .collect(Collectors.toList());
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
 
-                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                                .body(new UserInfoResponse(
-                                                userDetails.getUsername(),
-                                                roles));
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(new UserInfoResponse(
+                        userDetails.getUsername(),
+                        roles));
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        logger.info("signup request obj >> {} & {} & {} * {}", signUpRequest.getUsername(),
+                signUpRequest.getSigned(), signUpRequest.getNonce());
+        // verify if signed message is valid, otherwise bounce with error
+        Boolean isVerified = this.bcSvc.verifySignedMessage(signUpRequest.getSigned(), signUpRequest.getNonce(),
+                signUpRequest.getUsername());
+        if (!isVerified)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new MessageResponse("Signed message cannot be verified"));
+
+        if (userRepository.findProjectCreator(signUpRequest.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Username is already taken!"));
         }
+        // Create new user with username and encoded password
+        User user = new User(signUpRequest.getUsername(),
+                encoder.encode(signUpRequest.getPassword()));
 
-        @PostMapping("/signup")
-        public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-                logger.info("signup request obj >> {} & {} & {} * {}", signUpRequest.getUsername(),
-                                signUpRequest.getSigned(), signUpRequest.getNonce());
-                // verify if signed message is valid, otherwise bounce with error
-                Boolean isVerified = this.bcSvc.verifySignedMessage(signUpRequest.getSigned(), signUpRequest.getNonce(),
-                                signUpRequest.getUsername());
-                if (!isVerified)
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                        .body(new MessageResponse("Signed message cannot be verified"));
+        Set<String> strRoles = signUpRequest.getRole();
+        Set<Role> roles = new HashSet<>();
 
-                if (userRepository.findProjectCreator(signUpRequest.getUsername()).isPresent()) {
-                        return ResponseEntity.badRequest().body(new MessageResponse("Username is already taken!"));
-                }
-                // Create new user with username and encoded password
-                User user = new User(signUpRequest.getUsername(),
-                                encoder.encode(signUpRequest.getPassword()));
+        /* commented out as these statements allow anyone to register as mod or admin */
+        // if (strRoles == null) {
+        //     Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+        //             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        //     roles.add(userRole);
+        // } else {
+        //     strRoles.forEach(role -> {
+        //         System.out.println("sign up role >> " + role);
+        //         switch (role) {
+        //             case "admin":
+        //                 Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+        //                         .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        //                 roles.add(adminRole);
 
-                Set<String> strRoles = signUpRequest.getRole();
-                Set<Role> roles = new HashSet<>();
+        //                 break;
+        //             case "mod":
+        //                 Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+        //                         .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        //                 roles.add(modRole);
 
-                /* commented out as these statements allow anyone to register as mod or admin */
-                // if (strRoles == null) {
-                //     Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                //             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                //     roles.add(userRole);
-                // } else {
-                //     strRoles.forEach(role -> {
-                //         System.out.println("sign up role >> " + role);
-                //         switch (role) {
-                //             case "admin":
-                //                 Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                //                         .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                //                 roles.add(adminRole);
+        //                 break;
+        //             default:
+        //                 Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+        //                         .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        //                 roles.add(userRole);
+        //         }
+        //     });
+        // }
 
-                //                 break;
-                //             case "mod":
-                //                 Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                //                         .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                //                 roles.add(modRole);
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
 
-                //                 break;
-                //             default:
-                //                 Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                //                         .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                //                 roles.add(userRole);
-                //         }
-                //     });
-                // }
+        user.setRoles(roles);
+        roleRepository.insertUserRoles(user);
+        userRepository.saveUser(user);
 
-                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                roles.add(userRole);
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
 
-                user.setRoles(roles);
-                roleRepository.insertUserRoles(user);
-                userRepository.saveUser(user);
+    @PostMapping("/signout")
+    public ResponseEntity<?> logoutUser() {
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new MessageResponse("You've been signed out!"));
+    }
 
-                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    @PostMapping(path = "/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody SignupRequest loginRequest) {
+        logger.info("change password request obj >> {} & {} & {} * {}", loginRequest.getUsername(),
+                loginRequest.getSigned(), loginRequest.getNonce());
+        // verify if signed message is valid, otherwise bounce with error
+        Boolean isVerified = this.bcSvc.verifySignedMessage(loginRequest.getSigned(), loginRequest.getNonce(),
+                loginRequest.getUsername());
+        if (!isVerified)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new MessageResponse("Signed message cannot be verified"));
+
+        User user = new User(loginRequest.getUsername(),
+                encoder.encode(loginRequest.getPassword()));
+
+        userRepository.updateUser(user);
+        return ResponseEntity.ok(new MessageResponse("Password changed successfully!"));
+    }
+
+    @PostMapping(path = "/get-nonce", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> getNonce(@RequestBody String body) {
+
+        logger.info("endpoint from AuthController.java");
+        JsonObject jsonObjResqBody = Util.readJson(body);
+        String address = jsonObjResqBody.getString("address");
+        logger.info("Getting nonce for >> {}", address);
+        try {
+            String nonce = authSvc.getNonce(address);
+            String nonceResponse = Json.createObjectBuilder()
+                    .add("nonce", nonce)
+                    .build()
+                    .toString();
+            return ResponseEntity.status(HttpStatus.OK).body(nonceResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
 
-        @PostMapping("/signout")
-        public ResponseEntity<?> logoutUser() {
-                ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                                .body(new MessageResponse("You've been signed out!"));
-        }
-
-        @PostMapping(path = "/get-nonce", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-        @ResponseBody
-        public ResponseEntity<String> getNonce(@RequestBody String body) {
-
-                logger.info("endpoint from AuthController.java");
-                JsonObject jsonObjResqBody = Util.readJson(body);
-                String address = jsonObjResqBody.getString("address");
-                logger.info("Getting nonce for >> {}", address);
-                try {
-                        String nonce = authSvc.getNonce(address);
-                        String nonceResponse = Json.createObjectBuilder()
-                                        .add("nonce", nonce)
-                                        .build()
-                                        .toString();
-                        return ResponseEntity.status(HttpStatus.OK).body(nonceResponse);
-                } catch (Exception e) {
-                        e.printStackTrace();
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-                }
-        }
-
-        @GetMapping(path = "/get-url")
-        public ResponseEntity<String> getUrl(@RequestParam String param) {
-                return null;
-        }
+    @GetMapping(path = "/get-url")
+    public ResponseEntity<String> getUrl(@RequestParam String param) {
+        return null;
+    }
 
 }

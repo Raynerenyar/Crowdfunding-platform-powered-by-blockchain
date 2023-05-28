@@ -12,16 +12,18 @@
                 </p-overlayPanel>
             </div>
             <nav class="p-toolbar-group-end flex">
-                <div class="flex flex-row">
+                <div class="flex flex-row gap-2">
+
+                    <ng-container *ngIf="!onRightChain">
+                        <p-button class="m-0" styleClass="p-button-rounded p-button-raised" (click)="connectToSepolia()">Connect to Sepolia</p-button>
+                    </ng-container>
                     
                     <app-connect-wallet class="flex"></app-connect-wallet>
                     
-                    <p-button *ngIf="isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-sign-out" styleClass="p-button-rounded p-button-outlined p-button-raised" (click)="signOut($event)"></p-button>
+                    <p-button *ngIf="isLoggedIn" class="flex" icon="pi pi-sign-out" styleClass="p-button-rounded p-button-outlined p-button-raised" (click)="signOut($event)"></p-button>
                     
-                    <p-button *ngIf="!isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-sign-in" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
-                    <div>
-                        <p-button *ngIf="isLoggedIn" class="mr-1 ml-1 m-0 flex" icon="pi pi-user" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
-                    </div>
+                    <p-button *ngIf="!isLoggedIn" class="flex" icon="pi pi-sign-in" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
+                    <p-button *ngIf="isLoggedIn" class="flex" icon="pi pi-user" (click)="op.toggle($event)" styleClass="p-button-rounded p-button-outlined p-button-raised"></p-button>
                 </div>
             </nav>
         </div>

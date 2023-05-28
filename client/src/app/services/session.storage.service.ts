@@ -59,7 +59,7 @@ export class SessionStorageService {
   public getChain(): string {
     const chain = window.sessionStorage.getItem("chain")
     if (chain) return chain
-    return ""
+    return "Unknown"
   }
 
   public clearAddress() {

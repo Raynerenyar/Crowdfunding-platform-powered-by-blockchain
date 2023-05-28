@@ -1,6 +1,6 @@
 import { AfterContentInit, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { PrimeMessageService } from '../../services/prime.message.service';
-import { Observable, Subscription, timer } from 'rxjs';
+import { Observable, Subject, Subscription, takeUntil, timer } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { SessionStorageService } from 'src/app/services/session.storage.service';
 import { OverlayPanel } from 'primeng/overlaypanel';
@@ -9,13 +9,14 @@ import { Router } from '@angular/router';
 import { PrimeNGConfig, OverlayOptions } from 'primeng/api';
 import { ConfirmPopup } from 'primeng/confirmpopup';
 import { DomHandler } from 'primeng/dom';
+import { WalletService } from 'src/app/services/wallet.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit, OnDestroy, AfterContentInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   // isVisible!: boolean;
   isLoggedIn = false;
 
@@ -27,8 +28,20 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterContentInit {
   overlayPanel!: OverlayPanel
   @ViewChild('cpop')
   confirmPopup!: ConfirmPopup
+  onRightChain = false
+  chainSub$!: Subscription
+  notifier$ = new Subject<boolean>()
 
-  constructor(private authSvc: AuthService, private storageService: SessionStorageService, private msgSvc: PrimeMessageService, private confirmSvc: ConfirmationService, private router: Router, private cdr: ChangeDetectorRef, private primengConfig: PrimeNGConfig) { }
+  constructor(
+    private authSvc: AuthService,
+    private storageService: SessionStorageService,
+    private msgSvc: PrimeMessageService,
+    private confirmSvc: ConfirmationService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private primengConfig: PrimeNGConfig,
+    private walletSvc: WalletService
+  ) { }
 
 
   ngOnInit(): void {
@@ -39,10 +52,11 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterContentInit {
     o = {
       appendTo: 'body'
     }
-
-
-  }
-  ngAfterContentInit(): void {
+    this.onRightChain = this.walletSvc.isOnRightChain()
+    this.chainSub$ = this.walletSvc.onChainIdChangeEvent.subscribe(() => {
+      this.onRightChain = this.walletSvc.isOnRightChain()
+      this.cdr.detectChanges()
+    })
 
   }
 
@@ -94,9 +108,23 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterContentInit {
     if (this.confirmPopup) this.confirmPopup.hide()
   }
 
+  connectToSepolia() {
+    this.walletSvc.switchChain()
+      .pipe(takeUntil(this.notifier$))
+      .subscribe({
+        next: () => {
+
+        },
+        error: (err) => {
+
+        },
+      })
+  }
+
   ngOnDestroy(): void {
     if (this.logoutSub$) this.logoutSub$.unsubscribe()
     if (this.timerSub$) this.timerSub$.unsubscribe()
     if (this.signInSub$) this.signInSub$.unsubscribe()
+    if (this.chainSub$) this.chainSub$.unsubscribe()
   }
 }

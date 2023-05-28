@@ -85,19 +85,18 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
                     console.log("not found")
                   }
                 })
-
               // get balance of wallet that is connected
               if (this.userAddress) {
                 this.bcSvc.getBalanceOf(this.userAddress, this.project.acceptingToken)
                   .then(balance => {
                     this.tokenBalance = balance
                   })
-                  .catch()
+                  .catch(() => this.tokenBalance = 0)
               }
 
+              this.blockTimestampCondition = await this.getBlockTimestamp()
               this.raisedAmountCondition = await this.getRaisedAmount()
               this.contributedCondition = await this.getContributedAmount()
-              this.blockTimestampCondition = await this.getBlockTimestamp()
 
               // same condition as in smart contract
               // if all true then enable the refund button
@@ -122,17 +121,21 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
   // returns timestamp condition for refund
   getBlockTimestamp(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.bcSvc.getBlockTimestamp()
-        .pipe(takeUntil(this.notifier$))
-        .subscribe({
-          next: (blockTimestamp: number) => {
-            let date = new Date(this.project.deadline)
-            this.deadlineTimestamp = date.getTime()
-            this.currBlockTimestamp = blockTimestamp
-            resolve(this.currBlockTimestamp >= this.deadlineTimestamp)
-          },
-          error: () => reject(false)
-        })
+      try {
+        this.bcSvc.getBlockTimestamp()
+          .pipe(takeUntil(this.notifier$))
+          .subscribe({
+            next: (blockTimestamp: number) => {
+              let date = new Date(this.project.deadline)
+              this.deadlineTimestamp = date.getTime()
+              this.currBlockTimestamp = blockTimestamp
+              resolve(this.currBlockTimestamp >= this.deadlineTimestamp)
+            },
+            error: () => reject(false)
+          })
+      } catch (error) {
+
+      }
     })
   }
 

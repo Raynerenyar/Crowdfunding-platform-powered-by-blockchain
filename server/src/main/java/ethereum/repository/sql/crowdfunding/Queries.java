@@ -228,4 +228,11 @@ public class Queries {
             FROM  tokens
             WHERE token_address = ?
             """;
+
+    public static String UPDATE_USER_PASSWORD = """
+            UPDATE project_creators
+            SET password = ?
+            WHERE username = ?
+            """;
+
 }

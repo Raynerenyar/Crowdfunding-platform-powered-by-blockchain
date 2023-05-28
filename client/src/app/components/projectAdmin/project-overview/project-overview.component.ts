@@ -45,10 +45,8 @@ export class ProjectOverviewComponent implements OnInit {
           this.bcSvc.getRaisedAmount(this.projectAddress, this.project.acceptingToken)
             .pipe(takeUntil(this.notifier$))
             .subscribe({
-              next: (value) => {
-                this.raisedAmount = value
-              },
-              error: (err) => { }
+              next: (value) => { this.raisedAmount = value },
+              error: (err) => { this.raisedAmount = 0 }
             })
         })
     }

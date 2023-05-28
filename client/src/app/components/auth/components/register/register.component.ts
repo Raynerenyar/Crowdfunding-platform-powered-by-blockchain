@@ -22,15 +22,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
     username: null,
     email: null,
     password: null
-  };
-  isSuccessful = false;
-  isSignUpFailed = false;
-  errorMessage = '';
-  roles: string[] = [];
+  }
 
-  isLoggedIn = false;
-  isWalletSigned = false;
-  isSignedMsgFailed = false;
+  isSuccessful = false
+  isSignUpFailed = false
+  errorMessage = ''
+  roles: string[] = []
+
+  isLoggedIn = false
+  isWalletSigned = false
+  isSignedMsgFailed = false
+  isLoading = false
 
   @Output()
   onRegisterEvent = new Subject()
@@ -51,7 +53,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
   notifier$ = new Subject<boolean>()
   onRegistering = false
 
-  constructor(private storageService: SessionStorageService, private walletSvc: WalletService, private cdr: ChangeDetectorRef, private fb: FormBuilder, private authSvc: AuthzService, private msgSvc: PrimeMessageService, private storageSvc: SessionStorageService, private router: Router) { }
+  constructor(
+    private storageService: SessionStorageService,
+    private walletSvc: WalletService,
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder,
+    private authSvc: AuthzService,
+    private msgSvc: PrimeMessageService,
+    private storageSvc: SessionStorageService,
+    private router: Router) { }
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
@@ -77,6 +87,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   onRegister(): void {
     this.onRegistering = true
+    this.isLoading = true
     this.authSvc.getSigned()
       .pipe(takeUntil(this.notifier$))
       .subscribe({
@@ -88,9 +99,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
           this.authSvc.register(username, password, signedMsg, this.authSvc.nonce).subscribe({
             next: data => {
               // TODO: reload and ask to sign in
-              console.log(data);
-              this.isSuccessful = true;
-              this.isSignUpFailed = false;
+              this.isSuccessful = true
+              this.isSignUpFailed = false
+              this.isLoading = false
               this.onRegisterEvent.next(true)
               this.router.navigate(['login']).then(() => window.location.reload())
 
@@ -98,15 +109,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
             error: err => {
               this.errorMessage = err.error.message;
               this.msgSvc.failedToRegister(err.error.message)
-              this.isSignUpFailed = true;
+              this.isSignUpFailed = true
               this.onRegistering = false
+              this.isLoading = false
               this.router.navigate(['login']).then(() => window.location.reload())
             }
           })
         },
         error: (err) => {
-          console.log(err)
           this.onRegistering = false
+          this.isLoading = false
           this.msgSvc.failedToSignMsg(err)
           this.isSignedMsgFailed = true;
         },

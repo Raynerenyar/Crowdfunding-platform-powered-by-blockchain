@@ -22,6 +22,7 @@ import { CommentsComponent } from './components/explore/comments/view-comments/c
 import { NewCommentComponent } from './components/explore/comments/new-comment/new-comment.component';
 import { LoginPageComponent } from './components/auth/components/login-page/login-page.component';
 import { AboutComponent } from './components/about/about.component';
+import { ForgetComponent } from './components/auth/components/forget/forget.component';
 
 
 const routes: Routes = [
@@ -45,8 +46,8 @@ const routes: Routes = [
       { path: 'explore/:projectAddress/comments/new-comment', component: NewCommentComponent },
       { path: 'login', component: LoginPageComponent },
       { path: 'faucet', component: FaucetComponent },
-      { path: 'profile', component: ProfileComponent },
       { path: 'about', component: AboutComponent },
+      { path: 'forget', component: ForgetComponent },
       { path: '**', redirectTo: 'explore', pathMatch: 'full' },
     ]
   },

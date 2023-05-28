@@ -1,4 +1,4 @@
-    <p-button *ngIf="!walletAddress; else connected" class="mr-1 ml-1 flex" icon="pi pi-wallet" styleClass="p-button-rounded p-button-outlined p-button-raised" (click)="connectToWallet()"></p-button>
+    <p-button *ngIf="!walletAddress; else connected" class="flex" icon="pi pi-wallet" styleClass="p-button-rounded p-button-outlined p-button-raised" (click)="connectToWallet()"></p-button>
     <ng-template #connected>
-        <p-button class="mr-1 ml-1 flex scalein animation-duration-1000 align-items-center" styleClass="p-button-rounded p-button-outlined p-button-raised max-h-1rem cursor-auto" >{{shortenedAddress}}</p-button>
+        <p-button class="flex scalein animation-duration-1000 align-items-center" styleClass="p-button-rounded p-button-outlined p-button-raised  cursor-auto" >{{shortenedAddress}}</p-button>
     </ng-template>

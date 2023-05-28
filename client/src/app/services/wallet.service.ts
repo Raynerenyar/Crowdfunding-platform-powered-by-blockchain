@@ -74,11 +74,12 @@ export class WalletService {
 
       // on chain changed
       window.ethereum.on('chainChanged', (chainId: any) => {
-        this.onChainIdChangeEvent.next(chainId)
+        chainId = this.web3.utils.toDecimal(chainId)
         if (chainId != 11155111) this.messageSvc.detailedWarnMethod('Chain is not Sepolia', 'Please change to Sepolia')
         if (chainId == 11155111) this.storageSvc.saveChain("sepolia")
         if (chainId == 1337) this.storageSvc.saveChain("ganache")
         if (chainId != 1337 && chainId != 11155111) this.storageSvc.saveChain("unknown")
+        this.onChainIdChangeEvent.next(chainId)
       })
       this.getAccounts().then((accounts) => {
         if (accounts.length != 0) {
@@ -107,6 +108,76 @@ export class WalletService {
       return true
     }
     return false
+  }
+
+  public switchChain() {
+    return new Observable(observer => {
+      window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: this.web3.utils.toHex(11155111),
+            chainName: 'Sepolia',
+            nativeCurrency: {
+              name: 'ETH',
+              symbol: 'ETH',
+              decimals: 18
+            },
+            rpcUrls: ['https://eth-sepolia.public.blastapi.io'] /* ... */,
+            blockExplorerUrls: ['https://sepolia.etherscan.io/']
+          },
+        ],
+      }).then(() => {
+        this.msgSvc.generalSuccessMethod("Successfully connected to Sepolia")
+        observer.next()
+      }).catch(() => {
+        observer.error()
+        this.msgSvc.generalErrorMethod("Failed to add chain")
+      })
+
+      // if error is other than 4902
+      // } else {
+      //   observer.error()
+      //   this.msgSvc.generalErrorMethod("Failed to connect to chain")
+      // }
+
+
+      // window.ethereum.request({
+      //   method: 'wallet_switchEthereumChain',
+      //   params: [{ chainId: this.web3.utils.toHex(11155111) }],
+      // }).then(() => { observer.next() })
+      //   .catch((switchError: any) => {
+      //     // This error code indicates that the chain has not been added to MetaMask.
+      //     if (switchError.code === 4902) {
+      //       window.ethereum.request({
+      //         method: 'wallet_addEthereumChain',
+      //         params: [
+      //           {
+      //             chainId: this.web3.utils.toHex(11155111),
+      //             chainName: 'Sepolia',
+      //             nativeCurrency: {
+      //               name: 'ETH',
+      //               symbol: 'ETH',
+      //               decimals: 18
+      //             },
+      //             rpcUrls: ['https://eth-sepolia.public.blastapi.io'] /* ... */,
+      //             blockExplorerUrls: ['https://sepolia.etherscan.io/']
+      //           },
+      //         ],
+      //       }).then(() => { observer.next() })
+      //         .catch(() => {
+      //           observer.error()
+      //           this.msgSvc.generalErrorMethod("Failed to add chain")
+      //         })
+
+      //       // if error is other than 4902
+      //     } else {
+      //       observer.error()
+      //       this.msgSvc.generalErrorMethod("Failed to connect to chain")
+      //     }
+      //   })
+
+    })
   }
 
   public connectWalletToWebsite() {
