@@ -36,14 +36,14 @@
                             <span class="text-lg font-semibold">Value Of Votes:</span> {{valueOfVotes | commaSeparated}}
                         </div>
                         <div>
-                            <span class="text-lg font-semibold">Value in % Of Amount:</span> {{valueOfVotes/request.amount | percent:'1.2-2'}}
-                            <p-tag icon="pi pi-info-circle" pTooltip="Minimum quorem = 50% of the Value Of Votes over the Amount" styleClass="bg-white text-primary" class="text-xs"></p-tag>
+                            <span class="text-lg font-semibold">Value in % Of Goal:</span> {{valueOfVotes/project.goal | percent:'1.2-2'}}
+                            <p-tag icon="pi pi-info-circle" pTooltip="Minimum quorem = 50% of the Value Of Votes over the Goal" styleClass="bg-white text-primary" class="text-xs"></p-tag>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <ng-container *ngIf="valueOfVotes/(request.amount/2)*100 <= 100; else moreThan100">
-                        <p-progressBar [value]="valueOfVotes/(request.amount/2)*100"></p-progressBar>
+                    <ng-container *ngIf="valueOfVotes/(project.goal/2)*100 <= 100; else moreThan100">
+                        <p-progressBar [value]="valueOfVotes/(project.goal/2)*100"></p-progressBar>
                     </ng-container>
                     <ng-template #moreThan100>
                         <p-progressBar [value]="100"></p-progressBar>

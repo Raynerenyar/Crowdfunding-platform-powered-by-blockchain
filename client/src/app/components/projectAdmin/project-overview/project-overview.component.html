@@ -35,11 +35,12 @@
                                 {{project.acceptingToken}}
                             </a>    
                         </div>
-                        <div>
+                        <div class="flex flex-row">
                             Status: 
                             <span *ngIf="project.completed">Completed</span>
                             <span *ngIf="project.expired">Expired</span>
                             <span *ngIf="!project.expired && !project.completed">Ongoing</span>
+                            <p-tag icon="pi pi-info-circle" pTooltip="Status change on refund or receiving contributions" styleClass="bg-white text-primary" class="text-xs"></p-tag>
                         </div>
                     </div>
 
