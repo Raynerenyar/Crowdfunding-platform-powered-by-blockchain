@@ -102,7 +102,10 @@ contract Crowdfunding is Ownable {
     }
 
     function getRefund() public returns (uint) {
-        require(block.timestamp >= deadline, "Deadline has not passed");
+        require(
+            (block.timestamp * 1000) >= deadline,
+            "Deadline has not passed"
+        );
         require(raisedAmount < goal, "Raised amount is more than goal");
         require(contributors[msg.sender] > 0, "You need to be a contributor");
 

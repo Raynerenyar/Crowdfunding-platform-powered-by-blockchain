@@ -28,6 +28,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
   contributedAmount = 0
   currBlockTimestamp!: number
   deadlineTimestamp!: number
+  valuePercent!: number
 
   showContribute = true
   showRefund = false
@@ -164,6 +165,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
           next: (value) => {
             this.project.raisedAmount = value
             // console.log("raised amount", this.project.raisedAmount)
+            this.valuePercent = Math.floor((this.project.raisedAmount / this.project.goal) * 100)
             resolve(this.project.raisedAmount <= this.project.goal)
           },
           error: (err) => reject(false)

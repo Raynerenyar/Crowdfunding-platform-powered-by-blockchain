@@ -76,14 +76,15 @@
                                 </div>
                                 <div class="p-2">
                                     <ng-container *ngIf="((project.raisedAmount/project.goal)*100) <= 100; else moreThan100">
-                                        <p-progressBar [value]="((project.raisedAmount/project.goal)*100)"></p-progressBar>
+                                        <p-progressBar [value]="valuePercent"></p-progressBar>
+                                        <!-- <p-progressBar [value]="((project.raisedAmount/project.goal)*100)"></p-progressBar> -->
                                         <!-- <p-progressBar [value]="50"></p-progressBar> -->
                                     </ng-container>
                                     <ng-template #moreThan100>
                                         <p-progressBar [value]="100"></p-progressBar>
                                     </ng-template>
                                 </div>
-                            <div class="p-2 text-justify">
+                            <div class="p-2 text-justify w-12">
                                     {{project.description}}
                                 </div>
                             </div>
