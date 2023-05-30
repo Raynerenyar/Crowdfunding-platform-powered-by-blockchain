@@ -164,7 +164,7 @@ export class ProjectMainComponent implements OnInit, OnDestroy {
           next: (value) => {
             this.project.raisedAmount = value
             // console.log("raised amount", this.project.raisedAmount)
-            resolve(this.project.raisedAmount >= this.project.goal)
+            resolve(this.project.raisedAmount <= this.project.goal)
           },
           error: (err) => reject(false)
         })
