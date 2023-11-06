@@ -20,26 +20,27 @@ public class JdbcConfig {
         String url;
 
         // if not on local dev
-        if (!(env.getProperty("MYSQLHOST").equals("localhost"))) {
+        // if (!(env.getProperty("MYSQLHOST").equals("localhost"))) {
 
-            StringBuilder urlBldr = new StringBuilder()
-                    .append("jdbc:")
-                    .append("mysql://")
-                    .append(env.getProperty("MYSQLHOST"))
-                    .append(":")
-                    .append(env.getProperty("MYSQLPORT"))
-                    .append("/")
-                    .append(env.getProperty("MYSQLDATABASE")); // get shared env var
-            url = urlBldr.toString();
-        } else {
-            // for local development
-            url = env.getProperty("MYSQL_URL");
-        }
+        // StringBuilder urlBldr = new StringBuilder()
+        // .append("jdbc:")
+        // .append("mysql://")
+        // .append(env.getProperty("MYSQLHOST"))
+        // .append(":")
+        // .append(env.getProperty("MYSQLPORT"))
+        // .append("/")
+        // .append(env.getProperty("MYSQLDATABASE")); // get shared env var
+        // url = urlBldr.toString();
+        // } else {
+        // // for local development
+        url = env.getProperty("MYSQL_URL");
+        // }
+        System.out.println("DB URL ==>> " + url);
 
         return DataSourceBuilder.create()
                 .url(url)
-                .password(env.getProperty("MYSQLPASSWORD"))
-                .username(env.getProperty("MYSQLUSER"))
+                // .password(env.getProperty("MYSQLPASSWORD"))
+                // .username(env.getProperty("MYSQLUSER"))
                 .build();
 
     }
