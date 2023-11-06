@@ -9,14 +9,13 @@ COPY pom.xml /app
 
 # skip test as it can't run without env var
 # no need for test either
-RUN mvn -f /app/pom.xml clean package -Dmaven.test.skip
 RUN --mount=type=secret,id=_env,dst=/app/.env cat /app/.env
+RUN mvn -f /app/pom.xml clean package -Dmaven.test.skip
 
 ## SECOND STAGE docker pull eclipse-temurin:17 ##
 FROM eclipse-temurin:17
 
 COPY --from=build /app/target/assessment-0.0.1-SNAPSHOT.jar /app/target/assessment-0.0.1-SNAPSHOT.jar
-COPY --from=build /app/.env /app/.env
 
 EXPOSE 8080
 
