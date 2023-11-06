@@ -109,7 +109,7 @@ public class AuthController {
         @PostMapping("/signup")
         public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
                 logger.info("signup request obj >> {} & {} & {} * {}", signUpRequest.getUsername(),
-                                signUpRequest.getSigned(), signUpRequest.getNonce());
+                                signUpRequest.getSigned(), signUpRequest.getNonce(), signUpRequest.getPassword());
                 // verify if signed message is valid, otherwise bounce with error
                 Boolean isVerified = this.bcSvc.verifySignedMessage(signUpRequest.getSigned(), signUpRequest.getNonce(),
                                 signUpRequest.getUsername());
