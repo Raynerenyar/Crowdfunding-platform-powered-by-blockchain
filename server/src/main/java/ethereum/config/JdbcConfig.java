@@ -14,7 +14,8 @@ public class JdbcConfig {
 
     @Autowired
     Environment env;
-    @Value("spring.datasource.url")
+
+    @Value("${spring.datasource.url}")
     private String postgresqlUrl;
 
     @Bean
