@@ -2,6 +2,7 @@
  inside Browser’s Session Storage. For Logout, we will
   clear this Session Storage. */
 import { Injectable } from '@angular/core';
+import Web3 from 'web3';
 
 const USER_KEY = 'auth-user';
 
@@ -9,6 +10,9 @@ const USER_KEY = 'auth-user';
   providedIn: 'root'
 })
 export class SessionStorageService {
+
+  web3: Web3 = new Web3(window.ethereum);
+
   constructor() { }
 
   clean(): void {
@@ -44,6 +48,7 @@ export class SessionStorageService {
 
   public saveAddress(address: string) {
     window.sessionStorage.removeItem("address");
+    address = this.web3.utils.toChecksumAddress(address);
     window.sessionStorage.setItem("address", address);
   }
 
