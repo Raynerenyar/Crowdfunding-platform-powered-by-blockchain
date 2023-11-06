@@ -3,6 +3,7 @@ package ethereum.config;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,8 @@ public class JdbcConfig {
 
     @Autowired
     Environment env;
+    @Value("spring.datasource.url")
+    private String postgresqlUrl;
 
     @Bean
     public DataSource dataSource() {
@@ -36,6 +39,7 @@ public class JdbcConfig {
         url = env.getProperty("MYSQL_URL");
         // }
         System.out.println("DB URL ==>> " + url);
+        System.out.println("DB URL ==>> " + postgresqlUrl);
 
         return DataSourceBuilder.create()
                 .url(url)
