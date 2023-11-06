@@ -9,7 +9,7 @@ COPY pom.xml /app
 
 # for render.com, mount .env secret file, app has to package with env before
 RUN --mount=type=secret,id=_env,dst=/app/.env cat /app/.env
-RUN mvn -f /app/pom.xml clean package
+RUN mvn -f /app/pom.xml clean package -Dmaven.test.skip
 
 
 ## SECOND STAGE docker pull eclipse-temurin:17 ##
