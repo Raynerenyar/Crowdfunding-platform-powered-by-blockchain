@@ -37,7 +37,7 @@ public class JdbcConfig {
         // url = urlBldr.toString();
         // } else {
         // // for local development
-        url = env.getProperty("MYSQL_URL");
+        url = env.getProperty("SQL_URL");
         // }
 
         return DataSourceBuilder.create()
