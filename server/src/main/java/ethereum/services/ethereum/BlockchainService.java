@@ -61,7 +61,11 @@ public class BlockchainService {
             if (publicKey != null) {
                 String recoveredAddress = "0x" + Keys.getAddress(publicKey);
                 Boolean result = recoveredAddress.equalsIgnoreCase(address);
-                logger.info("recovered address from signature, address >> {}", recoveredAddress);
+                logger.info(
+                        "recovered address {} from signature, address >> {} >> result {}",
+                        recoveredAddress,
+                        address,
+                        result);
                 if (result == true)
                     return true;
             }
