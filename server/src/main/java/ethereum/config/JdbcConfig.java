@@ -39,8 +39,6 @@ public class JdbcConfig {
         // // for local development
         url = env.getProperty("MYSQL_URL");
         // }
-        System.out.println("DB URL ==>> " + url);
-        System.out.println("DB URL ==>> " + postgresqlUrl);
 
         return DataSourceBuilder.create()
                 .url(url)
