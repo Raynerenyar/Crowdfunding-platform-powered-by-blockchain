@@ -7,10 +7,10 @@ WORKDIR /app
 COPY src /app/src
 COPY pom.xml /app
 
-# skip test as it can't run without env var
-# no need for test either
+# for render.com, mount .env secret file, app has to package with env before
 RUN --mount=type=secret,id=_env,dst=/app/.env cat /app/.env
-RUN mvn -f /app/pom.xml clean package -Dmaven.test.skip
+RUN mvn -f /app/pom.xml clean package
+
 
 ## SECOND STAGE docker pull eclipse-temurin:17 ##
 FROM eclipse-temurin:17
