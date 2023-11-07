@@ -4,7 +4,6 @@ Welcome to an exciting crowdfunding platform powered by Ethereum blockchain tech
 This project was developed on the Sepolia blockchain which is a an Ethereum testnet. It enables the distribution and collection of funds to be decentralised. In the event of the web application going down, the collection of the contributed funds can be accessed through the verified smart contract. Being a verified smart contract allows anyone to see the source code[^1] of the contract as well as allows easy access to the methods[^2][^3] on a blockchain explorer such as [Sepolia Etherscan](https://sepolia.etherscan.io). Otherwise there are complicated ways to call methods of an unverified project.
 
 # Technologies used
-
 |Technology|Image|
 |---|---|
 |Solidity|<img src="https://docs.soliditylang.org/en/v0.8.17/_images/logo.svg" width="100">|
@@ -25,6 +24,12 @@ This project was developed on the Sepolia blockchain which is a an Ethereum test
 |Typescript|<img src="https://user-images.githubusercontent.com/25181517/183890598-19a0ac2d-e88a-4005-a8df-1ee36782fde1.png" width="100">|
 |Docker|<img src="https://user-images.githubusercontent.com/25181517/117207330-263ba280-adf4-11eb-9b97-0ac5b40bc3be.png" width="100">|
 
-[^1]: [Crowdfunding smart contract](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#code)
-[^2]: [Crowdfunding Smart contract read methods](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#readContract)
-[^3]: [Crowdfunding Smart contract write methods](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#writeContract)
+# Smart contract source codes
+1. [Crowdfunding Factory](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#code)
+2. [Example Crowdfunding, created and verified on every new project](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#code)
+3. [Dev token faucet](https://sepolia.etherscan.io/address/0x79d9f9AEF4E4808Db4c16b9Fffd4849063Ab8fF9#code)
+4. [Dev token](https://sepolia.etherscan.io/token/0x24ddd7c47d5ea7181f4d3bd67fb1d361c49020c6#code)
+
+[^1]: [Crowdfunding smart contract source code](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#code)
+[^2]: [Crowdfunding Smart contract read methods](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#readContract)
+[^3]: [Crowdfunding Smart contract write methods](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#writeContract)
