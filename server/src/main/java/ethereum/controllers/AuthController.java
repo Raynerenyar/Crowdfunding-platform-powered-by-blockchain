@@ -87,7 +87,8 @@ public class AuthController {
 
                 // from here on verify password and username
                 Authentication authentication = authenticationManager
-                                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                                .authenticate(new UsernamePasswordAuthenticationToken(
+                                                loginRequest.getUsername().toLowerCase(),
                                                 loginRequest.getPassword()));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -37,7 +37,7 @@ public class UserRepository {
     // insert project creator
     public int saveUser(User user) {
         String name = "user's name";
-        Object[] args = new Object[] { user.getUsername(), name, user.getPassword() };
+        Object[] args = new Object[] { user.getUsername().toLowerCase(), name, user.getPassword() };
         int[] argTypes = new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR };
         logger.info("inserting project creator, {}", user.getUsername());
         return jdbc.update(INSERT_PROJECT_CREATOR, args, argTypes);

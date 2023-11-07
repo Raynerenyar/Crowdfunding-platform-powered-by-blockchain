@@ -19,9 +19,7 @@ public class CrowdfundingEvents {
             CrowdfundingFactory loadedContract,
             String contractAddress,
             String blockHash) {
-        System.out.println("eth filter before");
         EthFilter ethFilter = new EthFilter(blockHash, contractAddress);
-        System.out.println("eth filter after");
         return loadedContract.createNewProjectEventEventFlowable(ethFilter);
     }
 

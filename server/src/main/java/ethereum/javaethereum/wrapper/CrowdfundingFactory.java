@@ -158,9 +158,6 @@ public class CrowdfundingFactory extends Contract {
     }
 
     public Flowable<CreateNewProjectEventEventResponse> createNewProjectEventEventFlowable(EthFilter filter) {
-        System.out.println(filter.getBlockHash());
-        System.out.println(filter.getAddress());
-        System.out.println(filter);
         return web3j.ethLogFlowable(filter).map(new Function<Log, CreateNewProjectEventEventResponse>() {
             @Override
             public CreateNewProjectEventEventResponse apply(Log log) {
