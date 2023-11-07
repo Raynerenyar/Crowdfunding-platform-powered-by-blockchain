@@ -87,7 +87,7 @@ public class SqlRepoController {
     @GetMapping("get-latest-project/{creatorAddress}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Project> getLatestProjectByCreatorAddress(@PathVariable String creatorAddress) {
-        Optional<Project> opt = crowdfundingRepoSvc.getLatestProjectByCreatorAddress(creatorAddress);
+        Optional<Project> opt = crowdfundingRepoSvc.getLatestProjectByCreatorAddress(creatorAddress.toLowerCase());
         if (opt.isPresent())
             return ResponseEntity.status(HttpStatus.OK).body(opt.get());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
