@@ -92,7 +92,7 @@ public class BlockchainEventHandler {
                     long goal = Util.revertFromBaseUnit(event._goal, decimals);
                     sqlRepoInter.insertProject(
                             event._projectAddress,
-                            event._projectCreator,
+                            event._projectCreator.toLowerCase(),
                             event._title,
                             description,
                             imageUrl,

@@ -48,7 +48,7 @@ public class RoleRepository {
 
     // takes in a user object that already contains the username
     public List<Role> findUserRole(User user) {
-        Object[] args = new Object[] { user.getUsername() };
+        Object[] args = new Object[] { user.getUsername().toLowerCase() };
         int[] argTypes = new int[] { Types.VARCHAR };
         return jdbc.query(FIND_USER_ROLES, args, argTypes, BeanPropertyRowMapper.newInstance(Role.class));
 
