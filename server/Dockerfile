@@ -7,8 +7,6 @@ WORKDIR /app
 COPY src /app/src
 COPY pom.xml /app
 
-# for render.com, mount .env secret file, app has to package with env before
-RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env
 RUN mvn -f /app/pom.xml clean package -Dmaven.test.skip
 
 
