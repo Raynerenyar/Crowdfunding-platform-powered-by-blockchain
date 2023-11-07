@@ -37,7 +37,7 @@ public class SqlRepoController {
     // @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<Project>> getProjectsByCreatorAddress(@PathVariable String address) {
         logger.info("get project by creator address, address >> {} ", address);
-        Optional<List<Project>> opt = crowdfundingRepoSvc.getProjectsByCreatorAddress(address);
+        Optional<List<Project>> opt = crowdfundingRepoSvc.getProjectsByCreatorAddress(address.toLowerCase());
         if (opt.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(opt.get());
         }
