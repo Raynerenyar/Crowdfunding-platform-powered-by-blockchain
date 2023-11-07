@@ -57,8 +57,8 @@ public class SqlRepoService {
         return Optional.of(addresses);
     }
 
-    public Optional<List<Project>> getProjectsWithPage(int offset, int limit) {
-        List<Project> projects = crowdRepo.selectProjectsWithPage(offset, limit);
+    public Optional<List<Project>> getProjectsWithPage(int limit, int offset) {
+        List<Project> projects = crowdRepo.selectProjectsWithPage(limit, offset);
         if (projects.size() == 0)
             return Optional.empty();
         return Optional.of(projects);

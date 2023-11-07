@@ -99,8 +99,8 @@ public class SqlCrowdfundingRepo implements SqlRepoInferface {
         return jdbc.queryForList(SELECT_PROJECT_BY_CREATOR_ADDRESS_FOR_PROJ_ADDRESS, String.class, args);
     }
 
-    public List<Project> selectProjectsWithPage(int offset, int limit) {
-        Object[] args = new Object[] { offset, limit };
+    public List<Project> selectProjectsWithPage(int limit, int offset) {
+        Object[] args = new Object[] { limit, offset };
         return jdbc.query(SELECT_PROJECTS_W_PAGE, BeanPropertyRowMapper.newInstance(Project.class),
                 args);
     }
@@ -117,7 +117,7 @@ public class SqlCrowdfundingRepo implements SqlRepoInferface {
 
             public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
                 rs.next();
-                return rs.getInt("count(*)");
+                return rs.getInt(1);
             }
         });
     }
@@ -284,7 +284,7 @@ public class SqlCrowdfundingRepo implements SqlRepoInferface {
 
             public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
                 rs.next();
-                return rs.getInt("count(*)");
+                return rs.getInt(1);
             }
         }, args);
     }

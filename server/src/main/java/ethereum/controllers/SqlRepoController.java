@@ -59,9 +59,9 @@ public class SqlRepoController {
 
     // get all projects by page with all column data
     @GetMapping("/get-projects")
-    public ResponseEntity<List<Project>> getProjectsWithPage(@RequestParam int offset, @RequestParam int limit) {
+    public ResponseEntity<List<Project>> getProjectsWithPage(@RequestParam int limit, @RequestParam int offset) {
         logger.info("getting projects with page, limit >> {}, offset >> {}", limit, offset);
-        Optional<List<Project>> opt = crowdfundingRepoSvc.getProjectsWithPage(offset, limit);
+        Optional<List<Project>> opt = crowdfundingRepoSvc.getProjectsWithPage(limit, offset);
         if (opt.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(opt.get());
         }
