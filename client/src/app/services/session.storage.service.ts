@@ -48,7 +48,9 @@ export class SessionStorageService {
 
   public saveAddress(address: string) {
     window.sessionStorage.removeItem("address");
-    address = this.web3.utils.toChecksumAddress(address);
+    if (address.length > 0) {
+      address = this.web3.utils.toChecksumAddress(address);
+    }
     window.sessionStorage.setItem("address", address);
   }
 
