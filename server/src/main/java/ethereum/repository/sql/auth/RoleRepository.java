@@ -36,7 +36,7 @@ public class RoleRepository {
     public boolean insertUserRoles(User user) {
         List<Object[]> batchArgs = user.getRoles().stream()
                 .map(role -> {
-                    return new Object[] { user.getUsername(), role.getId() };
+                    return new Object[] { user.getUsername().toLowerCase(), role.getId() };
                 }).toList();
         int[] argTypes = new int[] { Types.VARCHAR, Types.INTEGER };
         int[] insertedCount = jdbc.batchUpdate(INSERT_USER_INTO_ROLE, batchArgs, argTypes);
