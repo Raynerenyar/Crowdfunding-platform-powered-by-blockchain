@@ -23,7 +23,7 @@ public class UserRepository {
     private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
     public Optional<User> findProjectCreator(String creatorAddress) {
-        Object[] args = new Object[] { creatorAddress };
+        Object[] args = new Object[] { creatorAddress.toLowerCase() };
         int[] argTypes = new int[] { Types.VARCHAR };
         List<User> users = jdbc.query(FIND_PROJECT_CREATOR, args, argTypes,
                 BeanPropertyRowMapper.newInstance(User.class));
@@ -44,7 +44,7 @@ public class UserRepository {
     }
 
     public int updateUser(User user) {
-        Object[] args = new Object[] { user.getPassword(), user.getUsername() };
+        Object[] args = new Object[] { user.getPassword(), user.getUsername().toLowerCase() };
         int[] argTypes = new int[] { Types.VARCHAR, Types.VARCHAR };
         return jdbc.update(UPDATE_USER_PASSWORD, args, argTypes);
     }
