@@ -9,7 +9,7 @@ export class AboutComponent {
 
   arr = [
     { src: "https://docs.soliditylang.org/en/v0.8.17/_images/logo.svg", title: "Solidity" },
-    { src: "../../../assets/icons/test.svg", title: "Web3.js" },
+    { src: "../../../assets/icons/web3js.svg", title: "Web3.js" },
     { src: "https://avatars.githubusercontent.com/u/22208471?s=200&v=4", title: "Web3j" },
     { src: "https://user-images.githubusercontent.com/25181517/117201156-9a724800-adec-11eb-9a9d-3cd0f67da4bc.png", title: "Java" },
     { src: "https://user-images.githubusercontent.com/25181517/117207242-07d5a700-adf4-11eb-975e-be04e62b984b.png", title: "Maven" },
