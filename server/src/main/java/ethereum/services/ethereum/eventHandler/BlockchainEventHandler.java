@@ -58,11 +58,13 @@ public class BlockchainEventHandler {
         createNewProjectSub$ = CrowdfundingEvents
                 .createNewProject(loadedContract, crowdfundingFactoryAddress, blockHash)
                 .subscribe((event) -> {
-                    logger.info("event: create new project, blockhash >> {}, project title >> {}",
+                    logger.info("event: create new project, blockhash >> {}, project title >> {}, loadedContract >> {}",
                             blockHash,
-                            event._title);
+                            event._title,
+                            loadedContract);
 
-                    // sequence of params is important. must be same as the one used in the constructor of Crowdfunding contract
+                    // sequence of params is important. must be same as the one used in the
+                    // constructor of Crowdfunding contract
                     String[] params = {
                             event._goal.toString(),
                             event._deadline.toString(),
@@ -76,8 +78,10 @@ public class BlockchainEventHandler {
                             "Crowdfunding",
                             params);
 
-                    /* at this point the cliet side and the smart contract has verified that token address given by
-                     * the user is a token therefore it is valid to store address into db 
+                    /*
+                     * at this point the cliet side and the smart contract has verified that token
+                     * address given by
+                     * the user is a token therefore it is valid to store address into db
                      */
                     int count = sqlRepoInter.doesTokenExist(event._tokenUsed.toLowerCase());
                     if (count == 0)
@@ -199,10 +203,12 @@ public class BlockchainEventHandler {
         receiveContributionFromProjectSub$ = CrowdfundingEvents
                 .receiveContributionFromProject(loadedContract, projectAddress, blockHash)
                 .subscribe((event) -> {
-                    /* received contribution so request completes
+                    /*
+                     * received contribution so request completes
                      * update project's completed column to true
                      * fundraising project completes as goal has been reached
-                     * update projectRequest completed column to true in the request using project address and requestno
+                     * update projectRequest completed column to true in the request using project
+                     * address and requestno
                      */
                     logger.info("event: receive contribution");
                     Optional<Integer> opt = sqlRepoSvc.getRequestId(projectAddress,
