@@ -1,7 +1,7 @@
 # Crowdfunding-platform-powered-by-blockchain
 Welcome to an exciting crowdfunding platform powered by Ethereum blockchain technology. Here, a vibrant community of creators and backers come together to support innovative projects and turn dreams into reality.
 
-This project was developed on the Sepolia blockchain which is a an Ethereum testnet. It enables the distribution and collection of funds to be decentralised. In the event of the web application going down, the collection of the contributed funds can be accessed through the verified smart contract. Being a verified smart contract allows anyone to see the source code of the contract as well as allows easy access to the methods on a blockchain explorer such as [Sepolia Etherscan](https://sepolia.etherscan.io). Otherwise there are complicated ways to call methods of an unverified project.
+This project was developed on the Sepolia blockchain which is a an Ethereum testnet. It enables the distribution and collection of funds to be decentralised. In the event of the web application going down, the collection of the contributed funds can be accessed through the verified smart contract. Being a verified smart contract allows anyone to see the source code[^1] of the contract as well as allows easy access to the methods[^2][^3] on a blockchain explorer such as [Sepolia Etherscan](https://sepolia.etherscan.io). Otherwise there are complicated ways to call methods of an unverified project.
 
 # Technologies used
 
@@ -24,3 +24,7 @@ This project was developed on the Sepolia blockchain which is a an Ethereum test
 |Javascript|<img src="https://user-images.githubusercontent.com/25181517/117447155-6a868a00-af3d-11eb-9cfe-245df15c9f3f.png" width="100">|
 |Typescript|<img src="https://user-images.githubusercontent.com/25181517/183890598-19a0ac2d-e88a-4005-a8df-1ee36782fde1.png" width="100">|
 |Docker|<img src="https://user-images.githubusercontent.com/25181517/117207330-263ba280-adf4-11eb-9b97-0ac5b40bc3be.png" width="100">|
+
+[^1]: [Crowdfunding smart contract](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#code)
+[^2]: [Crowdfunding Smart contract read methods](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#readContract)
+[^3]: [Crowdfunding Smart contract write methods](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#writeContract)
