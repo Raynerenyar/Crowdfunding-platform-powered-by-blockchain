@@ -45,10 +45,6 @@ public class EthController {
         String contractName = job.getString("contractName");
         String functionName = job.getString("functionName");
         String blockHash = job.getString("blockHash");
-        logger.info("event details - \ncontractName: {},\nfunctionName: {},\nblockHash: {}",
-                contractName,
-                functionName,
-                blockHash);
 
         if (job.containsKey("description")) {
             String description = job.getString("description");
