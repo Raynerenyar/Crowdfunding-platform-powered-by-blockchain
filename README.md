@@ -24,11 +24,14 @@ This project was developed on the Sepolia blockchain which is a an Ethereum test
 |Typescript|<img src="https://user-images.githubusercontent.com/25181517/183890598-19a0ac2d-e88a-4005-a8df-1ee36782fde1.png" width="100">|
 |Docker|<img src="https://user-images.githubusercontent.com/25181517/117207330-263ba280-adf4-11eb-9b97-0ac5b40bc3be.png" width="100">|
 
+# Notes on use of relational database such as MySQL and PostgreSQL
+Although the details of each new project and each new request can be stored in the smart contract as state variables, the use of these relational databases is for the practice of CRUD. Additionally, to avoid excessive gas cost to the project creator, the description of a project/request is not stored in the blockchain.
+
 # Smart contract source codes
-1. [Crowdfunding Factory](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#code)
-2. [Example Crowdfunding, created and verified on every new project](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#code)
-3. [Dev token faucet](https://sepolia.etherscan.io/address/0x79d9f9AEF4E4808Db4c16b9Fffd4849063Ab8fF9#code)
-4. [Dev token](https://sepolia.etherscan.io/token/0x24ddd7c47d5ea7181f4d3bd67fb1d361c49020c6#code)
+- [Crowdfunding Factory](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#code)
+- [Example Crowdfunding, created and verified on every new project](https://sepolia.etherscan.io/address/0x768596e667842cef27d2828c9b02f37cbc61b537#code)
+- [Dev token faucet](https://sepolia.etherscan.io/address/0x79d9f9AEF4E4808Db4c16b9Fffd4849063Ab8fF9#code)
+- [Dev token](https://sepolia.etherscan.io/token/0x24ddd7c47d5ea7181f4d3bd67fb1d361c49020c6#code)
 
 [^1]: [Crowdfunding smart contract source code](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#code)
 [^2]: [Crowdfunding Smart contract read methods](https://sepolia.etherscan.io/address/0x88AF4fE9DB3C53D5f1CC3d5128063D36909592e9#readContract)
