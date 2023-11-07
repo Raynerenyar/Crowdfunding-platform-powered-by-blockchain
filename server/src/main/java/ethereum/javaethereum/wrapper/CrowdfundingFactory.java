@@ -32,13 +32,19 @@ import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
 
 /**
- * <p>Auto generated code.
- * <p><strong>Do not modify!</strong>
- * <p>Please use the <a href="https://docs.web3j.io/command_line.html">web3j command line tools</a>,
- * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the 
- * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
+ * <p>
+ * Auto generated code.
+ * <p>
+ * <strong>Do not modify!</strong>
+ * <p>
+ * Please use the <a href="https://docs.web3j.io/command_line.html">web3j
+ * command line tools</a>,
+ * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the
+ * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen
+ * module</a> to update.
  *
- * <p>Generated with web3j version 1.4.2.
+ * <p>
+ * Generated with web3j version 1.4.2.
  */
 @SuppressWarnings("rawtypes")
 public class CrowdfundingFactory extends Contract {
@@ -72,13 +78,21 @@ public class CrowdfundingFactory extends Contract {
 
     public static final String FUNC_ISTOKEN = "isToken";
 
-    public static final Event CREATENEWPROJECTEVENT_EVENT = new Event("CreateNewProjectEvent", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Address>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}, new TypeReference<Address>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}));
-    ;
+    public static final Event CREATENEWPROJECTEVENT_EVENT = new Event("CreateNewProjectEvent",
+            Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {
+            }, new TypeReference<Address>() {
+            }, new TypeReference<Utf8String>() {
+            }, new TypeReference<Uint256>() {
+            }, new TypeReference<Uint256>() {
+            }, new TypeReference<Address>() {
+            }, new TypeReference<Utf8String>() {
+            }, new TypeReference<Utf8String>() {
+            }));;
 
-    public static final Event OWNERSHIPTRANSFERRED_EVENT = new Event("OwnershipTransferred", 
-            Arrays.<TypeReference<?>>asList(new TypeReference<Address>(true) {}, new TypeReference<Address>(true) {}));
-    ;
+    public static final Event OWNERSHIPTRANSFERRED_EVENT = new Event("OwnershipTransferred",
+            Arrays.<TypeReference<?>>asList(new TypeReference<Address>(true) {
+            }, new TypeReference<Address>(true) {
+            }));;
 
     protected static final HashMap<String, String> _addresses;
 
@@ -100,26 +114,33 @@ public class CrowdfundingFactory extends Contract {
     }
 
     @Deprecated
-    protected CrowdfundingFactory(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+    protected CrowdfundingFactory(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice,
+            BigInteger gasLimit) {
         super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
-    protected CrowdfundingFactory(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+    protected CrowdfundingFactory(String contractAddress, Web3j web3j, Credentials credentials,
+            ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, credentials, contractGasProvider);
     }
 
     @Deprecated
-    protected CrowdfundingFactory(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+    protected CrowdfundingFactory(String contractAddress, Web3j web3j, TransactionManager transactionManager,
+            BigInteger gasPrice, BigInteger gasLimit) {
         super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    protected CrowdfundingFactory(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+    protected CrowdfundingFactory(String contractAddress, Web3j web3j, TransactionManager transactionManager,
+            ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
-    public static List<CreateNewProjectEventEventResponse> getCreateNewProjectEventEvents(TransactionReceipt transactionReceipt) {
-        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(CREATENEWPROJECTEVENT_EVENT, transactionReceipt);
-        ArrayList<CreateNewProjectEventEventResponse> responses = new ArrayList<CreateNewProjectEventEventResponse>(valueList.size());
+    public static List<CreateNewProjectEventEventResponse> getCreateNewProjectEventEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(CREATENEWPROJECTEVENT_EVENT,
+                transactionReceipt);
+        ArrayList<CreateNewProjectEventEventResponse> responses = new ArrayList<CreateNewProjectEventEventResponse>(
+                valueList.size());
         for (Contract.EventValuesWithLog eventValues : valueList) {
             CreateNewProjectEventEventResponse typedResponse = new CreateNewProjectEventEventResponse();
             typedResponse.log = eventValues.getLog();
@@ -137,10 +158,14 @@ public class CrowdfundingFactory extends Contract {
     }
 
     public Flowable<CreateNewProjectEventEventResponse> createNewProjectEventEventFlowable(EthFilter filter) {
+        System.out.println(filter.getBlockHash());
+        System.out.println(filter.getAddress());
+        System.out.println(filter);
         return web3j.ethLogFlowable(filter).map(new Function<Log, CreateNewProjectEventEventResponse>() {
             @Override
             public CreateNewProjectEventEventResponse apply(Log log) {
-                Contract.EventValuesWithLog eventValues = extractEventParametersWithLog(CREATENEWPROJECTEVENT_EVENT, log);
+                Contract.EventValuesWithLog eventValues = extractEventParametersWithLog(CREATENEWPROJECTEVENT_EVENT,
+                        log);
                 CreateNewProjectEventEventResponse typedResponse = new CreateNewProjectEventEventResponse();
                 typedResponse.log = log;
                 typedResponse._projectAddress = (String) eventValues.getNonIndexedValues().get(0).getValue();
@@ -156,15 +181,19 @@ public class CrowdfundingFactory extends Contract {
         });
     }
 
-    public Flowable<CreateNewProjectEventEventResponse> createNewProjectEventEventFlowable(DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+    public Flowable<CreateNewProjectEventEventResponse> createNewProjectEventEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
         filter.addSingleTopic(EventEncoder.encode(CREATENEWPROJECTEVENT_EVENT));
         return createNewProjectEventEventFlowable(filter);
     }
 
-    public static List<OwnershipTransferredEventResponse> getOwnershipTransferredEvents(TransactionReceipt transactionReceipt) {
-        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(OWNERSHIPTRANSFERRED_EVENT, transactionReceipt);
-        ArrayList<OwnershipTransferredEventResponse> responses = new ArrayList<OwnershipTransferredEventResponse>(valueList.size());
+    public static List<OwnershipTransferredEventResponse> getOwnershipTransferredEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(OWNERSHIPTRANSFERRED_EVENT,
+                transactionReceipt);
+        ArrayList<OwnershipTransferredEventResponse> responses = new ArrayList<OwnershipTransferredEventResponse>(
+                valueList.size());
         for (Contract.EventValuesWithLog eventValues : valueList) {
             OwnershipTransferredEventResponse typedResponse = new OwnershipTransferredEventResponse();
             typedResponse.log = eventValues.getLog();
@@ -179,7 +208,8 @@ public class CrowdfundingFactory extends Contract {
         return web3j.ethLogFlowable(filter).map(new Function<Log, OwnershipTransferredEventResponse>() {
             @Override
             public OwnershipTransferredEventResponse apply(Log log) {
-                Contract.EventValuesWithLog eventValues = extractEventParametersWithLog(OWNERSHIPTRANSFERRED_EVENT, log);
+                Contract.EventValuesWithLog eventValues = extractEventParametersWithLog(OWNERSHIPTRANSFERRED_EVENT,
+                        log);
                 OwnershipTransferredEventResponse typedResponse = new OwnershipTransferredEventResponse();
                 typedResponse.log = log;
                 typedResponse.previousOwner = (String) eventValues.getIndexedValues().get(0).getValue();
@@ -189,58 +219,67 @@ public class CrowdfundingFactory extends Contract {
         });
     }
 
-    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+    public Flowable<OwnershipTransferredEventResponse> ownershipTransferredEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
         filter.addSingleTopic(EventEncoder.encode(OWNERSHIPTRANSFERRED_EVENT));
         return ownershipTransferredEventFlowable(filter);
     }
 
     public RemoteFunctionCall<Boolean> allowedAddresses(String param0) {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ALLOWEDADDRESSES, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(param0)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ALLOWEDADDRESSES,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(param0)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     public RemoteFunctionCall<Boolean> isFreeForAll() {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ISFREEFORALL, 
-                Arrays.<Type>asList(), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ISFREEFORALL,
+                Arrays.<Type>asList(),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     public RemoteFunctionCall<String> owner() {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_OWNER, 
-                Arrays.<Type>asList(), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_OWNER,
+                Arrays.<Type>asList(),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
     public RemoteFunctionCall<String> projectAddresses(BigInteger param0) {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_PROJECTADDRESSES, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(param0)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_PROJECTADDRESSES,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(param0)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
     public RemoteFunctionCall<BigInteger> projectAddressesCount() {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_PROJECTADDRESSESCOUNT, 
-                Arrays.<Type>asList(), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
+                FUNC_PROJECTADDRESSESCOUNT,
+                Arrays.<Type>asList(),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     public RemoteFunctionCall<Tuple2<String, String>> projects(String param0) {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_PROJECTS, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(param0)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Address>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_PROJECTS,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(param0)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {
+                }, new TypeReference<Address>() {
+                }));
         return new RemoteFunctionCall<Tuple2<String, String>>(function,
                 new Callable<Tuple2<String, String>>() {
                     @Override
                     public Tuple2<String, String> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
                         return new Tuple2<String, String>(
-                                (String) results.get(0).getValue(), 
+                                (String) results.get(0).getValue(),
                                 (String) results.get(1).getValue());
                     }
                 });
@@ -248,102 +287,113 @@ public class CrowdfundingFactory extends Contract {
 
     public RemoteFunctionCall<TransactionReceipt> renounceOwnership() {
         final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
-                FUNC_RENOUNCEOWNERSHIP, 
-                Arrays.<Type>asList(), 
+                FUNC_RENOUNCEOWNERSHIP,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> transferOwnership(String newOwner) {
         final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
-                FUNC_TRANSFEROWNERSHIP, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(newOwner)), 
+                FUNC_TRANSFEROWNERSHIP,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(newOwner)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
-    public RemoteFunctionCall<TransactionReceipt> createNewProject(BigInteger _goal, BigInteger _deadline, String _acceptingThisToken, String _title) {
+    public RemoteFunctionCall<TransactionReceipt> createNewProject(BigInteger _goal, BigInteger _deadline,
+            String _acceptingThisToken, String _title) {
         final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
-                FUNC_CREATENEWPROJECT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_goal), 
-                new org.web3j.abi.datatypes.generated.Uint256(_deadline), 
-                new org.web3j.abi.datatypes.Address(_acceptingThisToken), 
-                new org.web3j.abi.datatypes.Utf8String(_title)), 
+                FUNC_CREATENEWPROJECT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_goal),
+                        new org.web3j.abi.datatypes.generated.Uint256(_deadline),
+                        new org.web3j.abi.datatypes.Address(_acceptingThisToken),
+                        new org.web3j.abi.datatypes.Utf8String(_title)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> allowAddress(String _allowThisAddress) {
         final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
-                FUNC_ALLOWADDRESS, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_allowThisAddress)), 
+                FUNC_ALLOWADDRESS,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_allowThisAddress)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> disallowAddress(String _disallowThisAddress) {
         final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
-                FUNC_DISALLOWADDRESS, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_disallowThisAddress)), 
+                FUNC_DISALLOWADDRESS,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_disallowThisAddress)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> toggleFreeForAll() {
         final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
-                FUNC_TOGGLEFREEFORALL, 
-                Arrays.<Type>asList(), 
+                FUNC_TOGGLEFREEFORALL,
+                Arrays.<Type>asList(),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<Boolean> isContract(String _address) {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ISCONTRACT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_address)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ISCONTRACT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_address)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     public RemoteFunctionCall<Boolean> isToken(String _address) {
-        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ISTOKEN, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_address)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_ISTOKEN,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_address)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {
+                }));
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     @Deprecated
-    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, Credentials credentials,
+            BigInteger gasPrice, BigInteger gasLimit) {
         return new CrowdfundingFactory(contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
     @Deprecated
-    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, TransactionManager transactionManager,
+            BigInteger gasPrice, BigInteger gasLimit) {
         return new CrowdfundingFactory(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, Credentials credentials,
+            ContractGasProvider contractGasProvider) {
         return new CrowdfundingFactory(contractAddress, web3j, credentials, contractGasProvider);
     }
 
-    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+    public static CrowdfundingFactory load(String contractAddress, Web3j web3j, TransactionManager transactionManager,
+            ContractGasProvider contractGasProvider) {
         return new CrowdfundingFactory(contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
-    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, Credentials credentials,
+            ContractGasProvider contractGasProvider) {
         return deployRemoteCall(CrowdfundingFactory.class, web3j, credentials, contractGasProvider, BINARY, "");
     }
 
-    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, TransactionManager transactionManager,
+            ContractGasProvider contractGasProvider) {
         return deployRemoteCall(CrowdfundingFactory.class, web3j, transactionManager, contractGasProvider, BINARY, "");
     }
 
     @Deprecated
-    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice,
+            BigInteger gasLimit) {
         return deployRemoteCall(CrowdfundingFactory.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
     }
 
     @Deprecated
-    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+    public static RemoteCall<CrowdfundingFactory> deploy(Web3j web3j, TransactionManager transactionManager,
+            BigInteger gasPrice, BigInteger gasLimit) {
         return deployRemoteCall(CrowdfundingFactory.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
     }
 
