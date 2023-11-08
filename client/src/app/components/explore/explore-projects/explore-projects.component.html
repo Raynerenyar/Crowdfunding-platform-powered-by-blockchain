@@ -1,46 +1,93 @@
 <div class="flex justify-content-center">
-    <div class="flex flex-column gap-3 pb-2 row-gap-3 justify-content-center max-width" style="width: 80%; height: 100%;">
+    <div class="flex flex-column gap-3 pb-2 row-gap-3 justify-content-center max-width"
+        style="width: 80%; height: 100%;">
 
         <div class="flex flex-column gap-3 justify-content-center base-card p-3 px-5 max-width">
 
-            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="true" (onPageChange)="onPageNumChange($event)"></p-paginator>
-                <!-- top row -->
-                <div class="flex flex-row flex-wrap md:flex-wrap lg:flex-nowrap justify-content-center gap-3 w-auto">
-                    <ng-container *ngIf="topRowProjects">
-                        <ng-container *ngFor="let project of topRowProjects">
-                            <ng-container [ngTemplateOutlet]="listProjects" [ngTemplateOutletContext]="{ $implicit: project}">
-                            </ng-container>
-                        </ng-container>
-                     </ng-container>
-                </div>
-                <!-- btm row -->
-                <div class="flex flex-row flex-wrap md:flex-wrap lg:flex-nowrap justify-content-center gap-3 w-full">
-                    <ng-container *ngIf="btmRowProjects">
-                        <ng-container *ngFor="let project of btmRowProjects">
-                            <ng-container [ngTemplateOutlet]="listProjects" [ngTemplateOutletContext]="{ $implicit: project}">
-                            </ng-container>           
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="true"
+                (onPageChange)="onPageNumChange($event)"></p-paginator>
+            <!-- top row -->
+            <div class="flex flex-row flex-wrap md:flex-wrap lg:flex-nowrap justify-content-center gap-3 w-auto">
+                <ng-container *ngIf="topRowProjects; else showPlaceholderProjects">
+                    <ng-container *ngFor="let project of topRowProjects">
+                        <ng-container [ngTemplateOutlet]="listProjects"
+                            [ngTemplateOutletContext]="{ $implicit: project}">
                         </ng-container>
                     </ng-container>
-                </div>                
-                
-                <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="true" (onPageChange)="onPageNumChange($event)"></p-paginator>
+                </ng-container>
+            </div>
+            <!-- btm row -->
+            <div class="flex flex-row flex-wrap md:flex-wrap lg:flex-nowrap justify-content-center gap-3 w-full">
+                <ng-container *ngIf="btmRowProjects">
+                    <ng-container *ngFor="let project of btmRowProjects">
+                        <ng-container [ngTemplateOutlet]="listProjects"
+                            [ngTemplateOutletContext]="{ $implicit: project}">
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+            </div>
+
+            <p-paginator [first]="first" [rows]="rows" [totalRecords]="length" [alwaysShow]="true"
+                (onPageChange)="onPageNumChange($event)"></p-paginator>
         </div>
     </div>
 </div>
 <ng-template #listProjects let-project>
-    <div class="flex justify-content-center w-12 md:w-12 lg:w-4 xl:w-4" [ngClass]="{'fadeinleft': fadingLeft,'fadeinright': !fadingLeft}" (click)="goToProject(project.projectAddress)">
+    <div class="flex justify-content-center w-12 md:w-12 lg:w-4 xl:w-4"
+        [ngClass]="{'fadeinleft': fadingLeft,'fadeinright': !fadingLeft}" (click)="goToProject(project.projectAddress)">
         <div class="card flex flex-column no-underline text-color w-full">
-            <img alt="Card" src={{project.imageUrl}} class="border-transparent border-none max-w-full h-auto" style="border-top-left-radius: 10px; border-top-right-radius: 10px;"/>
+            <img alt="Card" src={{project.imageUrl}} class="border-transparent border-none max-w-full h-auto"
+                style="border-top-left-radius: 10px; border-top-right-radius: 10px;" />
             <div class="flex flex-column">
                 <div class="text-2xl p-3 overflow-hidden text-overflow-ellipsis">{{project.title | titlecase}}</div>
                 <ng-container *ngIf="onRightChain; else notOnChain">
-                    <div class="p-3 overflow-hidden text-overflow-ellipsis">Raised Amount: {{project.raisedAmount | commaSeparated}} {{project.tokenSymbol}}</div>
+                    <div class="p-3 overflow-hidden text-overflow-ellipsis">Raised Amount: {{project.raisedAmount |
+                        commaSeparated}} {{project.tokenSymbol}}</div>
                     <div class="p-3 text-sm overflow-hidden text-overflow-ellipsis">{{project.projectAddress}}</div>
                 </ng-container>
                 <ng-template #notOnChain>
-                    <div>This project is on {{chain}}</div>
+                    <div>This project is on {{chain}}, please connect to Sepolia</div>
                 </ng-template>
             </div>
+
         </div>
     </div>
+</ng-template>
+<!-- https://primefaces.org/cdn/primeng/images/demo/product/gold-phone-case.jpg -->
+<ng-template #showPlaceholderProjects>
+
+    <div class="flex justify-content-center w-12 md:w-12 lg:w-4 xl:w-4"
+        [ngClass]="{'fadeinleft': fadingLeft,'fadeinright': !fadingLeft}">
+
+        <ng-container [ngTemplateOutlet]="placeholderProject">
+        </ng-container>
+
+        <ng-container [ngTemplateOutlet]="placeholderProject">
+        </ng-container>
+
+        <ng-container [ngTemplateOutlet]="placeholderProject">
+        </ng-container>
+
+    </div>
+
+</ng-template>
+<ng-template #placeholderProject>
+
+    <div class="card flex flex-column no-underline text-color w-full mx-2">
+        <img alt="Card" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg"
+            class="border-transparent border-none max-w-full h-auto"
+            style="border-top-left-radius: 10px; border-top-right-radius: 10px;" />
+        <div class="flex flex-column">
+            <div class="text-2xl p-3 overflow-hidden text-overflow-ellipsis">Loading...</div>
+            <ng-container *ngIf="onRightChain; else notOnChain">
+                <div class="p-3 overflow-hidden text-overflow-ellipsis">Raised Amount: Loading...</div>
+                <div class="p-3 text-sm overflow-hidden text-overflow-ellipsis">
+                    0x000000000000000000000000000000Loading...</div>
+            </ng-container>
+            <ng-template #notOnChain>
+                <div>This project is on {{chain}}, please connect to Sepolia</div>
+            </ng-template>
+        </div>
+    </div>
+
 </ng-template>
