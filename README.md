@@ -1,7 +1,10 @@
-# Crowdfunding-platform-powered-by-blockchain
+# Crowdfunding platform powered by blockchain
 Welcome to an exciting crowdfunding platform powered by Ethereum blockchain technology. Here, a vibrant community of creators and backers come together to support innovative projects and turn dreams into reality.
 
 This project was developed on the Sepolia blockchain which is a an Ethereum testnet. It enables the distribution and collection of funds to be decentralised. In the event of the web application going down, the collection of the contributed funds can be accessed through the verified smart contract. Being a verified smart contract allows anyone to see the source code[^1] of the contract as well as allows easy access to the methods[^2][^3] on a blockchain explorer such as [Sepolia Etherscan](https://sepolia.etherscan.io). Otherwise there are complicated ways to call methods of an unverified project.
+
+## Current deployed URL
+[https://crowdfunding-platform-powered-by-blockchain.vercel.app](https://crowdfunding-platform-powered-by-blockchain.vercel.app)
 
 # Technologies used
 |Technology|Image|
